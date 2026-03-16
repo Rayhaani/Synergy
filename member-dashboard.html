@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASARA PLATINUM | QUANTUM-NODE</title>
+    <title>SYNERGY PROTOCOL | QUANTUM-NODE</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -37,7 +37,6 @@
 
         .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 4px; }
 
-        /* Animated Background Pulse */
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.3; }
             50% { transform: scale(1.2); opacity: 0.5; }
@@ -62,7 +61,7 @@
     <div class="bg-pulse"></div>
 
     <nav class="sticky top-0 z-50 glass border-b border-white/10 p-4 flex justify-between items-center">
-        <div class="orbitron text-[12px] text-cyan-400 font-bold">Nasara <span class="text-white">Platinum</span></div>
+        <div class="orbitron text-[12px] text-cyan-400 font-bold">SYNERGY <span class="text-white">PROTOCOL</span></div>
         <div class="flex items-center gap-4">
             <div class="text-right">
                 <p class="text-[9px] text-gray-400 uppercase">Vault Balance</p>
@@ -110,14 +109,14 @@
             <div class="glass p-8 rounded-[40px] border-t border-cyan-500/30 text-center relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent shadow-[0_0_15px_cyan]"></div>
                 
-                <h2 class="orbitron text-xs mb-6 text-white/80">Input Verification Matrix</h2>
+                <h2 class="orbitron text-xs mb-6 text-white/80">Input Secure Code</h2>
                 
                 <div class="relative inline-block w-full">
                     <input type="text" id="node-code" maxlength="4" class="w-full bg-transparent border-b-2 border-white/10 py-4 text-center text-4xl font-light tracking-[20px] outline-none focus:border-cyan-500 transition-all text-cyan-400 orbitron" placeholder="0000">
                 </div>
 
-                <button onclick="finalizeNode()" class="w-full mt-8 py-5 rounded-2xl bg-cyan-500 text-black orbitron font-bold text-[11px] hover:bg-white transition-all shadow-[0_20px_40px_rgba(0,242,254,0.2)]">
-                    Sync to Blockchain
+                <button onclick="authenticateNode()" class="w-full mt-8 py-5 rounded-2xl bg-cyan-500 text-black orbitron font-bold text-[11px] hover:bg-white transition-all shadow-[0_20px_40px_rgba(0,242,254,0.2)]">
+                    Authenticate
                 </button>
             </div>
         </section>
@@ -166,11 +165,11 @@
                 let duration = player.getDuration();
                 let progress = (current / duration) * 100;
                 
-                // Update Timer
                 let mins = Math.floor(current / 60);
                 let secs = Math.floor(current % 60);
                 document.getElementById('timer-display').innerText = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
 
+                // Wannan shine logic din dake bude wajen input code bayan an kalla 90%
                 if (progress >= 90) {
                     document.getElementById('verifier-panel').style.opacity = "1";
                     document.getElementById('verifier-panel').style.pointerEvents = "all";
@@ -179,22 +178,22 @@
             }, 1000);
         }
 
-        function finalizeNode() {
-            const code = document.getElementById('node-code').value;
-            if(code === "2026") {
-                alert("QUANTUM_SYNC_COMPLETE: Reward Processed.");
-                window.location.reload();
+        // Wannan shine function din AUTHENTICATE da na ciro daga wancan code din
+        function authenticateNode() {
+            const inputCode = document.getElementById('node-code').value;
+            if(inputCode === "2026") { // Zaka iya canza wannan code din
+                alert("SYNERGY_AUTH_SUCCESS: Verification Complete.");
+                location.reload();
             } else {
-                alert("AUTH_FAILED: Invalid Encryption Key.");
+                alert("ACCESS_DENIED: Invalid Secure Code.");
             }
         }
 
-        // Anti-Cheat: Screen Visibility
         document.addEventListener("visibilitychange", () => {
             if (document.hidden && isActive) {
                 player.pauseVideo();
                 document.body.style.filter = "grayscale(1) blur(10px)";
-                setTimeout(() => { alert("PROTOCOL_BREACH: Session Aborted."); location.reload(); }, 500);
+                setTimeout(() => { alert("PROTOCOL_BREACH: Activity Detected."); location.reload(); }, 500);
             }
         });
     </script>
