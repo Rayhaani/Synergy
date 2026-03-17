@@ -128,27 +128,18 @@
                     let currentTime = player.getCurrentTime();
                     let progress = Math.min(Math.floor((currentTime / player.getDuration()) * 100), 100);
 
-                    // --- STRIKE SYSTEM ANTI-SKIP ---
-                   
-                    if (skipStrikes >= 3) {
-    // ... code na kulle shafi ...
-} else {
-    showSynergyAlert("STRIKE " + skipStrikes + "/3: RESET", "error");
-                    }
-                    
+                                        if (currentTime > lastTime + 2.1) { 
                         skipStrikes++;
                         player.seekTo(0); 
                         lastTime = 0;
-
                         if (skipStrikes >= 3) {
-                            document.body.innerHTML = "<div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:red; font-family:Syncopate; text-align:center; padding:20px;'><h1>PROTOCOL BREACH</h1><p style='color:white; margin-top:20px;'>Your access has been suspended for multiple fraud attempts. <br> Please refresh and follow the rules.</p></div>";
+                            document.body.innerHTML = "<div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:red; font-family:Syncopate; text-align:center; padding:20px;'><h1>PROTOCOL BREACH</h1><p style='color:white; margin-top:20px;'>Your access has been suspended.</p></div>";
                             clearInterval(securityTicker);
                         } else {
-                            alert("WARNING (" + skipStrikes + "/3): Skip detected. Resetting to 0%. Attempt 3 will lock the session.");
+                            showSynergyAlert("STRIKE " + skipStrikes + "/3: RESET", "error");
                         }
-                    } else {
-                        lastTime = currentTime; 
-                    }
+                    } else { lastTime = currentTime; }
+                    
 
                     document.getElementById("ring").innerText = progress + "%";
                     document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
@@ -195,10 +186,7 @@
                         }
             
             
-                // Wannan shi ne Auto-Refresh bayan sakan 3 (3000 milliseconds)
-setTimeout(() => {
-    location.reload();
-}, 3000);
+                
                 
 
         // --- TAB SWITCHING PROTECTION (Visibility API) ---
