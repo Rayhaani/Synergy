@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYNERGY PROTOCOL | PRESTIGE UI</title>
+    <title>SYNERGY PROTOCOL | MASTER SYNC</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -34,10 +34,9 @@
 
         .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 3px; }
 
-        /* Saka wannan kafin .floating-card-v3 */
-main { 
-    padding-bottom: 150px !important; 
-}
+        main { 
+            padding-bottom: 150px !important; 
+        }
         
         .floating-card-v3 {
             border-radius: 40px;
@@ -48,7 +47,6 @@ main {
             transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        /* DAWO DA ASALIN CIRCLE RING MAI KYAU */
         .progress-ring-original {
             width: 115px; height: 115px;
             border-radius: 50%;
@@ -62,11 +60,10 @@ main {
             color: var(--aqua);
         }
 
-        /* RAGE GIRMAN SECURITY CODE */
         #generated-code-display {
-            font-size: 2.8rem; /* An rage daga 5rem don kar ya yanke */
+            font-size: 2.8rem;
             font-weight: 700;
-            tracking: 8px;
+            letter-spacing: 8px;
             color: white;
             text-align: center;
             display: block;
@@ -174,11 +171,12 @@ main {
     <script>
         let player;
         let currentCode = "";
+        let lastTime = 0; // Don kiyaye gudun kallo (Anti-skip)
         
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('yt-player', {
                 height: '100%', width: '100%', videoId: 'dQw4w9WgXcQ',
-                playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0 },
+                playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 },
                 events: { 'onStateChange': onPlayerStateChange }
             });
         }
@@ -194,16 +192,27 @@ main {
             if (event.data === YT.PlayerState.PLAYING) {
                 const ring = document.getElementById("ring");
                 const ticker = setInterval(() => {
-                    let progress = Math.min(Math.floor((player.getCurrentTime() / player.getDuration()) * 100), 100);
+                    let currentTime = player.getCurrentTime();
+                    let totalDuration = player.getDuration();
+                    let progress = Math.min(Math.floor((currentTime / totalDuration) * 100), 100);
+                    
+                    // --- SMART ANTI-SKIP LOGIC ---
+                    if (currentTime > lastTime + 2.5) { 
+                        player.seekTo(lastTime); 
+                    } else {
+                        lastTime = currentTime; 
+                    }
                     
                     // Update Original Ring
                     ring.innerText = progress + "%";
                     ring.style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
 
-                    let mins = Math.floor(player.getCurrentTime() / 60);
-                    let secs = Math.floor(player.getCurrentTime() % 60);
+                    // Timer display
+                    let mins = Math.floor(currentTime / 60);
+                    let secs = Math.floor(currentTime % 60);
                     document.getElementById('timer-display').innerText = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
 
+                    // --- LOCKDOWN ADJUSTED TO 5% ---
                     if (progress >= 5) {
                         const panel = document.getElementById('verifier-panel');
                         panel.style.opacity = "1";
@@ -231,5 +240,4 @@ main {
         }
     </script>
 </body>
-                </html>
-                
+</html>
