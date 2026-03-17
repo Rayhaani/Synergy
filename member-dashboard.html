@@ -147,17 +147,30 @@
         }
         function generateCode() { currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); document.getElementById("generated-code-display").innerText = currentCode; }
 
-        async function authenticateNode() {
-            if(document.getElementById('node-code').value.toUpperCase() === currentCode) {
-                const userRef = db.collection("users").doc(testUser);
-                await db.runTransaction(async (t) => {
-                    const doc = await t.get(userRef);
-                    let newBal = doc.exists ? doc.data().balance + 150 : 150;
-                    t.set(userRef, { balance: newBal }, { merge: true });
-                });
-                alert("SUCCESS: ₦150 Added!"); location.reload();
-            } else { alert("ERROR: Mismatch!"); }
-        }
+                async function authenticateNode() {
+            const inputField = document.getElementById('node-code');
+            const inputVal = inputField.value.toUpperCase();
+            
+            if(inputVal === currentCode) {
+                try {
+                    const userRef = db.collection("users").doc(testUser);
+                    
+                    // Wannan zai tabbatar an saka kudi koda babu user din a baya
+                    await userRef.set({
+                        balance: firebase.firestore.FieldValue.increment(150)
+                    }, { merge: true });
+
+                    alert("SUCCESS: ₦150 Added to your vault!");
+                    location.reload(); // Refresh don ganin sabon balance
+                } catch (error) {
+                    console.error("Firebase Error: ", error);
+                    alert("DATABASE_ERROR: Duba ko Firestore dinka yana 'Test Mode'");
+                }
+            } else {
+                alert("ERROR: Security Hash Mismatch!");
+            }
+                }
+        
     </script>
 </body>
         </html>
