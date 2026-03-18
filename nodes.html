@@ -20,7 +20,7 @@
             background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(40px) saturate(180%); 
             border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(0, 242, 254, 0.3); 
         }
-        .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 3px; }
+        .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         main { padding-bottom: 150px; }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
@@ -34,65 +34,84 @@
             font-family: 'Syncopate', sans-serif; font-size: 10px;
         }
         .synergy-toast.show { top: 30px; }
+
+        /* Custom Scrollbar for the list */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.2); border-radius: 10px; }
     </style>
 </head>
 <body class="p-6">
 
-    <main class="max-w-2xl mx-auto space-y-10 mt-16 animate-ui">
+    <main class="max-w-2xl mx-auto space-y-8 mt-16 animate-ui">
         
-        <section class="glass-premium p-10 rounded-[45px] relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px]"></div>
+        <section class="glass-premium p-8 rounded-[40px] relative overflow-hidden text-center space-y-8">
+            <h2 class="orbitron text-[12px] text-cyan-400 tracking-[6px] font-bold">NETWORK EXPANSION</h2>
             
-            <div class="text-center space-y-12 relative z-10">
-                <h2 class="orbitron text-[14px] text-cyan-400 tracking-[8px] font-bold">NETWORK EXPANSION</h2>
-                
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-black/40 p-8 rounded-[35px] border border-white/5 shadow-inner">
-                        <p class="orbitron text-[9px] text-gray-500 tracking-[2px] mb-2 uppercase">Total Referrals</p>
-                        <h4 id="ref-count" class="text-4xl font-black text-white">0</h4>
-                    </div>
-                    <div class="bg-black/40 p-8 rounded-[35px] border border-white/5 shadow-inner">
-                        <p class="orbitron text-[9px] text-gray-500 tracking-[2px] mb-2 uppercase">Node Status</p>
-                        <h4 class="text-[12px] font-bold text-green-400 orbitron tracking-[2px] animate-pulse">ACTIVE</h4>
-                    </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-black/40 p-6 rounded-[30px] border border-white/5">
+                    <p class="orbitron text-[8px] text-gray-500 mb-1">Total Referrals</p>
+                    <h4 id="ref-count" class="text-3xl font-black text-white">0</h4>
                 </div>
+                <div class="bg-black/40 p-6 rounded-[30px] border border-white/5">
+                    <p class="orbitron text-[8px] text-gray-500 mb-1">Active Nodes</p>
+                    <h4 id="active-count-top" class="text-3xl font-black text-green-400">0</h4>
+                </div>
+            </div>
 
-                <div class="space-y-6 pt-4">
-                    <p class="orbitron text-[9px] text-gray-400 tracking-[3px] uppercase">Unique Node Link</p>
-                    <div class="flex items-center gap-3 bg-black/60 p-5 rounded-2xl border border-cyan-500/20 group hover:border-cyan-500/50 transition-all">
-                        <input type="text" id="ref-link" readonly value="Loading..." 
-                               class="bg-transparent text-[12px] text-cyan-300 w-full outline-none font-mono tracking-widest">
-                        <button onclick="copyRef()" class="p-2 text-cyan-400 hover:scale-110 transition-transform">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-gray-600 italic px-4">Refer new nodes to maximize your protocol yield and network stability.</p>
+            <div class="space-y-4">
+                <p class="orbitron text-[8px] text-gray-400 tracking-[3px]">YOUR UNIQUE NODE LINK</p>
+                <div class="flex items-center gap-3 bg-black/60 p-4 rounded-2xl border border-cyan-500/20">
+                    <input type="text" id="ref-link" readonly value="Loading..." 
+                           class="bg-transparent text-[11px] text-cyan-300 w-full outline-none font-mono">
+                    <button onclick="copyRef()" class="p-2 text-cyan-400 hover:scale-110 transition-transform">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
                 </div>
+            </div>
+        </section>
+
+        <section class="glass-premium p-6 rounded-[40px] space-y-6">
+            <div class="flex justify-between items-center px-2">
+                <h3 class="orbitron text-[10px] text-gray-400 tracking-[3px]">Node Directory</h3>
+                <span class="text-[9px] text-cyan-500 orbitron">Real-time Feed</span>
+            </div>
+
+            <div class="overflow-x-auto custom-scroll max-h-[400px]">
+                <table class="w-full">
+                    <thead class="sticky top-0 bg-[#020617] z-10">
+                        <tr class="text-[9px] orbitron text-gray-500 border-b border-white/5">
+                            <th class="text-left pb-4">Username</th>
+                            <th class="text-center pb-4">Task Status</th>
+                            <th class="text-right pb-4">Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody id="referral-list-body" class="divide-y divide-white/[0.03]">
+                        <tr>
+                            <td colspan="3" class="text-center py-20 text-gray-600 text-[11px] italic">Initializing node scan...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
     </main>
 
     <footer class="fixed bottom-8 left-10 right-10 h-20 glass-premium rounded-[35px] flex justify-around items-center z-[100]">
-        
         <a href="https://rayhaani.github.io/Synergy-Protocol/member-dashboard" class="flex flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-all">
-            <span class="text-[10px] font-bold text-gray-500 orbitron">Core</span>
+            <span class="text-[9px] font-bold text-gray-500 orbitron">Core</span>
         </a>
-
         <a href="nodes.html" class="flex flex-col items-center gap-1">
             <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_15px_cyan]"></div>
-            <span class="text-[10px] font-bold text-cyan-400 orbitron">Nodes</span>
+            <span class="text-[9px] font-bold text-cyan-400 orbitron">Nodes</span>
         </a>
-
         <a href="vault.html" class="flex flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-all">
-            <span class="text-[10px] font-bold text-gray-500 orbitron">Vault</span>
+            <span class="text-[9px] font-bold text-gray-500 orbitron">Vault</span>
         </a>
-
         <a href="meta.html" class="flex flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-all">
-            <span class="text-[10px] font-bold text-gray-500 orbitron">Meta</span>
+            <span class="text-[9px] font-bold text-gray-500 orbitron">Meta</span>
         </a>
     </footer>
-    
 
     <script>
         const firebaseConfig = { 
@@ -107,22 +126,71 @@
         const db = firebase.firestore();
         const testUser = "mamba_001";
 
+        // Logic don gano referrals da nuna aikinsu
+        function loadReferralNetwork() {
+            const listBody = document.getElementById('referral-list-body');
+            const topActiveCount = document.getElementById('active-count-top');
+
+            db.collection("users").where("referredBy", "==", testUser)
+            .onSnapshot((querySnapshot) => {
+                listBody.innerHTML = "";
+                let activeCount = 0;
+                
+                if (querySnapshot.empty) {
+                    listBody.innerHTML = '<tr><td colspan="3" class="text-center py-20 text-gray-600 text-[11px]">No nodes linked to your protocol.</td></tr>';
+                    return;
+                }
+
+                const today = new Date().toLocaleDateString('en-GB');
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const username = doc.id;
+                    const lastDate = data.lastActivityDate || "N/A";
+                    const progress = data.videosWatchedToday || 0;
+                    
+                    // Mutum ya zama active idan ya kalla 10/10 a yau
+                    const isActive = (lastDate === today && progress >= 10);
+                    if(isActive) activeCount++;
+
+                    const row = `
+                        <tr class="text-[11px]">
+                            <td class="py-5 font-medium text-gray-300">@${username}</td>
+                            <td class="py-5 text-center">
+                                ${isActive ? 
+                                    '<span class="text-green-400 font-bold bg-green-400/10 px-3 py-1 rounded-full border border-green-400/20">ACTIVE</span>' : 
+                                    '<span class="text-red-400 opacity-60 bg-red-400/5 px-3 py-1 rounded-full">INACTIVE</span>'}
+                            </td>
+                            <td class="py-5 text-right font-mono ${lastDate === today ? 'text-cyan-400' : 'text-gray-500'}">
+                                ${lastDate === today ? 'Today' : lastDate}
+                            </td>
+                        </tr>
+                    `;
+                    listBody.innerHTML += row;
+                });
+
+                topActiveCount.innerText = activeCount;
+                document.getElementById('ref-count').innerText = querySnapshot.size;
+            });
+        }
+
         function syncNodeData() {
             db.collection("users").doc(testUser).onSnapshot((doc) => {
                 if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('ref-count').innerText = data.referrals || 0;
-                    document.getElementById('ref-link').value = `https://synergy.io/ref/${testUser}`;
+                    document.getElementById('ref-link').value = `https://synergy-protocol.io/join?ref=${testUser}`;
                 }
             });
         }
+
+        // Initialize
         syncNodeData();
+        loadReferralNetwork();
 
         function copyRef() {
             const copyText = document.getElementById("ref-link");
             copyText.select();
             navigator.clipboard.writeText(copyText.value);
-            showToast("LINK COPIED");
+            showToast("LINK COPIED TO CLIPBOARD");
         }
 
         function showToast(msg) {
