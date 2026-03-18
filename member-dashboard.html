@@ -383,6 +383,87 @@ function syncBalance() {
         }
     });
         }
+
+
+        // 1. GENERATE SESSION ID
+const currentSessionId = Math.random().toString(36).substring(7);
+
+async function checkMultiLogin() {
+    const sessionRef = db.collection("active_sessions").doc(testUser);
+    
+    // Saita sabon session
+    await sessionRef.set({
+        sessionId: currentSessionId,
+        lastActive: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Lura da idan wani ya shiga daga wani wuri
+    sessionRef.onSnapshot((doc) => {
+        if (doc.exists && doc.data().sessionId !== currentSessionId) {
+            // IDAN SESSION BAI YI DAIDAI BA, KULLE SHAFIN
+            document.body.innerHTML = `
+                <div style="background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:30px; border: 2px solid #f87171;">
+                    <h1 style="letter-spacing:5px;">SESSION TERMINATED</h1>
+                    <p style="color:white; margin-top:20px; font-family: 'Space Grotesk';">Multiple logins detected. This account is now under security review.</p>
+                    <button onclick="location.reload()" style="margin-top:30px; padding:15px 40px; background:#f87171; color:black; font-weight:bold; border-radius:10px; cursor:pointer;">RE-AUTHENTICATE</button>
+                </div>`;
+            if(player) player.pauseVideo();
+        }
+    });
+}
+
+// Kira function din
+checkMultiLogin();
+
+
+        // 2. DETECT CONSOLE OPENING (ANTI-BOT)
+let devtoolsCheck = false;
+const element = new Image();
+Object.defineProperty(element, 'id', {
+    get: function() {
+        if (!devtoolsCheck) {
+            showSynergyAlert("SECURITY WARNING: DEVTOOLS DETECTED", "error");
+            // Auto-lock idan ya cigaba da budewa
+            setTimeout(() => {
+                location.href = "about:blank"; // Maida shi empty page
+            }, 2000);
+            devtoolsCheck = true;
+        }
+    }
+});
+
+// Wannan zai rika duba duk sakan 2 idan ana kokarin hacking
+setInterval(() => {
+    console.log(element);
+}, 2000);
+
+// DISABLE RIGHT CLICK (Kada a bari ya yi Inspect Element cikin sauki)
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// DISABLE KEYBOARD SHORTCUTS (Ctrl+Shift+I, F12)
+document.onkeydown = function(e) {
+    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+        showSynergyAlert("PROTOCOL VIOLATION: SHORTCUTS DISABLED", "error");
+        return false;
+    }
+};
+
+
+    // 3. IDLE DETECTION (PAUSE IF NO ACTIVITY)
+let idleTime = 0;
+document.onmousemove = document.onkeypress = document.ontouchstart = function() {
+    idleTime = 0; // Reset lokaci idan mamba ya taba waya
+};
+
+setInterval(() => {
+    idleTime++;
+    if (idleTime > 60) { // Idan ya kai sakan 60 babu motsi
+        if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+            showSynergyAlert("IDLE DETECTED: AUTO-PAUSED", "info");
+        }
+    }
+}, 1000);
         
                         
     </script>
