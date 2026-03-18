@@ -444,15 +444,7 @@ function syncBalance() {
     }
 }
 
-            // 1. Kira Reset Logic din a nan
-            checkAndResetDailyStats(data, testUser);
-
-            // 2. Sauran UI updates dinka
-            document.getElementById('vault-balance').innerText = "₦" + (data.balance || 0).toLocaleString();
-            updateFuturisticHUD(data.videosWatchedToday || 0);
-        }
-    });
-                                                }
+            
         
 
         // 1. GENERATE SESSION ID
