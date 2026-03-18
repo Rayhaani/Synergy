@@ -388,19 +388,7 @@ document.getElementById('task-ring').style.background =
     `conic-gradient(#4ade80 ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
         
 
-    // SABON TASK RING LOGIC
-    const overallProgress = Math.min((watchedCount / dailyGoal) * 360, 360);
-    const outerRing = document.getElementById('task-ring-outer');
     
-    // Idan an gama aiki, ya koma koren gaske mai glow
-    if (watchedCount >= dailyGoal) {
-        outerRing.style.background = `conic-gradient(#4ade80 ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
-        outerRing.style.boxShadow = "0 0 40px rgba(74, 222, 128, 0.4)";
-    } else {
-        outerRing.style.background = `conic-gradient(#00f2fe ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
-    }
-}
-        
         
 // Kira wannan a cikin syncBalance()
 function syncBalance() {
