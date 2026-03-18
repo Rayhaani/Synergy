@@ -13,8 +13,26 @@
         body { background: var(--bg); color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; background-image: radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.15), transparent), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); min-height: 100vh; }
         .glass-premium { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(40px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(0, 242, 254, 0.3); }
         .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 3px; }
-        main { padding-bottom: 0px !important; }
-        .floating-card-v3 { border-radius: 40px; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.9); transform: translateY(40px); opacity: 0; pointer-events: none; transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
+        main { padding-bottom: 40px !important; }
+        
+        
+        .floating-card-v3 { 
+    display: none; /* Wannan zai cire sararin gaba daya idan card din baya nan */
+    border-radius: 40px; 
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.9); 
+    transform: translateY(40px); 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); 
+}
+
+/* Wannan sabon class din zai dawo da sararin kawai idan lokacin bayyanawa ya yi */
+.is-visible-now {
+    display: block !important;
+}
+        
+        
+        
         .progress-ring-original { width: 115px; height: 115px; border-radius: 50%; background: conic-gradient(var(--aqua) 0%, #111 0%); display: flex; align-items: center; justify-content: center; margin: 20px auto; font-size: 22px; font-weight: 800; border: 4px solid rgba(255,255,255,0.05); box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); color: var(--aqua); }
         #generated-code-display { font-size: 2.8rem; font-weight: 700; letter-spacing: 8px; color: white; text-align: center; display: block; }
         .node-input-clean { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; color: white !important; font-size: 1.4rem !important; text-align: center; padding: 18px !important; width: 100%; outline: none; }
