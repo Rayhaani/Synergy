@@ -33,7 +33,12 @@
         .synergy-toast.show { top: 30px; }
         .toast-icon { color: var(--aqua); font-weight: bold; font-size: 20px; }
                 
-    
+    #task-ring-outer {
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    mask-image: radial-gradient(transparent 65%, black 66%);
+    -webkit-mask-image: radial-gradient(transparent 65%, black 66%);
+                                 }
+                
         
     </style>
 </head>
@@ -340,52 +345,67 @@ function syncBalance() {
     });
         }
 
-        function updateFuturisticHUD(watchedCount) {
+       function updateFuturisticHUD(watchedCount) {
     const dailyGoal = 10;
     const payPerVideo = 150;
 
-    // 1. Update Daily Units
-    document.getElementById('daily-count').innerHTML = `${watchedCount} <span class="text-[10px] text-gray-500">/ ${dailyGoal} UNITS</span>`;
+    // 1. Update Daily Units Text
+    const dailyCountEl = document.getElementById('daily-count');
+    if(dailyCountEl) {
+        dailyCountEl.innerHTML = `${watchedCount} <span class="text-[10px] text-gray-500">/ ${dailyGoal} UNITS</span>`;
+    }
     
-    // 2. Progress Bar Smooth Animation
-    const percent = Math.min((watchedCount / dailyGoal) * 100, 100);
-    document.getElementById('daily-progress-bar').style.width = `${percent}%`;
+    // 2. Linear Progress Bar
+    const progressBar = document.getElementById('daily-progress-bar');
+    if(progressBar) {
+        const percent = Math.min((watchedCount / dailyGoal) * 100, 100);
+        progressBar.style.width = `${percent}%`;
+    }
 
-    // 3. Live Monthly Projection
-    const monthlyEst = (watchedCount * payPerVideo) * 30;
-    document.getElementById('est-earnings').innerText = "₦" + monthlyEst.toLocaleString();
+    // 3. Monthly Projection
+    const estEarnings = document.getElementById('est-earnings');
+    if(estEarnings) {
+        const monthlyEst = (watchedCount * payPerVideo) * 30;
+        estEarnings.innerText = "₦" + monthlyEst.toLocaleString();
+    }
 
-    // 4. Rank & Dynamic Task Description
-    let rank = "IRON";
-    let taskMsg = "Initialize 10 sessions to unlock Silver";
-    let icon = "🚀";
-    let color = "#00f2fe"; // Cyan
+    // 4. TASK RING (CIRCULAR) LOGIC
+    const overallProgress = Math.min((watchedCount / dailyGoal) * 360, 360);
+    const outerRing = document.getElementById('task-ring-outer');
+    if(outerRing) {
+        if (watchedCount >= dailyGoal) {
+            outerRing.style.background = `conic-gradient(#4ade80 ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
+            outerRing.style.boxShadow = "0 0 40px rgba(74, 222, 128, 0.4)";
+        } else {
+            outerRing.style.background = `conic-gradient(#00f2fe ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
+            outerRing.style.boxShadow = "0 0 20px rgba(0, 242, 254, 0.1)";
+        }
+    }
+
+    // 5. Rank & Icon Updates
+    let rank = "IRON", taskMsg = "Initialize 10 sessions to unlock Silver", icon = "🚀", color = "#00f2fe";
 
     if (watchedCount >= 5) { 
         rank = "BRONZE"; taskMsg = "Maintain activity to reach Gold"; 
-        icon = "⚔️"; color = "#fb923c"; // Orange
+        icon = "⚔️"; color = "#fb923c"; 
     }
     if (watchedCount >= 10) { 
         rank = "GOLD"; taskMsg = "Daily quota reached. Protocol Secure."; 
-        icon = "👑"; color = "#facc15"; // Gold
+        icon = "👑"; color = "#facc15"; 
     }
 
     const rankTag = document.getElementById('rank-tag');
-    rankTag.innerText = "Rank: " + rank;
-    rankTag.style.color = color;
-    rankTag.style.borderColor = color + "80";
+    if(rankTag) {
+        rankTag.innerText = "Rank: " + rank;
+        rankTag.style.color = color;
+        rankTag.style.borderColor = color + "80";
+    }
     
-    document.getElementById('task-desc').innerText = taskMsg;
-    document.getElementById('status-icon').innerText = icon;
-}
-        
-// Misali: Idan mamba ya kalli bidiyo 1 daga cikin 10
-const totalDailyGoal = 10;
-const overallProgress = (watchedCount / totalDailyGoal) * 360; // Convert to degrees
-
-// Wannan zai nuna a wani sabon circular element
-document.getElementById('task-ring').style.background = 
-    `conic-gradient(#4ade80 ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
+    const taskDesc = document.getElementById('task-desc');
+    const statusIcon = document.getElementById('status-icon');
+    if(taskDesc) taskDesc.innerText = taskMsg;
+    if(statusIcon) statusIcon.innerText = icon;
+        }
         
 
     
