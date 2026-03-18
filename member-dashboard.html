@@ -33,7 +33,12 @@
         .synergy-toast.show { top: 30px; }
         .toast-icon { color: var(--aqua); font-weight: bold; font-size: 20px; }
                 
-    
+    #task-ring-outer {
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    mask-image: radial-gradient(transparent 65%, black 66%);
+    -webkit-mask-image: radial-gradient(transparent 65%, black 66%);
+                        }
+        
     </style>
 </head>
 <body>
@@ -53,8 +58,14 @@
                 <p class="orbitron text-[10px] text-cyan-500/70 mt-5 tracking-[8px]">Initialize Session</p>
             </div>
         </section>
-        <div class="progress-ring-original orbitron" id="ring">0%</div>
 
+        <div class="relative flex items-center justify-center my-10">
+    <div id="task-ring-outer" class="absolute w-[160px] h-[160px] rounded-full border border-white/5 shadow-[0_0_30px_rgba(74,222,128,0.1)]" style="background: conic-gradient(#4ade80 0deg, transparent 0deg);"></div>
+    
+    <div class="progress-ring-original orbitron relative z-10" id="ring" style="margin: 0 !important; width: 125px; height: 125px; background: #020617; border: 4px solid rgba(0,242,254,0.1);">0%</div>
+        </div>
+        
+        
         <section class="grid grid-cols-3 gap-6">
             <div class="glass-premium p-6 rounded-[28px] text-center"><small class="text-[9px] text-gray-500 block mb-2">STABILITY</small><span class="text-sm font-bold text-cyan-400">99.9%</span></div>
             <div class="glass-premium p-6 rounded-[28px] text-center"><small class="text-[9px] text-gray-500 block mb-2">TIMER</small><span id="timer-display" class="text-sm font-bold text-white">00:00</span></div>
@@ -381,6 +392,19 @@ document.getElementById('task-ring').style.background =
     `conic-gradient(#4ade80 ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
         
 
+    // SABON TASK RING LOGIC
+    const overallProgress = Math.min((watchedCount / dailyGoal) * 360, 360);
+    const outerRing = document.getElementById('task-ring-outer');
+    
+    // Idan an gama aiki, ya koma koren gaske mai glow
+    if (watchedCount >= dailyGoal) {
+        outerRing.style.background = `conic-gradient(#4ade80 ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
+        outerRing.style.boxShadow = "0 0 40px rgba(74, 222, 128, 0.4)";
+    } else {
+        outerRing.style.background = `conic-gradient(#00f2fe ${overallProgress}deg, rgba(255,255,255,0.05) 0deg)`;
+    }
+}
+        
         
 // Kira wannan a cikin syncBalance()
 function syncBalance() {
