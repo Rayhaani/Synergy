@@ -226,18 +226,24 @@
                     let mins = Math.floor(currentTime / 60), secs = Math.floor(currentTime % 60);
                     document.getElementById('timer-display').innerText = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
 
-                    // TRIGGER VERIFICATION (At 5% for testing)
                     
-                    if (progress >= 5) { 
-                        const p = document.getElementById('verifier-panel'); 
-                        p.style.opacity = "1"; p.style.transform = "translateY(0)"; p.style.pointerEvents = "all"; p.classList.add('is-active-floating');
-                        if(currentCode === "") {
-                            generateCode();
-                            showSynergyAlert("HASH CODE GENERATED", "info");
-                        }
-                    }
-                }, 1000);
-            }
+                    // A maimakon tsohon code din, saka wannan:
+if (progress >= 5) { 
+    const p = document.getElementById('verifier-panel'); 
+    p.classList.add('is-visible-now'); // Zai bude sararin yanzu
+    setTimeout(() => {
+        p.style.opacity = "1"; 
+        p.style.transform = "translateY(0)"; 
+        p.style.pointerEvents = "all"; 
+        p.classList.add('is-active-floating');
+    }, 10);
+
+    if(currentCode === "") {
+        generateCode();
+        showSynergyAlert("HASH CODE GENERATED", "info");
+    }
+}
+                    
 
         function generateCode() { 
             currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); 
