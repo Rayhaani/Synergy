@@ -135,10 +135,12 @@
     </div>
 
          
-            <section id="referral-panel" class="glass-premium p-8 rounded-[32px] hidden animate-fade-in">
+            <section id="referral-panel" class="glass-premium p-8 rounded-[32px] mt-6" style="display: none;">
     <div class="text-center space-y-6">
         <h2 class="orbitron text-[12px] text-cyan-400 tracking-[4px]">Network Expansion</h2>
-        
+        </div>
+            </section>
+            
         <div class="grid grid-cols-2 gap-4">
             <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
                 <p class="orbitron text-[8px] text-gray-500 mb-1">Total Referrals</p>
@@ -613,7 +615,7 @@ setInterval(() => {
 }, 1000);
         
 
-     function showTab(tabName) {
+    function showTab(tabName) {
     const mainContent = document.querySelector('main');
     const refPanel = document.getElementById('referral-panel');
     
@@ -622,63 +624,74 @@ setInterval(() => {
     const coreDot = document.getElementById('core-dot');
     const nodesText = document.getElementById('nodes-text');
     const nodesDot = document.getElementById('nodes-dot');
-    const coreBtn = coreText.parentElement;
-    const nodesBtn = nodesText.parentElement;
 
     if (tabName === 'nodes') {
-        // 1. Boye komai na Core
+        // 1. BOYÈ KOMAI NA CORE: Muna boye dukkan yaran dake cikin main ban da referral panel
         Array.from(mainContent.children).forEach(child => {
-            child.style.display = 'none';
+            if (child.id !== 'referral-panel') {
+                child.style.display = 'none';
+            }
         });
 
-        // 2. Nuna Referral Panel
+        // 2. NUNA NODES PAGE:
         if (refPanel) {
             refPanel.style.display = 'block';
-            refPanel.classList.remove('hidden');
         }
 
-        // 3. Update Styles (Nodes Active)
-        nodesBtn.classList.remove('opacity-50');
-        nodesText.classList.replace('text-gray-500', 'text-cyan-400');
-        nodesDot.classList.replace('bg-transparent', 'bg-cyan-400');
-        nodesDot.classList.add('shadow-[0_0_15px_cyan]');
-
-        coreBtn.classList.add('opacity-50');
-        coreText.classList.replace('text-cyan-400', 'text-gray-500');
-        coreDot.classList.replace('bg-cyan-400', 'bg-transparent');
-        coreDot.classList.remove('shadow-[0_0_15px_cyan]');
-        
+        // 3. CANZA KALAR BUTTONS: (Nodes ya koma Cyan, Core ya koma Gray)
+        updateButtonStyles('nodes');
         showSynergyAlert("NODES INTERFACE SECURED", "info");
     } 
     else if (tabName === 'core') {
-        // 1. Nuna komai na Core, boye Referral
+        // 1. BOYÈ NODES PAGE:
+        if (refPanel) {
+            refPanel.style.display = 'none';
+        }
+
+        // 2. DAWO DA KOMAI NA CORE:
         Array.from(mainContent.children).forEach(child => {
-            if (child.id === 'referral-panel') {
-                child.style.display = 'none';
-            } else if (child.id === 'verifier-panel') {
-                const progress = parseInt(document.getElementById('ring').innerText) || 0;
-                child.style.display = (progress >= 5) ? 'block' : 'none';
-            } else {
-                child.style.display = 'block';
-                // Gyara kalar boxes su tsaya a stacked layout (Kamar yadda kake so)
-                if (child.classList.contains('grid-cols-3')) {
-                    child.classList.replace('grid-cols-3', 'grid-cols-1');
+            if (child.id !== 'referral-panel') {
+                // Verifier panel zai bayyana ne kawai idan an kai 5%
+                if (child.id === 'verifier-panel') {
+                    const progress = parseInt(document.getElementById('ring').innerText) || 0;
+                    child.style.display = (progress >= 5) ? 'block' : 'none';
+                } else {
+                    child.style.display = 'block';
                 }
             }
         });
 
-        // 2. Update Styles (Core Active)
-        coreBtn.classList.remove('opacity-50');
-        coreText.classList.replace('text-gray-500', 'text-cyan-400');
-        coreDot.classList.replace('bg-transparent', 'bg-cyan-400');
-        coreDot.classList.add('shadow-[0_0_15px_cyan]');
-
-        nodesBtn.classList.add('opacity-50');
-        nodesText.classList.replace('text-cyan-400', 'text-gray-500');
-        nodesDot.classList.replace('bg-cyan-400', 'bg-transparent');
-        nodesDot.classList.remove('shadow-[0_0_15px_cyan]');
+        // 3. CANZA KALAR BUTTONS: (Core ya koma Cyan, Nodes ya koma Gray)
+        updateButtonStyles('core');
     }
-     }
+}
+
+// Function na taimakawa wajen gyara kalar buttons
+function updateButtonStyles(activeTab) {
+    const coreText = document.getElementById('core-text');
+    const coreDot = document.getElementById('core-dot');
+    const nodesText = document.getElementById('nodes-text');
+    const nodesDot = document.getElementById('nodes-dot');
+
+    if (activeTab === 'nodes') {
+        nodesText.style.color = "#00f2fe";
+        nodesDot.style.backgroundColor = "#00f2fe";
+        nodesDot.classList.add('shadow-[0_0_15px_#00f2fe]');
+        
+        coreText.style.color = "#6b7280";
+        coreDot.style.backgroundColor = "transparent";
+        coreDot.classList.remove('shadow-[0_0_15px_#00f2fe]');
+    } else {
+        coreText.style.color = "#00f2fe";
+        coreDot.style.backgroundColor = "#00f2fe";
+        coreDot.classList.add('shadow-[0_0_15px_#00f2fe]');
+        
+        nodesText.style.color = "#6b7280";
+        nodesDot.style.backgroundColor = "transparent";
+        nodesDot.classList.remove('shadow-[0_0_15px_#00f2fe]');
+    }
+}
+        
         
         
         
