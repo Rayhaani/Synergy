@@ -614,7 +614,73 @@ setInterval(() => {
     }
 }, 1000);
         
+function showTab(tabName) {
+    const mainContent = document.querySelector('main');
+    const refPanel = document.getElementById('referral-panel');
+    
+    // UI Elements for Buttons
+    const coreText = document.getElementById('core-text');
+    const coreDot = document.getElementById('core-dot');
+    const nodesText = document.getElementById('nodes-text');
+    const nodesDot = document.getElementById('nodes-dot');
+    const coreBtn = coreText.parentElement;
+    const nodesBtn = nodesText.parentElement;
 
+    if (tabName === 'nodes') {
+        // 1. Boye komai na Core
+        Array.from(mainContent.children).forEach(child => {
+            child.style.display = 'none';
+        });
+
+        // 2. Nuna Referral Panel
+        if (refPanel) {
+            refPanel.style.display = 'block';
+            refPanel.classList.remove('hidden');
+        }
+
+        // 3. Update Styles (Nodes Active)
+        nodesBtn.classList.remove('opacity-50');
+        nodesText.classList.replace('text-gray-500', 'text-cyan-400');
+        nodesDot.classList.replace('bg-transparent', 'bg-cyan-400');
+        nodesDot.classList.add('shadow-[0_0_15px_cyan]');
+
+        coreBtn.classList.add('opacity-50');
+        coreText.classList.replace('text-cyan-400', 'text-gray-500');
+        coreDot.classList.replace('bg-cyan-400', 'bg-transparent');
+        coreDot.classList.remove('shadow-[0_0_15px_cyan]');
+        
+        showSynergyAlert("NODES INTERFACE SECURED", "info");
+    } 
+    else if (tabName === 'core') {
+        // 1. Nuna komai na Core, boye Referral
+        Array.from(mainContent.children).forEach(child => {
+            if (child.id === 'referral-panel') {
+                child.style.display = 'none';
+            } else if (child.id === 'verifier-panel') {
+                const progress = parseInt(document.getElementById('ring').innerText) || 0;
+                child.style.display = (progress >= 5) ? 'block' : 'none';
+            } else {
+                child.style.display = 'block';
+                // Gyara kalar boxes su tsaya a stacked layout (Kamar yadda kake so)
+                if (child.classList.contains('grid-cols-3')) {
+                    child.classList.replace('grid-cols-3', 'grid-cols-1');
+                }
+            }
+        });
+
+        // 2. Update Styles (Core Active)
+        coreBtn.classList.remove('opacity-50');
+        coreText.classList.replace('text-gray-500', 'text-cyan-400');
+        coreDot.classList.replace('bg-transparent', 'bg-cyan-400');
+        coreDot.classList.add('shadow-[0_0_15px_cyan]');
+
+        nodesBtn.classList.add('opacity-50');
+        nodesText.classList.replace('text-cyan-400', 'text-gray-500');
+        nodesDot.classList.replace('bg-cyan-400', 'bg-transparent');
+        nodesDot.classList.remove('shadow-[0_0_15px_cyan]');
+    }
+}
+    
         
     </script>
 </body>
