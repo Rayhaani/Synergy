@@ -728,20 +728,21 @@ function showTab(tabName) {
         nodesDot.classList.remove('shadow-[0_0_15px_cyan]');
     }
 }
+
+      async function secureShareAndEarn(videoId) {
+    // Yin amfani da youtu.be yana taimakawa WhatsApp kwaso hoto (preview) da wuri
+    const videoUrl = "https://youtu.be/" + videoId; 
     
-        // Function na Sharing tare da matakan tsaro
-async function secureShareAndEarn(videoId) {
-    const videoUrl = "https://www.youtube.com/watch?v=" + videoId;
     const shareData = {
-        title: 'SYNERGY PROTOCOL UPDATE',
-        text: 'Kalli wannan bidiyon don koyon yadda ake samun yield: ',
-        url: videoUrl // Kai tsaye zuwa YouTube
+        title: 'SYNERGY PROTOCOL',
+        text: 'Kalli wannan bidiyon don samun karin yield a protocol dinka: ',
+        url: videoUrl 
     };
 
     const startTime = Date.now();
     let hasLeftPage = false;
 
-    // 1. Gano lokacin da mutum ya bar shafinmu (Visibility API)
+    // 1. Gano lokacin da mamba ya bar shafin (Visibility API)
     const checkExit = () => {
         if (document.hidden) {
             hasLeftPage = true;
@@ -750,39 +751,40 @@ async function secureShareAndEarn(videoId) {
     document.addEventListener("visibilitychange", checkExit);
 
     try {
+        // Bude tsarin sharing na waya
         await navigator.share(shareData);
         
-        // 2. Jira mutum ya dawo (Window Focus)
+        // 2. Jira mamba ya dawo shafin (Window Focus)
         window.onfocus = function() {
             const endTime = Date.now();
             const timeElapsed = (endTime - startTime) / 1000;
 
-            // MATAKAN TSARO (Anti-Cheat)
+            // MATAKAN TSARO (Anti-Cheat Logic)
+            // Dole ya kasance ya bar shafin, kuma ya dauki akalla sakan 6 kafin ya dawo
             if (hasLeftPage && timeElapsed >= 6) { 
-                // Idan ya fita kuma ya dade akalla sakan 6
-                processReward(50); // Ba shi reward
-                showToast("VERIFIED: Reward added to vault!");
+                // Tura lada zuwa Firebase
+                db.collection("users").doc(testUser).update({
+                    balance: firebase.firestore.FieldValue.increment(50),
+                    lastShareTime: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    showSynergyAlert("SUCCESS: ₦50 ADDED TO VAULT", "success");
+                });
             } else if (!hasLeftPage) {
-                showToast("FAILED: You must share to WhatsApp.");
+                showSynergyAlert("FAILED: YOU MUST SHARE TO WHATSAPP", "error");
             } else {
-                showToast("TOO FAST: Please complete the sharing process.");
+                showSynergyAlert("TOO FAST: COMPLETE THE SHARING PROCESS", "error");
             }
 
-            // Clean up listeners
+            // Share bayan an gama (Clean up)
             document.removeEventListener("visibilitychange", checkExit);
             window.onfocus = null;
         };
     } catch (err) {
         console.log("Share cancelled or not supported");
     }
-}
-
-function processReward(amount) {
-    db.collection("users").doc(testUser).update({
-        balance: firebase.firestore.FieldValue.increment(amount),
-        lastShareTime: firebase.firestore.FieldValue.serverTimestamp()
-    });
-                       }
+      }
+      
+        
           
     </script>
 </body>
