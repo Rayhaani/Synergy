@@ -44,6 +44,14 @@
     text-transform: uppercase; 
     letter-spacing: 4px; 
             }
+
+        /* Saka wannan a cikin <style> tag dinka */
+.vault-card { 
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
         
     </style>
 </head>
@@ -109,15 +117,14 @@
     </main>
 
 <footer class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[85%] max-w-md h-16 vault-card rounded-full flex justify-around items-center z-[100] px-6">
-    <a href="#" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Core</span></a>
-    <a href="#" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Nodes</span></a>
-    <a href="#" class="flex flex-col items-center">
+    <a href="member-dashboard.html" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Core</span></a>
+    <a href="nodes.html" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Nodes</span></a>
+    <a href="vault.html" class="flex flex-col items-center">
         <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_#00f2fe] mb-1"></div>
         <span class="text-[9px] font-bold text-white orbitron">Vault</span>
     </a>
-    <a href="#" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Profile</span></a>
+    <a href="me.html" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Profile</span></a>
 </footer>
-    
 </body>
           </html>
           
