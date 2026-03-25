@@ -191,11 +191,15 @@
         </div>
 
         <div class="flex gap-4 my-6">
-             <button class="btn-slim btn-white">Showcase</button>
-             <button class="btn-slim btn-trans">Timeline</button>
+     <!-- Na kara musu id da kuma onclick action -->
+     <button id="btn-showcase" onclick="switchTab('showcase')" class="btn-slim btn-white">Showcase</button>
+     <button id="btn-timeline" onclick="switchTab('timeline')" class="btn-slim btn-trans">Timeline</button>
         </div>
+        
 
         <div class="insta-grid pb-10">
+<div id="showcase-area" class="insta-grid pb-10">
+            
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1583944438403-f5260a7c0838?w=400"></div>
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?w=400"></div>
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1574169208507-84376144848b?w=400"></div>
@@ -206,6 +210,61 @@
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400"></div>
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1445205170230-053b830c6050?w=400"></div>
         </div>
+
+        <div id="timeline-area" class="hidden pb-10 px-2">
+    <!-- Wannan shi ne asalin Timeline dinka -->
+    <div class="relative border-l border-gray-800 ml-4 pl-8 space-y-12">
+        
+        <!-- Post na farko a Timeline -->
+        <div class="relative">
+            <div class="absolute -left-[37px] top-0 w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f2fe]"></div>
+            <h3 class="text-white font-bold text-sm">March 2026</h3>
+            <div class="glass-vault mt-3 p-4">
+                <p class="text-gray-400 text-xs">Successfully updated the Synergy Protocol interface to V14 with full tab switching functionality.</p>
+            </div>
+        </div>
+
+        <!-- Post na biyu a Timeline -->
+        <div class="relative">
+            <div class="absolute -left-[37px] top-0 w-4 h-4 rounded-full bg-gray-700"></div>
+            <h3 class="text-gray-500 font-bold text-sm">January 2026</h3>
+            <div class="glass-vault mt-3 p-4 opacity-60">
+                <p class="text-gray-400 text-xs">Business name reservation for "KanoMart Limited" completed and SMEDAN certificate secured.</p>
+            </div>
+        </div>
+
+    </div>
+        </div>
+
+
+            <script>
+function switchTab(tab) {
+    const showcase = document.getElementById('showcase-area');
+    const timeline = document.getElementById('timeline-area');
+    const btnS = document.getElementById('btn-showcase');
+    const btnT = document.getElementById('btn-timeline');
+
+    if (tab === 'showcase') {
+        // Nuna hotuna, boye timeline
+        showcase.classList.remove('hidden');
+        timeline.classList.add('hidden');
+        
+        // Canza kalar buttons (Showcase ya koma fari)
+        btnS.className = 'btn-slim btn-white';
+        btnT.className = 'btn-slim btn-trans';
+    } else {
+        // Boye hotuna, nuna timeline
+        showcase.classList.add('hidden');
+        timeline.classList.remove('hidden');
+        
+        // Canza kalar buttons (Timeline ya koma fari)
+        btnT.className = 'btn-slim btn-white';
+        btnS.className = 'btn-slim btn-trans';
+    }
+}
+            </script>
+            
+            
     </main>
 </body>
 </html>
