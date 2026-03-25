@@ -97,19 +97,23 @@
         
     
         <section class="grid grid-cols-3 gap-3">
+    <!-- Video Vault -->
     <div class="glass-premium p-4 rounded-[24px] text-center">
         <small class="text-[8px] text-gray-500 block mb-1">VIDEO VAULT</small>
         <span id="video-balance" class="text-[12px] font-bold text-cyan-400">₦0</span>
     </div>
+    <!-- Share Vault -->
     <div class="glass-premium p-4 rounded-[24px] text-center">
         <small class="text-[8px] text-gray-500 block mb-1">SHARE VAULT</small>
         <span id="share-balance" class="text-[12px] font-bold text-green-400">₦0</span>
     </div>
+    <!-- Total Yield -->
     <div class="glass-premium p-4 rounded-[24px] text-center border-t border-white/20">
         <small class="text-[8px] text-white/70 block mb-1">TOTAL YIELD</small>
         <span id="total-balance" class="text-[12px] font-bold text-white">₦0</span>
     </div>
         </section>
+        
         
 
         <section id="verifier-panel" class="floating-card-v3 glass-premium p-10 relative">
@@ -534,20 +538,21 @@ syncMemberDashboard();
     db.collection("users").doc(testUser).onSnapshot((doc) => {
         if (doc.exists) {
             const data = doc.data();
-            const videoBal = data.videoBalance || 0;
-            const shareBal = data.shareBalance || 0;
-            const totalBal = videoBal + shareBal;
+            // Muna dauko kudaden daga Firebase
+            const vBal = data.videoBalance || 0;
+            const sBal = data.shareBalance || 0;
+            const tBal = vBal + sBal;
 
-            // Wannan zai nuna kudaden a sababbin boxes dinka
-            if(document.getElementById('video-balance')) document.getElementById('video-balance').innerText = "₦" + videoBal.toLocaleString();
-            if(document.getElementById('share-balance')) document.getElementById('share-balance').innerText = "₦" + shareBal.toLocaleString();
-            if(document.getElementById('total-balance')) document.getElementById('total-balance').innerText = "₦" + totalBal.toLocaleString();
+            // Saka kudaden a cikin HTML ta amfani da IDs dinsu
+            document.getElementById('video-balance').innerText = "₦" + vBal.toLocaleString();
+            document.getElementById('share-balance').innerText = "₦" + sBal.toLocaleString();
+            document.getElementById('total-balance').innerText = "₦" + tBal.toLocaleString();
 
             updateFuturisticHUD(data.videosWatchedToday || 0);
         }
     });
-}
-syncBalance();         
+     }
+        
         
 
         // 1. GENERATE SESSION ID
