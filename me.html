@@ -21,7 +21,7 @@
         .camera-cover-main {
             position: absolute; top: 100px; right: 20px; width: 40px; height: 40px;
             background: #e4e6eb; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            z-index: 100; border: 3px solid var(--bg);
+            z-index: 100; border: 3px solid var(--bg); cursor: pointer;
         }
 
         .profile-content { position: relative; z-index: 20; margin-top: 140px; padding: 0 15px; }
@@ -36,7 +36,7 @@
         .avatar-circle { width: 100px; height: 100px; border-radius: 35px; padding: 4px; background: linear-gradient(135deg, var(--neon), #7000ff); position: relative; }
         .avatar-circle img { width: 100%; height: 100%; border-radius: 31px; object-fit: cover; border: 3px solid var(--bg); }
 
-        .camera-profile-main { position: absolute; bottom: -2px; right: -2px; width: 32px; height: 32px; background: #e4e6eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg); z-index: 60; }
+        .camera-profile-main { position: absolute; bottom: -2px; right: -2px; width: 32px; height: 32px; background: #e4e6eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg); z-index: 60; cursor: pointer; }
 
         .stats-row { display: flex; gap: 20px; margin-top: 5px; }
         .stat-item { text-align: left; }
@@ -59,33 +59,44 @@
         .grid-item { aspect-ratio: 1/1; border-radius: 20px; overflow: hidden; background: #111; border: 1px solid rgba(0, 242, 254, 0.1); }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
         .hidden { display: none; }
+        
+        .photo-menu {
+            position: absolute; width: 140px; background: #111; border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; z-index: 1000; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .photo-menu button {
+            width: 100%; padding: 10px 15px; text-align: left; font-size: 10px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .photo-menu button:hover { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
     <div class="cover-wrapper">
-    <img id="main-cover-img" src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1200" class="cover-photo" alt="Cover">
+        <img id="main-cover-img" src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1200" class="cover-photo" alt="Cover">
     </div>
     
-
-<!-- Kyamarar Cover Photo -->
-<div class="camera-cover-main" onclick="document.getElementById('cover-upload').click()" style="cursor: pointer;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
-    </svg>
-    <!-- Wannan shi ne boyayyen input din da zai bude gallery -->
-    <input type="file" id="cover-upload" accept="image/*" class="hidden" onchange="previewCover(event)">
-</div>
-    
+    <div class="camera-cover-main" onclick="toggleMenu('cover-menu')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <div id="cover-menu" class="photo-menu hidden" style="top: 45px; right: 0;">
+            <button onclick="document.getElementById('cover-upload').click()">Update Photo</button>
+            <button onclick="removePhoto('cover')" class="text-red-400">Remove Photo</button>
+        </div>
+        <input type="file" id="cover-upload" accept="image/*" class="hidden" onchange="updatePhoto(event, 'cover')">
+    </div>
 
     <main class="max-w-2xl mx-auto profile-content">
         <div class="relative">
             <div class="avatar-container">
                 <div class="avatar-circle">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=mamba" alt="Profile">
-                    <div class="camera-profile-main">
+                    <img id="main-profile-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=mamba" alt="Profile">
+                    <div class="camera-profile-main" onclick="toggleMenu('profile-menu')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        <div id="profile-menu" class="photo-menu hidden" style="bottom: 40px; left: 0;">
+                            <button onclick="document.getElementById('profile-upload').click()">Update Profile</button>
+                            <button onclick="removePhoto('profile')" class="text-red-400">Remove Profile</button>
+                        </div>
+                        <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="updatePhoto(event, 'profile')">
                     </div>
                 </div>
             </div>
@@ -98,7 +109,6 @@
                             <svg width="10" height="10" fill="none" stroke="black" stroke-width="4" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
                         </div>
                     </div>
-
                     <div class="stats-row">
                         <div class="stat-item"><span class="stat-num">419</span><span class="stat-label">posts</span></div>
                         <div class="stat-item"><span class="stat-num">2,521</span><span class="stat-label">followers</span></div>
@@ -112,12 +122,10 @@
                         Crafting the largest Wholesale Directory in Kano. 
                         Wholesaler of Luxury Sudanese Toubs & Traditional Wear.
                     </p>
-
                     <div class="flex gap-3 mb-6">
                         <button class="btn-slim btn-black">Follow Node</button>
                         <button class="btn-slim btn-white">Contact</button>
                     </div>
-
                     <div class="smart-box-highlights">
                         <div class="highlights-scroll">
                             <div class="highlight-item"><div class="highlight-ring"><img src="https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?w=100"></div><p class="highlight-label">Toubs</p></div>
@@ -130,13 +138,12 @@
             </div>
         </div>
 
-        <!-- TAB BUTTONS -->
         <div class="flex gap-4 my-6">
              <button id="btn-showcase" onclick="switchTab('showcase')" class="btn-slim btn-white">Showcase</button>
              <button id="btn-timeline" onclick="switchTab('timeline')" class="btn-slim btn-trans">Timeline</button>
         </div>
         
-        <!-- SHOWCASE AREA -->
+        <!-- SHOWCASE AREA (9 BOXES) -->
         <div id="showcase-area" class="insta-grid pb-10">
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1583944438403-f5260a7c0838?w=400"></div>
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1543087903-1ac2ec7aa8c5?w=400"></div>
@@ -149,82 +156,101 @@
             <div class="grid-item"><img src="https://images.unsplash.com/photo-1445205170230-053b830c6050?w=400"></div>
         </div>
 
-        <!-- TIMELINE AREA -->
+        <!-- TIMELINE AREA WITH FULL DETAILS -->
         <div id="timeline-area" class="hidden pb-10 px-2 space-y-6">
-    
-    <!-- Post 1: Rubutu da Hoto -->
-    <div class="glass-vault p-4 rounded-[30px] border-none bg-white/5">
-        <div class="flex items-center gap-3 mb-4">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=mamba" class="w-10 h-10 rounded-full border border-cyan-400/30">
-            <div>
-                <h4 class="text-white font-bold text-xs">Aliyu Haedar</h4>
-                <p class="text-gray-500 text-[10px]">2 hours ago • <span class="text-cyan-400">Public</span></p>
+            <!-- Post 1 -->
+            <div class="glass-vault p-4 rounded-[30px] border-none bg-white/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=mamba" class="w-10 h-10 rounded-full border border-cyan-400/30">
+                        <div>
+                            <h4 class="text-white font-bold text-xs">Aliyu Haedar</h4>
+                            <p class="text-gray-500 text-[10px]">2 hours ago • <span class="text-cyan-400 font-bold">Public</span></p>
+                        </div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <p class="text-gray-300 text-xs mb-4">Barka da dare abokai! Yau na zagaya kasuwar Kantin Kwari, gaskiya harkar Toubs tana kara bunkasa. 🚀</p>
+                <div class="rounded-2xl overflow-hidden border border-white/5">
+                    <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500" class="w-full">
+                </div>
+                <div class="flex justify-between mt-4 pt-3 border-t border-white/5">
+                    <div class="flex gap-4">
+                        <span class="text-[10px] text-gray-500 font-bold">❤️ 1.2k</span>
+                        <span class="text-[10px] text-gray-500 font-bold">💬 45 Comments</span>
+                    </div>
+                    <span class="text-[10px] text-cyan-400 font-bold cursor-pointer">Write a comment...</span>
+                </div>
+            </div>
+            
+            <!-- Post 2 -->
+            <div class="glass-vault p-4 rounded-[30px] border-none bg-white/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=mamba" class="w-10 h-10 rounded-full border border-cyan-400/30">
+                        <div>
+                            <h4 class="text-white font-bold text-xs">Aliyu Haedar</h4>
+                            <p class="text-gray-500 text-[10px]">Yesterday at 10:45 PM</p>
+                        </div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <p class="text-[14px] text-white italic font-medium">"Success is not just about profit, it's about the value you bring to your community." 💡</p>
+                <div class="flex gap-4 mt-4 pt-3 border-t border-white/5">
+                    <span class="text-[10px] text-gray-500 font-bold">❤️ 850</span>
+                    <span class="text-[10px] text-gray-500 font-bold">💬 12 Comments</span>
+                </div>
             </div>
         </div>
-        <p class="text-gray-300 text-xs leading-relaxed mb-4">
-            Barka da dare abokai! Yau na zagaya kasuwar Kantin Kwari, gaskiya harkar Toubs tana kara bunkasa. Muna nan muna tsara yadda Wholesale Directory dinmu zai saukaka wa mutane harka. 🚀
-        </p>
-        <div class="rounded-2xl overflow-hidden border border-white/5">
-            <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500" class="w-100 object-cover">
-        </div>
-        <div class="flex gap-4 mt-4 pt-3 border-t border-white/5">
-            <span class="text-[10px] text-gray-500 font-bold">❤️ 1.2k</span>
-            <span class="text-[10px] text-gray-500 font-bold">💬 45 Comments</span>
-        </div>
-    </div>
-
-    <!-- Post 2: Rubutu Kawai -->
-    <div class="glass-vault p-4 rounded-[30px] border-none bg-white/5">
-        <div class="flex items-center gap-3 mb-4">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=mamba" class="w-10 h-10 rounded-full border border-cyan-400/30">
-            <div>
-                <h4 class="text-white font-bold text-xs">Aliyu Haedar</h4>
-                <p class="text-gray-500 text-[10px]">Yesterday at 10:45 PM</p>
-            </div>
-        </div>
-        <p class="text-[14px] text-white font-medium leading-relaxed italic">
-            "Success is not just about profit, it's about the value you bring to your community." 💡
-        </p>
-        <div class="flex gap-4 mt-4 pt-3 border-t border-white/5">
-            <span class="text-[10px] text-gray-500 font-bold">❤️ 850</span>
-            <span class="text-[10px] text-gray-500 font-bold">💬 12 Comments</span>
-        </div>
-    </div>
-
-        </div>
-        
 
         <script>
+            window.onload = function() {
+                const savedCover = localStorage.getItem('userCover');
+                const savedProfile = localStorage.getItem('userProfile');
+                if (savedCover) document.getElementById('main-cover-img').src = savedCover;
+                if (savedProfile) document.getElementById('main-profile-img').src = savedProfile;
+            }
+
+            function toggleMenu(menuId) {
+                const menu = document.getElementById(menuId);
+                const allMenus = document.querySelectorAll('.photo-menu');
+                allMenus.forEach(m => { if(m.id !== menuId) m.classList.add('hidden'); });
+                menu.classList.toggle('hidden');
+            }
+
+            function updatePhoto(event, type) {
+                const reader = new FileReader();
+                const imgId = type === 'cover' ? 'main-cover-img' : 'main-profile-img';
+                const storageKey = type === 'cover' ? 'userCover' : 'userProfile';
+                reader.onload = function() {
+                    document.getElementById(imgId).src = reader.result;
+                    localStorage.setItem(storageKey, reader.result);
+                }
+                if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+                document.getElementById(type + '-menu').classList.add('hidden');
+            }
+
+            function removePhoto(type) {
+                const imgId = type === 'cover' ? 'main-cover-img' : 'main-profile-img';
+                const storageKey = type === 'cover' ? 'userCover' : 'userProfile';
+                document.getElementById(imgId).src = type === 'cover' ? "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1200" : "https://api.dicebear.com/7.x/bottts/svg?seed=mamba";
+                localStorage.removeItem(storageKey);
+                document.getElementById(type + '-menu').classList.add('hidden');
+            }
+
             function switchTab(tab) {
                 const showcase = document.getElementById('showcase-area');
                 const timeline = document.getElementById('timeline-area');
                 const btnS = document.getElementById('btn-showcase');
                 const btnT = document.getElementById('btn-timeline');
-
                 if (tab === 'showcase') {
-                    showcase.classList.remove('hidden');
-                    timeline.classList.add('hidden');
-                    btnS.className = 'btn-slim btn-white';
-                    btnT.className = 'btn-slim btn-trans';
+                    showcase.classList.remove('hidden'); timeline.classList.add('hidden');
+                    btnS.className = 'btn-slim btn-white'; btnT.className = 'btn-slim btn-trans';
                 } else {
-                    showcase.classList.add('hidden');
-                    timeline.classList.remove('hidden');
-                    btnT.className = 'btn-slim btn-white';
-                    btnS.className = 'btn-slim btn-trans';
+                    showcase.classList.add('hidden'); timeline.classList.remove('hidden');
+                    btnT.className = 'btn-slim btn-white'; btnS.className = 'btn-slim btn-trans';
                 }
             }
-
-            function previewCover(event) {
-    const reader = new FileReader();
-    reader.onload = function() {
-        const output = document.getElementById('main-cover-img');
-        output.src = reader.result; // Wannan zai canza hoton zuwa wanda ka zaba
-    }
-    if(event.target.files[0]) {
-        reader.readAsDataURL(event.target.files[0]);
-    }
-            }
-            
         </script>
     </main>
 </body>
