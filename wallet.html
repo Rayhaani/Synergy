@@ -38,24 +38,41 @@
     text-transform: uppercase; 
     letter-spacing: 4px; 
             }
+      
+
+/* Wannan zai ba header din kalar 'Cyber' mai sanyi */
+nav {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
         
         
     </style>
 </head>
 <body>
 
-   <nav class="sticky top-0 z-50 glass-premium p-5 flex justify-between items-center px-8">
+
+    <nav class="sticky top-0 z-[1000] px-6 py-5 flex justify-between items-center bg-[#020617]/80 backdrop-blur-xl border-b border-white/5">
     <div class="flex items-center gap-4">
-        <!-- Back Button -->
-        <a href="dashboard.html" class="text-white hover:text-cyan-400">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <!-- Back Button connected to Dashboard -->
+        <a href="dashboard.html" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/50 transition-all group">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:text-cyan-400">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
         </a>
-        <div class="orbitron text-[14px] text-cyan-400 font-bold tracking-[5px]">VAULT</div>
+        
+        <div>
+            <h1 class="orbitron text-[11px] text-cyan-500 tracking-[4px] leading-none">Quantum Ledger</h1>
+            <p class="text-[8px] text-gray-500 uppercase mt-1 tracking-[2px]">Secure Protocol V3</p>
+        </div>
     </div>
-    <div class="w-10 h-10 rounded-full border border-cyan-500/30 p-1">
-        <div class="w-full h-full bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full shadow-[0_0_15px_cyan]"></div>
+
+    <!-- Minimalist Status Indicator (Maimakon babban Circle) -->
+    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/5 border border-cyan-500/20">
+        <div class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></div>
+        <span class="text-[9px] orbitron text-cyan-500 font-bold">Encrypted</span>
     </div>
-   </nav>
+    </nav>
     
 
     <main class="max-w-2xl mx-auto p-6 mt-4 space-y-8">
