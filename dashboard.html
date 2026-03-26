@@ -182,23 +182,43 @@
         </div>
 
             
-        <section class="grid grid-cols-3 gap-3">
-    <!-- Video Vault -->
-    <div class="glass-premium p-4 rounded-[24px] text-center">
-        <small class="text-[8px] text-gray-500 block mb-1">VIDEO VAULT</small>
-        <span id="video-balance" class="text-[12px] digits-luxury text-cyan-400">₦0</span>
+        <!-- Nemo bangaren boxes na sama, ka sauya shi da wannan -->
+
+<section class="space-y-6">
+    <!-- Main Big Balance -->
+    <div class="master-card rounded-[35px] p-8 text-center border-t-2 border-cyan-500/30">
+        <p class="orbitron text-[9px] text-gray-400 mb-2 tracking-[3px]">Total Cumulative Yield</p>
+        <h1 class="digits-apple text-5xl text-white">
+            <span class="text-gray-500 text-2xl">₦</span>1,950
+        </h1>
     </div>
-    <!-- Share Vault -->
-    <div class="glass-premium p-4 rounded-[24px] text-center">
-        <small class="text-[8px] text-gray-500 block mb-1">SHARE VAULT</small>
-        <span id="share-balance" class="text-[12px] digits-luxury text-green-400">₦0</span>
+
+    <!-- Secondary Vaults (Slimmer & Cleaner) -->
+    <div class="grid grid-cols-2 gap-4">
+        <div class="master-card rounded-[24px] p-4 bg-white/[0.02]">
+            <p class="orbitron text-[7px] text-gray-500 mb-1">Video Vault</p>
+            <h4 class="digits-luxury text-lg text-cyan-400">₦1,950</h4>
+        </div>
+        <div class="master-card rounded-[24px] p-4 bg-white/[0.02]">
+            <p class="orbitron text-[7px] text-gray-500 mb-1">Share Vault</p>
+            <h4 class="digits-luxury text-lg text-green-400">₦0</h4>
+        </div>
     </div>
-    <!-- Total Yield -->
-    <div class="glass-premium p-4 rounded-[24px] text-center border-t border-white/20">
-        <small class="text-[8px] text-white/70 block mb-1">TOTAL YIELD</small>
-        <span id="total-balance" class="text-[12px] digits-luxury text-white">₦0</span>
-    </div>
-        </section>
+</section>
+
+<style>
+    /* Wannan zai sa buttons din su rika sheki (Glow) */
+    .btn-viral {
+        background: linear-gradient(90deg, #00f2fe 0%, #7000ff 100%);
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+        transition: all 0.4s ease;
+    }
+    .btn-viral:hover {
+        box-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
+        transform: translateY(-2px);
+    }
+</style>
+        
         
         
 
