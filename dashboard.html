@@ -224,9 +224,6 @@
         transform: translateY(-2px);
     }
 </style>
-        
-        
-        
 
         <section id="verifier-panel" class="floating-card-v3 glass-premium p-10 relative">
     <div class="text-center space-y-8">
@@ -240,12 +237,14 @@
         </div>
     </div>
 </section> 
-        <section class="grid grid-cols-1 gap-4 mt-8 px-2">
+
+<section class="grid grid-cols-1 gap-4 mt-8 px-2">
     <div class="glass-premium p-5 rounded-[24px] border-b-2 border-b-cyan-500/30 relative overflow-hidden group">
         <div class="flex justify-between items-end mb-3">
             <div>
                 <p class="orbitron text-[9px] text-cyan-400 tracking-[3px]">Daily Protocol</p>
-                <h3 id="daily-count" class="text-2xl font-black text-white mt-1">0 <span class="text-[10px] text-gray-500">/ 10 UNITS</span></h3>
+                <!-- Na canja font-black zuwa digits-terminal -->
+                <h3 id="daily-count" class="text-2xl digits-terminal text-white mt-1">0 <span class="text-[10px] text-gray-500">/ 10 UNITS</span></h3>
             </div>
             <div id="rank-tag" class="px-3 py-1 rounded-full border border-purple-500/50 bg-purple-500/10 text-[9px] orbitron text-purple-400 animate-pulse">Rank: Iron</div>
         </div>
@@ -257,7 +256,8 @@
     <div class="grid grid-cols-2 gap-4">
         <div class="glass-premium p-5 rounded-[24px] border-r-2 border-r-green-500/20 group">
             <p class="orbitron text-[8px] text-gray-500 tracking-[2px] mb-1">Est. Monthly Yield</p>
-            <h3 id="est-earnings" class="text-xl font-bold text-green-400 digits-banker tracking-tighter">₦0</h3>
+            <!-- Na canja digits-banker zuwa digits-terminal -->
+            <h3 id="est-earnings" class="text-xl digits-terminal text-green-400 tracking-tighter">₦0</h3>
             <div class="mt-3 flex items-center gap-2">
                 <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping"></div>
                 <span class="text-[8px] text-gray-400 uppercase">Live Projection</span>
@@ -269,8 +269,8 @@
             <p id="task-desc" class="text-[10px] font-bold text-white leading-tight">Initialize 10 sessions to unlock Silver</p>
             <div class="mt-2 text-[12px]" id="status-icon">🚀</div>
         </div>
-    </div>       
-         </section>
+    </div>
+</section>
 
         <section id="referral-panel" class="glass-premium p-8 rounded-[32px] mt-6 space-y-8">
     <div class="text-center space-y-2">
