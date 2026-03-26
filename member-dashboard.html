@@ -105,34 +105,29 @@
 <body>
 
 
-    <!-- TOP NAVIGATION -->
-<nav class="sticky top-0 z-[10000] glass-premium p-5 flex justify-between items-center px-8" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid #1a1a1a;">
-    
-    <!-- PROFESSIONAL LOGO SECTION -->
+<nav class="sticky top-0 z-[10000] p-5 flex justify-between items-center px-8 bg-black/80 backdrop-blur-xl border-b border-white/5">
+    <!-- LOGO & NAME -->
     <div class="flex items-center gap-4">
-        <div class="relative w-10 h-10 flex items-center justify-center">
-            <!-- Outer Hexagon Decor -->
-            <div class="absolute inset-0 bg-cyan-500/20 rotate-45 rounded-xl animate-pulse"></div>
-            <!-- Main Logo Core -->
-            <div class="relative w-8 h-8 bg-black border-2 border-cyan-400 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(0,242,254,0.4)]">
-                <span class="text-cyan-400 font-black text-[10px] tracking-tighter">SP</span>
-            </div>
-        </div>
-        <div class="flex flex-col">
-            <span class="orbitron text-[13px] text-white font-black tracking-[3px]">SYNERGY</span>
-            <span class="text-[8px] text-cyan-500 font-bold tracking-[5px] -mt-1 uppercase">Protocol</span>
-        </div>
-    </div>
-    
-    <!-- MENU TRIGGER SECTION -->
-    <div class="relative">
-        <div class="menu-trigger p-2 hover:bg-white/5 rounded-xl transition-all cursor-pointer" onclick="toggleGoogleMenu(event)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="1.5"></circle>
-                <circle cx="12" cy="5" r="1.5"></circle>
-                <circle cx="12" cy="19" r="1.5"></circle>
+        <div class="w-9 h-9 flex items-center justify-center relative">
+            <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-cyan-400" stroke-width="1.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
             </svg>
         </div>
+        <div class="orbitron text-[14px] text-white font-black tracking-[3px] whitespace-nowrap uppercase">
+            Synergy Protocol
+        </div>
+    </div>
+
+    <!-- MENU TRIGGER -->
+    <div class="relative">
+        <div class="p-2 cursor-pointer group" onclick="toggleGoogleMenu(event)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <circle cx="12" cy="5" r="1" fill="white"></circle>
+                <circle cx="12" cy="12" r="1" fill="white"></circle>
+                <circle cx="12" cy="19" r="1" fill="white"></circle>
+            </svg>
+        </div>
+        
 
         <!-- EXACT MENU FROM YOUR IMAGE CODE -->
         <div id="google-nav" class="google-popup">
