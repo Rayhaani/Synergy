@@ -114,6 +114,29 @@
     font-weight: 400 !important; 
     letter-spacing: -0.5px;
       }
+
+
+      /* Wannan shi ne asirin Neon Interceptor */
+.neon-glow-text {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 300;
+    color: #fff;
+    text-shadow: 
+        0 0 7px rgba(0, 242, 254, 0.3),
+        0 0 10px rgba(0, 242, 254, 0.2),
+        0 0 21px rgba(0, 242, 254, 0.1);
+    animation: neonPulse 2s infinite alternate;
+}
+
+@keyframes neonPulse {
+    from { opacity: 0.8; text-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
+    to { opacity: 1; text-shadow: 0 0 15px rgba(0, 242, 254, 0.8), 0 0 2px #00f2fe; }
+}
+
+.verifier-input-focus:focus {
+    border-color: #00f2fe !important;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+}
       
     </style>
 </head>
@@ -225,25 +248,38 @@
     }
 </style>
 
-<section id="verifier-panel" class="floating-card-v3 glass-premium p-10 relative">
-    <div class="text-center space-y-8">
-        <div>
-            <h2 class="orbitron text-[9px] text-cyan-500/50 mb-4 tracking-[4px]">Security Hash Code</h2>
+
+   <section id="verifier-panel" class="floating-card-v3 glass-premium p-10 relative overflow-hidden">
+    <!-- Wani dan haske a bayan code din (Glow Background) -->
+    <div class="absolute inset-0 bg-cyan-500/5 blur-[80px] -z-10"></div>
+
+    <div class="text-center space-y-10">
+        <div class="space-y-2">
+            <h2 class="orbitron text-[9px] text-cyan-500/60 tracking-[5px] uppercase">Interception Hash</h2>
             
-            <!-- Mun rage girman code din, mun mayar dashi tsakiya, kuma mun saka terminal font -->
-            <div id="generated-code-display" class="digits-terminal text-3xl text-white tracking-[12px] opacity-90 block w-full text-center ml-[6px]">
-                ------
+            <!-- Code din yana nan a tsakiya cif tare da Neon Effect -->
+            <div class="flex justify-center w-full">
+                <div id="generated-code-display" class="neon-glow-text text-4xl tracking-[15px] py-4 pl-[15px]">
+                    ------
+                </div>
             </div>
         </div>
-        
-        <div class="space-y-6">
-            <input type="text" id="node-code" maxlength="6" class="node-input-clean digits-terminal" placeholder="••••••">
-            <button onclick="authenticateNode()" class="w-full py-5 rounded-2xl bg-white text-black orbitron font-bold text-[11px] hover:bg-cyan-400 transition-all tracking-[2px]">
+
+        <div class="space-y-6 max-w-[280px] mx-auto">
+            <div class="relative">
+                <input type="text" id="node-code" maxlength="6" 
+                    class="node-input-clean digits-terminal verifier-input-focus border-white/5 transition-all uppercase" 
+                    placeholder="••••••" 
+                    style="letter-spacing: 8px; font-size: 1.2rem;">
+            </div>
+            
+            <button onclick="authenticateNode()" 
+                class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500/80 to-blue-600/80 text-white orbitron font-bold text-[10px] tracking-[3px] hover:scale-[1.02] active:scale-[0.98] transition-all border border-white/10 shadow-lg">
                 Verify Transaction
             </button>
         </div>
     </div>
-</section>
+   </section>
         
 
 <section class="grid grid-cols-1 gap-4 mt-8 px-2">
