@@ -32,37 +32,31 @@
         }
         .btn-withdraw:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(0, 242, 254, 0.5); }
  
-    .vault-card { 
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-}
 
 .orbitron { 
     font-family: 'Syncopate', sans-serif; 
     text-transform: uppercase; 
     letter-spacing: 4px; 
             }
-
-        /* Saka wannan a cikin <style> tag dinka */
-.vault-card { 
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-}
+        
         
     </style>
 </head>
 <body>
 
-    <nav class="sticky top-0 z-50 glass-premium p-5 flex justify-between items-center px-8">
-        <div class="orbitron text-[14px] text-cyan-400 font-bold tracking-[5px]">SYNERGY PROTOCOL</div>
-        <div class="w-10 h-10 rounded-full border border-cyan-500/30 p-1">
-            <div class="w-full h-full bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full shadow-[0_0_15px_cyan]"></div>
-        </div>
-    </nav>
+   <nav class="sticky top-0 z-50 glass-premium p-5 flex justify-between items-center px-8">
+    <div class="flex items-center gap-4">
+        <!-- Back Button -->
+        <a href="dashboard.html" class="text-white hover:text-cyan-400">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </a>
+        <div class="orbitron text-[14px] text-cyan-400 font-bold tracking-[5px]">VAULT</div>
+    </div>
+    <div class="w-10 h-10 rounded-full border border-cyan-500/30 p-1">
+        <div class="w-full h-full bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full shadow-[0_0_15px_cyan]"></div>
+    </div>
+   </nav>
+    
 
     <main class="max-w-2xl mx-auto p-6 mt-4 space-y-8">
         
@@ -115,16 +109,6 @@
         </section>
 
     </main>
-
-<footer class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[85%] max-w-md h-16 vault-card rounded-full flex justify-around items-center z-[100] px-6">
-    <a href="member-dashboard.html" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Core</span></a>
-    <a href="nodes.html" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Nodes</span></a>
-    <a href="vault.html" class="flex flex-col items-center">
-        <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_#00f2fe] mb-1"></div>
-        <span class="text-[9px] font-bold text-white orbitron">Vault</span>
-    </a>
-    <a href="me.html" class="text-gray-600 hover:text-white transition-colors"><span class="text-[9px] font-bold orbitron">Profile</span></a>
-</footer>
 </body>
           </html>
           
