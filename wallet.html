@@ -89,18 +89,7 @@
 <body>
 
 
-    <!-- Withdrawal Section -->
-        <section class="glass-premium p-8 space-y-6">
-            <div class="text-center">
-                <h2 class="orbitron text-[10px] text-cyan-500/60 tracking-[4px]">Yield Liquidation</h2>
-            </div>
-            <div class="space-y-4">
-                <input type="number" id="withdraw-amount" placeholder="Enter Amount" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl digits-terminal text-white outline-none focus:border-cyan-500/50 transition-all">
-                <button onclick="requestPayout()" class="w-full py-5 rounded-2xl bg-white text-black orbitron font-bold text-[11px] tracking-[2px] hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.05)]">
-                    Process Transaction
-                </button>
-            </div>
-        </section>
+
 
     
     <!-- Header: Gyararre (Slim & Edge-to-Edge) -->
@@ -123,7 +112,21 @@
 
     <!-- Main Content: Added padding and spacing -->
     <main class="p-6 max-w-md mx-auto space-y-6">
-    
+
+
+            <!-- Withdrawal Section -->
+        <section class="glass-premium p-8 space-y-6">
+            <div class="text-center">
+                <h2 class="orbitron text-[10px] text-cyan-500/60 tracking-[4px]">Yield Liquidation</h2>
+            </div>
+            <div class="space-y-4">
+                <input type="number" id="withdraw-amount" placeholder="Enter Amount" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl digits-terminal text-white outline-none focus:border-cyan-500/50 transition-all">
+                <button onclick="requestPayout()" class="w-full py-5 rounded-2xl bg-white text-black orbitron font-bold text-[11px] tracking-[2px] hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.05)]">
+                    Process Transaction
+                </button>
+            </div>
+        </section>
+        
         <!-- 1. MAIN EQUITY CARD -->
         <section class="master-card rounded-[32px] p-8 text-center fade-in">
             <p class="orbitron text-[8px] text-gray-500 mb-3">Available Equity</p>
