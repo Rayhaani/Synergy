@@ -162,52 +162,7 @@
 
 
 
-            <div id="panel-nodes" class="space-y-4">
-    <div class="relative group max-w-md mx-auto">
-        
-    
             
-            <div class="relative group max-w-md mx-auto">
-    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-600/20 rounded-[2rem] blur-xl opacity-75"></div>
-    
-    <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-6 overflow-hidden shadow-2xl">
-        
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#00f2fe 1px, transparent 1px); background-size: 24px 24px;"></div>
-
-        <div class="relative z-10 flex justify-between items-start mb-8">
-            <div class="flex flex-col">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="orbitron text-[9px] text-cyan-400 tracking-[3px]">MESH_NODE_B1</span>
-                </div>
-                <h4 class="text-xs text-gray-500 font-mono">Uptime: 99.9% Active</h4>
-            </div>
-            <div class="flex gap-[2px] items-end h-4">
-                <div class="w-[3px] h-1/4 bg-cyan-500/30 rounded-full"></div>
-                <div class="w-[3px] h-2/4 bg-cyan-500/50 rounded-full"></div>
-                <div class="w-[3px] h-3/4 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f2fe]"></div>
-                <div class="w-[3px] h-full bg-cyan-400 rounded-full shadow-[0_0_8px_#00f2fe]"></div>
-            </div>
-        </div>
-
-        <div class="relative z-10 text-center py-6 bg-white/[0.02] rounded-3xl border border-white/5 mb-8">
-            <p class="orbitron text-[8px] text-gray-500 tracking-[4px] mb-3">CURRENT_FREE_YIELD</p>
-            <div class="flex items-center justify-center gap-2">
-                <span class="text-2xl text-cyan-500 font-light">₦</span>
-                <span class="digits text-4xl font-bold text-white tracking-tighter" id="free-yield-display">0.00</span>
-            </div>
-            <div class="mt-4 flex justify-center gap-8">
-                <div class="flex flex-col">
-                    <span class="text-[7px] orbitron text-gray-500">SPEED</span>
-                    <span class="text-xs text-white font-mono">1.0x Base</span>
-                </div>
-                <div class="w-[1px] h-8 bg-white/10"></div>
-                <div class="flex flex-col">
-                    <span class="text-[7px] orbitron text-gray-500">DAILY_CAP</span>
-                    <span class="text-xs text-white font-mono">₦250.00</span>
-                </div>
-            </div>
-        </div>
 
         <div class="relative z-10 flex flex-col gap-3">
             <button class="w-full py-4 bg-gradient-to-r from-cyan-600/20 to-cyan-400/20 border border-cyan-400/30 rounded-2xl group-hover:border-cyan-400/60 transition-all">
@@ -247,98 +202,131 @@
 </style>
             
 
-<div id="panel-contracts" class="hidden">
-    <div class="relative group max-w-md mx-auto">
-        <div class="absolute -inset-1 bg-gradient-to-r from-yellow-500/20 to-purple-600/20 rounded-[2rem] blur-xl opacity-75"></div>
-        
-        <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-6 overflow-hidden shadow-2xl">
-            
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#ea7e08 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <section class="cyber-hud pb-32">
+            <div class="hud-nav">
+                <button onclick="switchPanel('nodes')" id="tab-nodes" class="hud-tab active">🛰️</button>
+                <button onclick="switchPanel('contracts')" id="tab-contracts" class="hud-tab">💎</button>
+                <button onclick="switchPanel('staking')" id="tab-staking" class="hud-tab">🛡️</button>
+            </div>
 
-            <div class="relative z-10 flex justify-between items-center mb-6">
-                <div class="flex flex-col">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_8px_#ea7e08]"></span>
-                        <span class="orbitron text-[9px] text-yellow-500 tracking-[3px]">PREMIUM_APIs</span>
+            <div id="panel-nodes" class="space-y-4">
+                <div class="relative group max-w-md mx-auto">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-600/20 rounded-[2rem] blur-xl opacity-75"></div>
+                    <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-6 overflow-hidden shadow-2xl">
+                        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#00f2fe 1px, transparent 1px); background-size: 24px 24px;"></div>
+                        <div class="relative z-10 flex justify-between items-start mb-8">
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                    <span class="orbitron text-[9px] text-cyan-400 tracking-[3px]">MESH_NODE_B1</span>
+                                </div>
+                                <h4 class="text-xs text-gray-500 font-mono">Uptime: 99.9% Active</h4>
+                            </div>
+                            <div class="flex gap-[2px] items-end h-4">
+                                <div class="w-[3px] h-1/4 bg-cyan-500/30 rounded-full"></div>
+                                <div class="w-[3px] h-2/4 bg-cyan-500/50 rounded-full"></div>
+                                <div class="w-[3px] h-3/4 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f2fe]"></div>
+                                <div class="w-[3px] h-full bg-cyan-400 rounded-full shadow-[0_0_8px_#00f2fe]"></div>
+                            </div>
+                        </div>
+                        <div class="relative z-10 text-center py-6 bg-white/[0.02] rounded-3xl border border-white/5 mb-8">
+                            <p class="orbitron text-[8px] text-gray-500 tracking-[4px] mb-3">CURRENT_FREE_YIELD</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-2xl text-cyan-500 font-light">₦</span>
+                                <span class="digits text-4xl font-bold text-white tracking-tighter" id="free-yield-display">0.00</span>
+                            </div>
+                            <div class="mt-4 flex justify-center gap-8">
+                                <div class="flex flex-col">
+                                    <span class="text-[7px] orbitron text-gray-500">SPEED</span>
+                                    <span class="text-xs text-white font-mono">1.0x Base</span>
+                                </div>
+                                <div class="w-[1px] h-8 bg-white/10"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[7px] orbitron text-gray-500">DAILY_CAP</span>
+                                    <span class="text-xs text-white font-mono">₦250.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative z-10 flex flex-col gap-3">
+                            <button class="w-full py-4 bg-gradient-to-r from-cyan-600/20 to-cyan-400/20 border border-cyan-400/30 rounded-2xl group-hover:border-cyan-400/60 transition-all">
+                                <span class="orbitron text-[10px] text-cyan-400 font-bold tracking-[2px]">WITHDRAW_EARNINGS</span>
+                            </button>
+                        </div>
+                        <div class="absolute inset-x-0 top-0 h-[1px] bg-cyan-400/20 animate-[moveDown_4s_linear_infinite]"></div>
                     </div>
-                    <h4 class="text-xs text-gray-500 font-mono">Available Units: 20</h4>
-                </div>
-                <div class="bg-yellow-500/10 border border-yellow-500/30 px-3 py-1 rounded-md">
-                    <span class="orbitron text-[8px] text-yellow-500 font-bold">STORE_OPEN</span>
                 </div>
             </div>
 
-            <div class="relative z-10 space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                
-                <div class="p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-all">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-500/20 to-transparent rounded-lg flex items-center justify-center border border-yellow-500/30">
-                                <span class="text-lg">💎</span>
+            <div id="panel-contracts" class="hidden space-y-4">
+                <div class="relative group max-w-md mx-auto">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-yellow-500/20 to-purple-600/20 rounded-[2rem] blur-xl opacity-75"></div>
+                    <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-6 overflow-hidden shadow-2xl">
+                        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#ea7e08 1px, transparent 1px); background-size: 24px 24px;"></div>
+                        <div class="relative z-10 flex justify-between items-center mb-6">
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_8px_#ea7e08]"></span>
+                                    <span class="orbitron text-[9px] text-yellow-500 tracking-[3px]">PREMIUM_APIs</span>
+                                </div>
+                                <h4 class="text-xs text-gray-500 font-mono">Available Units: 20</h4>
                             </div>
-                            <div>
-                                <h5 class="text-sm font-bold text-white tracking-wide">Neural_Gold_V1</h5>
-                                <p class="text-[9px] text-gray-500 orbitron">By Synergy Labs</p>
+                            <div class="bg-yellow-500/10 border border-yellow-500/30 px-3 py-1 rounded-md">
+                                <span class="orbitron text-[8px] text-yellow-500 font-bold">STORE_OPEN</span>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <span class="digits text-lg font-bold text-yellow-500">₦25,000</span>
+                        <div class="relative z-10 space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div class="p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-all">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-500/20 to-transparent rounded-lg flex items-center justify-center border border-yellow-500/30">
+                                            <span class="text-lg">💎</span>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-sm font-bold text-white tracking-wide">Neural_Gold_V1</h5>
+                                            <p class="text-[9px] text-gray-500 orbitron">By Synergy Labs</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="digits text-lg font-bold text-yellow-500">₦25,000</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 border-t border-white/5 pt-3">
+                                    <div class="flex flex-col">
+                                        <span class="text-[7px] orbitron text-gray-500">POWER_BOOST</span>
+                                        <span class="text-[11px] text-green-400 font-mono">+15.5 TH/s</span>
+                                    </div>
+                                    <div class="flex flex-col text-right">
+                                        <span class="text-[7px] orbitron text-gray-500">DAILY_EST</span>
+                                        <span class="text-[11px] text-white font-mono">~₦1,250.00</span>
+                                    </div>
+                                </div>
+                                <button class="w-full py-3 bg-yellow-500 text-black orbitron text-[10px] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all">INITIALIZE_UPGRADE</button>
+                            </div>
                         </div>
+                        <div class="absolute inset-x-0 top-0 h-[1px] bg-yellow-400/20 animate-[moveDown_4s_linear_infinite]"></div>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4 border-t border-white/5 pt-3">
-                        <div class="flex flex-col">
-                            <span class="text-[7px] orbitron text-gray-500">POWER_BOOST</span>
-                            <span class="text-[11px] text-green-400 font-mono">+15.5 TH/s</span>
-                        </div>
-                        <div class="flex flex-col text-right">
-                            <span class="text-[7px] orbitron text-gray-500">DAILY_EST</span>
-                            <span class="text-[11px] text-white font-mono">~₦1,250.00</span>
-                        </div>
-                    </div>
-                    
-                    <button class="w-full py-3 bg-yellow-500 text-black orbitron text-[10px] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all">
-                        INITIALIZE_UPGRADE
-                    </button>
                 </div>
-
-                <div class="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-transparent rounded-lg flex items-center justify-center border border-cyan-500/30">
-                                <span class="text-lg">⚡</span>
-                            </div>
-                            <div>
-                                <h5 class="text-sm font-bold text-white tracking-wide">Quant-Speed_X</h5>
-                                <p class="text-[9px] text-gray-500 orbitron">By Northern-Tech</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="digits text-lg font-bold text-yellow-500">₦50,000</span>
-                        </div>
-                    </div>
-                    <button class="w-full py-3 bg-white/5 text-white/50 orbitron text-[10px] font-black rounded-xl cursor-not-allowed">
-                        LOCKED_LEVEL_2
-                    </button>
-                </div>
-
-                </div>
-
-            <div class="relative z-10 mt-6 pt-4 border-t border-white/5 text-center">
-                <p class="text-[7px] text-gray-600 orbitron tracking-[2px]">All API Licenses are valid for 30 Days</p>
             </div>
 
-            <div class="absolute inset-x-0 top-0 h-[1px] bg-yellow-400/20 animate-[moveDown_4s_linear_infinite]"></div>
-        </div>
-    </div>
-</div>
-
-<style>
-/* Custom Scrollbar domin tsarin ya yi kyau a Mobile */
-.custom-scrollbar::-webkit-scrollbar { width: 3px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.01); }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(234, 126, 8, 0.3); border-radius: 10px; }
-</style>
+            <div id="panel-staking" class="hidden">
+                <div class="quantum-card border-purple-500/20 max-w-md mx-auto">
+                    <div class="grid grid-cols-2 gap-6 mb-10">
+                        <div class="text-center">
+                            <p class="text-[8px] orbitron text-gray-500 mb-2">SECURED_ASSETS</p>
+                            <p class="digits text-xl text-white">₦0.00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[8px] orbitron text-gray-500 mb-2">VAULT_GROWTH</p>
+                            <p class="digits text-xl text-green-400">18.5%</p>
+                        </div>
+                    </div>
+                    <div class="relative mb-6">
+                        <input type="number" placeholder="0.00" class="w-full bg-black/50 border border-white/5 p-6 rounded-2xl digits text-center text-cyan-400 focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <button class="w-full py-5 bg-gradient-to-r from-cyan-600 to-purple-600 text-white orbitron text-[10px] font-bold rounded-2xl shadow-xl">LOCK_LIQUIDITY</button>
+                </div>
+            </div>
+        </section>
             
             
 
