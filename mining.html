@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNERGY | NEURAL CORE PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --neon-cyan: #00f2fe; --neon-purple: #7000ff; --bg-dark: #010409; }
+        
+        body { 
+            background: var(--bg-dark); color: #fff; font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden; min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.05), transparent 70%),
+                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+        }
+
+        .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 5px; }
+        .digits { font-family: 'Roboto Mono', monospace; }
+
+        /* DATA LINES */
+        .data-line {
+            width: 2px; height: 150px;
+            background: linear-gradient(to bottom, transparent, var(--neon-cyan), transparent);
+            position: fixed; opacity: 0.4; animation: moveData 4s linear infinite; z-index: 1;
+        }
+        @keyframes moveData { 0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); } }
+
+        /* THE NEURAL CORE (UNCHANGED) */
+        .core-container {
+            position: relative; width: 280px; height: 280px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .outer-ring {
+            position: absolute; width: 100%; height: 100%;
+            border: 1px solid rgba(0, 242, 254, 0.1);
+            border-radius: 50%; border-top: 3px solid var(--neon-cyan);
+            animation: spin 4s linear infinite;
+        }
+        .middle-ring {
+            position: absolute; width: 85%; height: 85%;
+            border: 1px dashed rgba(112, 0, 255, 0.3);
+            border-radius: 50%; border-bottom: 2px solid var(--neon-purple);
+            animation: spin 6s linear reverse infinite;
+        }
+        .inner-core {
+            width: 140px; height: 140px;
+            background: radial-gradient(circle, rgba(0,242,254,0.1) 0%, transparent 70%);
+            border-radius: 50%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* POWER BUTTON */
+        .power-btn {
+            background: #000; border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan); padding: 20px 45px;
+            border-radius: 50px; font-weight: bold;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+            transition: 0.3s; z-index: 10;
+        }
+        .power-btn.active { background: var(--neon-cyan); color: #000; box-shadow: 0 0 40px var(--neon-cyan); }
+
+        /* --- THE CYBER-HUD (BOTTOM) --- */
+        .cyber-hud {
+            width: 100%; margin-top: 40px; position: relative;
+            padding: 30px; border-radius: 40px 40px 0 0;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 242, 254, 0.3);
+            box-shadow: 0 -20px 60px rgba(0, 242, 254, 0.1);
+        }
+
+        .hud-nav {
+            display: flex; justify-content: center; gap: 15px; margin-bottom: 40px;
+        }
+        .hud-tab {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .hud-tab.active {
+            background: var(--neon-cyan); color: #000;
+            transform: scale(1.2) translateY(-10px);
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+        .hud-tab::before {
+            content: ''; position: absolute; inset: -5px; border-radius: 50%;
+            border: 1px solid transparent; transition: 0.5s;
+        }
+        .hud-tab.active::before { border: 1px solid var(--neon-cyan); animation: pulseOrb 2s infinite; }
+
+        @keyframes pulseOrb { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+
+        .quantum-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px; padding: 30px; position: relative; overflow: hidden;
+        }
+        .quantum-card::after {
+            content: ''; position: absolute; top: 0; right: 0; width: 100px; height: 100px;
+            background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%);
+            opacity: 0.05;
+        }
+
+        .scanner-line {
+            width: 100%; height: 2px; background: var(--neon-cyan);
+            opacity: 0.2; position: absolute; top: 0;
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="flex flex-col items-center">
+
+    <div class="data-line" style="left: 5%;"></div>
+    <div class="data-line" style="right: 5%; animation-delay: 2s;"></div>
+
+    <nav class="w-full p-8 flex justify-between items-center z-50">
+        <div class="flex flex-col">
+            <span class="orbitron text-[9px] text-cyan-400">Security: Level 5</span>
+            <span class="text-[8px] text-gray-500 font-mono" id="timestamp">SYNCING...</span>
+        </div>
+        <span class="orbitron text-[10px] text-white/30">Synergy Core v10.0</span>
+    </nav>
+
+    <main class="w-full max-w-2xl px-6 flex flex-col items-center gap-12 z-10">
+        
+        <div class="core-container mt-4">
+            <div class="outer-ring" id="ring1"></div>
+            <div class="middle-ring" id="ring2"></div>
+            <div class="inner-core">
+                <span class="orbitron text-[8px] text-cyan-500 opacity-50 mb-2">Hash Rate</span>
+                <h3 class="digits text-xl font-bold" id="hash-rate">0.00 TH/s</h3>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="orbitron text-[10px] text-gray-500 tracking-[8px] mb-4">Neural Yield Accumulated</p>
+            <h1 class="text-7xl font-light tracking-tighter text-white digits" id="balance">
+                <span class="text-3xl text-cyan-500">₦</span>0.00
+            </h1>
+        </div>
+
+        <button onclick="igniteCore()" id="ignite-btn" class="power-btn orbitron text-[11px] tracking-[4px]">
+            IGNITE NEURAL CORE
+        </button>
+
+        <section class="cyber-hud pb-32">
+            <div class="hud-nav">
+                <button onclick="switchPanel('nodes')" id="tab-nodes" class="hud-tab active">🛰️</button>
+                <button onclick="switchPanel('contracts')" id="tab-contracts" class="hud-tab">💎</button>
+                <button onclick="switchPanel('staking')" id="tab-staking" class="hud-tab">🛡️</button>
+            </div>
+
+            <div id="panel-nodes" class="space-y-4">
+                <div class="quantum-card">
+                    <div class="scanner-line"></div>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="orbitron text-[10px] text-cyan-400 mb-2">Network Status</p>
+                            <h4 class="text-lg font-bold tracking-widest">GLOBAL_MESH_01</h4>
+                        </div>
+                        <div class="text-right">
+                            <span class="digits text-xs text-white">UP: 99.8%</span>
+                            <div class="flex gap-1 mt-1 justify-end">
+                                <div class="w-1 h-3 bg-cyan-400"></div>
+                                <div class="w-1 h-3 bg-cyan-400"></div>
+                                <div class="w-1 h-3 bg-cyan-400"></div>
+                                <div class="w-1 h-3 bg-gray-700"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-contracts" class="hidden">
+                <div class="quantum-card bg-yellow-500/5 border-yellow-500/20">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-12 h-1 bg-yellow-500 mb-6"></div>
+                        <h3 class="orbitron text-xs text-yellow-500 mb-2">NEURAL_GOLD_MINER</h3>
+                        <p class="digits text-3xl font-bold mb-8">₦25,000</p>
+                        <button class="w-full py-5 bg-yellow-500 text-black orbitron text-[10px] font-black rounded-full hover:scale-105 transition-all">DECODE_UPGRADE</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-staking" class="hidden">
+                <div class="quantum-card border-purple-500/20">
+                    <div class="grid grid-cols-2 gap-6 mb-10">
+                        <div class="text-center">
+                            <p class="text-[8px] orbitron text-gray-500 mb-2">SECURED_ASSETS</p>
+                            <p class="digits text-xl text-white">₦0.00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[8px] orbitron text-gray-500 mb-2">VAULT_GROWTH</p>
+                            <p class="digits text-xl text-green-400">18.5%</p>
+                        </div>
+                    </div>
+                    <div class="relative mb-6">
+                        <input type="number" placeholder="0.00" class="w-full bg-black/50 border border-white/5 p-6 rounded-2xl digits text-center text-cyan-400 focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <button class="w-full py-5 bg-gradient-to-r from-cyan-600 to-purple-600 text-white orbitron text-[10px] font-bold rounded-2xl shadow-xl">LOCK_LIQUIDITY</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let isActive = false;
+        let balanceValue = 0.00;
+        let mainTimer;
+
+        setInterval(() => {
+            document.getElementById('timestamp').innerText = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        }, 1000);
+
+        function igniteCore() {
+            const btn = document.getElementById('ignite-btn');
+            const ring1 = document.getElementById('ring1');
+            const ring2 = document.getElementById('ring2');
+            const hashTxt = document.getElementById('hash-rate');
+            const balanceTxt = document.getElementById('balance');
+
+            if (!isActive) {
+                isActive = true;
+                btn.innerText = "CORE ACTIVE";
+                btn.classList.add('active');
+                ring1.style.animationDuration = "1s";
+                ring2.style.animationDuration = "1.5s";
+                mainTimer = setInterval(() => {
+                    balanceValue += 0.08;
+                    balanceTxt.innerHTML = `<span class="text-3xl text-cyan-500">₦</span>${balanceValue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    hashTxt.innerText = (Math.random() * (98.5 - 92.0) + 92.0).toFixed(2) + " TH/s";
+                }, 1000);
+            } else {
+                isActive = false;
+                btn.innerText = "IGNITE NEURAL CORE";
+                btn.classList.remove('active');
+                ring1.style.animationDuration = "4s";
+                ring2.style.animationDuration = "6s";
+                clearInterval(mainTimer);
+                hashTxt.innerText = "0.00 TH/s";
+            }
+        }
+
+        function switchPanel(id) {
+            const panels = ['panel-nodes', 'panel-contracts', 'panel-staking'];
+            const tabs = ['tab-nodes', 'tab-contracts', 'tab-staking'];
+            panels.forEach(p => document.getElementById(p).classList.add('hidden'));
+            tabs.forEach(t => document.getElementById(t).classList.remove('active'));
+            document.getElementById('panel-' + id).classList.remove('hidden');
+            document.getElementById('tab-' + id).classList.add('active');
+        }
+    </script>
+</body>
+                          </html>
