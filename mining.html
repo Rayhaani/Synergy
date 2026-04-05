@@ -205,114 +205,123 @@
 
 
 
-             <div id="panel-contracts" class="hidden w-full space-y-6">
+             <div id="panel-contracts" class="hidden w-full space-y-8">
     
-    <div class="max-w-md mx-auto space-y-4">
-        <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-8 overflow-hidden">
-            <div class="text-center">
-                <p class="orbitron text-[8px] text-gray-500 tracking-[4px] mb-2">AVAILABLE_PRO_BALANCE</p>
+    <div class="max-w-md mx-auto relative group">
+        <div class="absolute -inset-1 bg-gradient-to-b from-cyan-500/5 to-transparent rounded-[2.5rem] blur-xl"></div>
+        
+        <div class="relative bg-[#080c14] border border-white/10 rounded-[2.5rem] p-6 overflow-hidden">
+            <div class="text-center py-6 mb-4">
+                <p class="orbitron text-[8px] text-gray-500 tracking-[4px] mb-2">Available Balance</p>
                 <div class="flex items-center justify-center gap-2">
                     <span class="text-2xl text-cyan-500 font-light digits">₦</span>
                     <span class="digits text-4xl font-bold text-white tracking-tighter">4,850.00</span>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent blur-sm"></div>
+
+            <div class="space-y-4 mb-6">
+                <div class="relative bg-white/[0.03] border border-white/5 rounded-2xl p-5 flex justify-between items-center group/card">
+                    <span class="orbitron text-[9px] text-gray-400 tracking-[1px]">Total Earned</span>
+                    <span class="digits text-sm text-white font-medium">₦82,400.00</span>
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[2px]"></div>
+                </div>
+
+                <div class="relative bg-white/[0.03] border border-white/5 rounded-2xl p-5 flex justify-between items-center group/card">
+                    <span class="orbitron text-[9px] text-gray-400 tracking-[1px]">Total Withdrawn</span>
+                    <span class="digits text-sm text-white font-medium">₦77,550.00</span>
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[2px]"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="relative bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-center">
+                        <p class="text-[7px] orbitron text-green-500 mb-1">Running</p>
+                        <p class="digits text-white text-sm">03 Units</p>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60%] h-[1px] bg-green-500/30 blur-[2px]"></div>
+                    </div>
+                    <div class="relative bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-center">
+                        <p class="text-[7px] orbitron text-red-500 mb-1">Expired</p>
+                        <p class="digits text-white text-sm">08 Units</p>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60%] h-[1px] bg-red-500/30 blur-[2px]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="w-full py-4 bg-cyan-500/10 border border-cyan-400/30 rounded-2xl hover:bg-cyan-500/20 transition-all flex justify-center items-center gap-3 group">
+                <span class="orbitron text-[10px] text-cyan-400 font-bold tracking-[2px]">Withdraw Profits</span>
+                <svg class="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
         </div>
-
-        <div class="space-y-3">
-            <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 overflow-hidden flex justify-between items-center">
-                <span class="orbitron text-[9px] text-gray-500 tracking-[2px]">TOTAL_EARNED</span>
-                <span class="digits text-white font-bold tracking-wider">₦82,400.00</span>
-                <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-cyan-500/20 blur-[2px]"></div>
-            </div>
-
-            <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 overflow-hidden flex justify-between items-center">
-                <span class="orbitron text-[9px] text-gray-500 tracking-[2px]">TOTAL_WITHDRAWN</span>
-                <span class="digits text-white font-bold tracking-wider">₦77,550.00</span>
-                <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-purple-500/20 blur-[2px]"></div>
-            </div>
-
-            <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 overflow-hidden flex justify-between items-center">
-                <span class="orbitron text-[9px] text-green-500 tracking-[2px]">RUNNING_UNITS</span>
-                <span class="digits text-white font-bold tracking-wider">03_CORE</span>
-                <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-green-500/20 blur-[2px]"></div>
-            </div>
-
-            <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 overflow-hidden flex justify-between items-center">
-                <span class="orbitron text-[9px] text-red-500 tracking-[2px]">EXPIRED_UNITS</span>
-                <span class="digits text-white font-bold tracking-wider">08_CORE</span>
-                <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-red-500/20 blur-[2px]"></div>
-            </div>
-        </div>
-
-        <button class="w-full py-4 bg-cyan-500/5 border border-cyan-400/20 rounded-2xl hover:bg-cyan-500/10 transition-all flex justify-center items-center gap-2 group">
-            <span class="orbitron text-[10px] text-cyan-400 font-bold tracking-[2px]">WITHDRAW_PROFITS</span>
-            <svg class="w-3 h-3 text-cyan-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-        </button>
     </div>
-
-    <div class="w-full h-[1px] bg-white/5 my-8 shadow-[0_0_10px_rgba(255,255,255,0.05)]"></div>
 
     <div class="max-w-md mx-auto space-y-4 px-2">
-        <div class="bg-[#080c14] border border-white/10 rounded-[2rem] p-6 relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_8px_#eab308]"></span>
-                        <span class="orbitron text-[8px] text-yellow-500 tracking-[3px]">ACTIVE_UNIT</span>
+        <p class="orbitron text-[8px] text-gray-600 tracking-[6px] text-center mb-4">AVAILABLE NEURAL UNITS</p>
+        
+        <div class="relative bg-[#0b121d] border border-white/5 rounded-[2rem] p-6 overflow-hidden">
+            <div class="flex justify-between items-start mb-8">
+                <div class="flex gap-4">
+                    <img src="path/to/diamond-icon.png" class="w-10 h-10 object-contain" alt="Gold">
+                    <div>
+                        <h4 class="orbitron text-[12px] text-white font-bold leading-tight uppercase">Neural Gold Core</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">99.8% Efficiency</p>
                     </div>
-                    <h4 class="orbitron text-[11px] text-white font-bold uppercase">Neural Gold Core</h4>
                 </div>
                 <div class="text-right">
-                    <span class="digits text-sm text-white font-bold tracking-tight">₦25,000</span>
-                    <p class="text-[7px] orbitron text-gray-600">UNIT_PRICE</p>
+                    <span class="digits text-lg text-white font-bold">₦25,000</span>
+                    <p class="text-[7px] orbitron text-gray-600">Unit_Price</p>
                 </div>
             </div>
-            <button class="w-full py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl hover:bg-yellow-500 hover:text-black transition-all">
-                <span class="orbitron text-[9px] font-bold tracking-[2px]">INITIALIZE_MINER</span>
-            </button>
+            
+            <div class="flex items-end justify-between gap-4">
+                <div class="flex-1 space-y-2">
+                    <div class="flex justify-between items-center text-[10px]">
+                        <span class="orbitron text-gray-500 text-[8px]">Hash Boost</span>
+                        <span class="digits text-yellow-500 text-[11px] font-bold">+15.5 TH/s</span>
+                    </div>
+                    <div class="h-[6px] bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-yellow-500 w-2/3 shadow-[0_0_10px_#eab308]"></div>
+                    </div>
+                </div>
+                <button class="px-8 py-3 bg-[#1a1a1a] border border-yellow-500/20 rounded-xl hover:border-yellow-500 transition-all">
+                    <span class="orbitron text-[10px] text-white font-bold tracking-[1px]">INITIALIZE</span>
+                </button>
+            </div>
         </div>
 
-        <div class="bg-[#080c14] border border-white/10 rounded-[2rem] p-6 relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_#22d3ee]"></span>
-                        <span class="orbitron text-[8px] text-cyan-400 tracking-[3px]">ACTIVE_UNIT</span>
+        <div class="relative bg-[#0b121d] border border-white/5 rounded-[2rem] p-6 overflow-hidden">
+            <div class="flex justify-between items-start mb-8">
+                <div class="flex gap-4">
+                    <img src="path/to/bolt-icon.png" class="w-10 h-10 object-contain" alt="Flux">
+                    <div>
+                        <h4 class="orbitron text-[12px] text-white font-bold leading-tight uppercase">Cyber Flux Core</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">100% Stability</p>
                     </div>
-                    <h4 class="orbitron text-[11px] text-white font-bold uppercase">Cyber Flux Unit</h4>
                 </div>
                 <div class="text-right">
-                    <span class="digits text-sm text-white font-bold tracking-tight">₦50,000</span>
-                    <p class="text-[7px] orbitron text-gray-600">UNIT_PRICE</p>
+                    <span class="digits text-lg text-white font-bold">₦50,000</span>
+                    <p class="text-[7px] orbitron text-gray-600">Unit_Price</p>
                 </div>
             </div>
-            <button class="w-full py-3 bg-cyan-400/10 border border-cyan-400/30 rounded-xl hover:bg-cyan-400 hover:text-black transition-all">
-                <span class="orbitron text-[9px] font-bold tracking-[2px]">INITIALIZE_MINER</span>
-            </button>
+            
+            <div class="flex items-end justify-between gap-4">
+                <div class="flex-1 space-y-2">
+                    <div class="flex justify-between items-center text-[10px]">
+                        <span class="orbitron text-gray-500 text-[8px]">Hash Boost</span>
+                        <span class="digits text-cyan-400 text-[11px] font-bold">+35.0 TH/s</span>
+                    </div>
+                    <div class="h-[6px] bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-cyan-400 w-1/2 shadow-[0_0_10px_#22d3ee]"></div>
+                    </div>
+                </div>
+                <button class="px-8 py-3 bg-[#1a1a1a] border border-cyan-400/20 rounded-xl hover:border-cyan-400 transition-all">
+                    <span class="orbitron text-[10px] text-white font-bold tracking-[1px]">INITIALIZE</span>
+                </button>
+            </div>
         </div>
 
-        <div class="bg-[#080c14] border border-white/10 rounded-[2rem] p-6 relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="w-2 h-2 bg-purple-500 rounded-full animate-pulse shadow-[0_0_8px_#a855f7]"></span>
-                        <span class="orbitron text-[8px] text-purple-500 tracking-[3px]">ACTIVE_UNIT</span>
-                    </div>
-                    <h4 class="orbitron text-[11px] text-white font-bold uppercase">Quantum Ghost Unit</h4>
-                </div>
-                <div class="text-right">
-                    <span class="digits text-sm text-white font-bold tracking-tight">₦100,000</span>
-                    <p class="text-[7px] orbitron text-gray-600">UNIT_PRICE</p>
-                </div>
-            </div>
-            <button class="w-full py-3 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500 hover:text-black transition-all">
-                <span class="orbitron text-[9px] font-bold tracking-[2px]">INITIALIZE_MINER</span>
-            </button>
-        </div>
     </div>
-             </div>
-             
+</div>
+    
+                             
   
              
             <div id="panel-staking" class="hidden">
