@@ -357,12 +357,9 @@
              </div>          
 
 
-                  
-       <div id="panel-staking" class="hidden w-full space-y-10">
+        <div id="panel-staking" class="hidden w-full space-y-10">
     
     <div class="max-w-md mx-auto relative group">
-        <div class="absolute -inset-4 bg-emerald-500/5 rounded-[3rem] blur-3xl opacity-20"></div>
-        
         <div class="relative bg-[#080c14] border border-white/10 rounded-[2.5rem] p-8 pb-10 overflow-hidden shadow-2xl">
             
             <div class="text-center py-4 mb-8">
@@ -374,12 +371,12 @@
             </div>
 
             <div class="space-y-4 mb-8">
-                <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex justify-between items-center group/item hover:bg-white/[0.04] transition-all">
+                <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex justify-between items-center transition-all">
                     <span class="orbitron text-[9px] text-gray-400">Annual Yield</span>
                     <span class="digits text-emerald-400 font-bold">+18.5% Apy</span>
                     <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[1px] bg-emerald-500/30 blur-[2px]"></div>
                 </div>
-                <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex justify-between items-center group/item hover:bg-white/[0.04] transition-all">
+                <div class="relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex justify-between items-center transition-all">
                     <span class="orbitron text-[9px] text-gray-400">Rewards Earned</span>
                     <span class="digits text-white font-bold">₦12,450.00</span>
                     <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[1px] bg-white/20 blur-[2px]"></div>
@@ -387,22 +384,19 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <button class="py-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl hover:bg-emerald-500 hover:text-black transition-all duration-300">
-                    <span class="orbitron text-[9px] font-bold tracking-[1px]">Direct Deposit</span>
+                <button class="py-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl hover:bg-emerald-500 hover:text-black transition-all">
+                    <span class="orbitron text-[9px] font-bold tracking-[1px] whitespace-nowrap">Direct Deposit</span>
                 </button>
-                <button class="py-4 bg-white/5 border border-white/10 rounded-2xl hover:border-emerald-500 transition-all duration-300">
-                    <span class="orbitron text-[9px] font-bold tracking-[1px]">Restake Reward</span>
+                <button class="py-4 bg-white/5 border border-white/10 rounded-2xl hover:border-emerald-500 transition-all">
+                    <span class="orbitron text-[9px] font-bold tracking-[1px] whitespace-nowrap">Restake Reward</span>
                 </button>
             </div>
 
             <button class="w-full py-4 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 border border-emerald-500/20 rounded-2xl hover:bg-emerald-500/10 transition-all flex justify-center items-center gap-3">
                 <span class="orbitron text-[10px] text-emerald-400 font-bold tracking-[2px]">Withdraw Staking Rewards</span>
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
         </div>
     </div>
-
-    <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
 
     <div class="max-w-md mx-auto space-y-8 px-2">
         <p class="orbitron text-[9px] text-gray-600 tracking-[6px] text-center mb-4">Verified Staking Nodes</p>
@@ -410,7 +404,7 @@
         <div class="relative bg-[#0b121d] border border-white/5 rounded-[2.5rem] p-7 overflow-visible group">
             <div class="flex justify-between items-start mb-8">
                 <div class="flex gap-4">
-                    <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 font-bold text-emerald-500 orbitron shadow-[0_0_15px_rgba(16,185,129,0.1)]">Bn</div>
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 font-bold text-emerald-500 orbitron">Bn</div>
                     <div>
                         <h4 class="orbitron text-[12px] text-white font-bold tracking-wider">Binance Smart Stake</h4>
                         <p class="text-[8px] text-gray-500 font-mono">99.9% Uptime Security</p>
@@ -432,46 +426,16 @@
                         <div class="h-full bg-emerald-500 w-[95%] shadow-[0_0_15px_#10b981]"></div>
                     </div>
                 </div>
-                <button class="px-10 py-5 bg-[#1a1a1a] border border-emerald-500/40 rounded-[1.5rem] hover:bg-emerald-500 hover:text-black transition-all shadow-2xl translate-x-3 active:scale-95">
+                <button class="px-10 py-5 bg-[#1a1a1a] border border-emerald-500/40 rounded-[1.5rem] hover:bg-emerald-500 hover:text-black transition-all shadow-2xl translate-x-3">
                     <span class="orbitron text-[10px] font-bold tracking-[2px]">Stake</span>
                 </button>
             </div>
         </div>
-
-        <div class="relative bg-[#0b121d] border border-white/5 rounded-[2.5rem] p-7 overflow-visible group">
-            <div class="flex justify-between items-start mb-8">
-                <div class="flex gap-4">
-                    <div class="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center border border-cyan-500/20 font-bold text-cyan-400 orbitron shadow-[0_0_15px_rgba(34,211,238,0.1)]">Ld</div>
-                    <div>
-                        <h4 class="orbitron text-[12px] text-white font-bold tracking-wider">Lido Liquid Node</h4>
-                        <p class="text-[8px] text-gray-500 font-mono">Decentralized Asset Pool</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <span class="digits text-xl text-white font-bold">15.2%</span>
-                    <p class="text-[7px] orbitron text-gray-600 tracking-widest">Est Apy</p>
-                </div>
-            </div>
-            
-            <div class="flex items-end justify-between gap-4">
-                <div class="flex-1 space-y-3">
-                    <div class="flex justify-between items-center text-[10px]">
-                        <span class="orbitron text-gray-500 text-[8px]">Node Stability</span>
-                        <span class="digits text-cyan-400 text-[11px] font-bold">98.4% Active</span>
-                    </div>
-                    <div class="h-[4px] bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-cyan-400 w-[85%] shadow-[0_0_15px_#22d3ee]"></div>
-                    </div>
-                </div>
-                <button class="px-10 py-5 bg-[#1a1a1a] border border-cyan-500/40 rounded-[1.5rem] hover:bg-cyan-400 hover:text-black transition-all shadow-2xl translate-x-3 active:scale-95">
-                    <span class="orbitron text-[10px] font-bold tracking-[2px]">Stake</span>
-                </button>
-            </div>
-        </div>
-
     </div>
-                        </div>
+        </div>
              
+       
+                
         
     </main>
 
