@@ -204,85 +204,169 @@
             </div>
 
             
-
-        <div id="panel-contracts" class="hidden w-full space-y-8">
+<div id="panel-contracts" class="hidden w-full space-y-10">
     
     <div class="relative group max-w-md mx-auto">
-        <div class="absolute -inset-1 bg-gradient-to-r from-cyan-600/20 to-purple-600/20 rounded-[2rem] blur-xl opacity-75"></div>
-        <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-6 overflow-hidden">
-            <div class="absolute inset-x-0 top-0 h-[1px] bg-cyan-400/30 animate-[moveDown_4s_linear_infinite]"></div>
-            
-            <div class="flex justify-between items-center mb-6">
-                <span class="orbitron text-[9px] text-cyan-400 tracking-[3px]">MINING_EXECUTIVE_CORE</span>
-                <span class="digits text-[9px] text-gray-500">ID: #882-QX</span>
-            </div>
-
-            <div class="text-center py-4 bg-white/[0.02] rounded-3xl border border-white/5 mb-6">
-                <p class="orbitron text-[8px] text-gray-500 tracking-[4px] mb-2">AVAILABLE_PRO_BALANCE</p>
-                <div class="flex items-center justify-center gap-2">
-                    <span class="text-2xl text-cyan-500 font-light">₦</span>
-                    <span class="digits text-4xl font-bold text-white tracking-tighter">1,250.00</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 mb-6">
-                <div class="bg-black/40 p-3 rounded-2xl border border-white/5 text-center">
-                    <p class="text-[7px] orbitron text-green-400 mb-1">ACTIVE</p>
-                    <p class="digits text-sm text-white">04</p>
-                </div>
-                <div class="bg-black/40 p-3 rounded-2xl border border-white/5 text-center">
-                    <p class="text-[7px] orbitron text-red-500 mb-1">EXPIRED</p>
-                    <p class="digits text-sm text-white">12</p>
-                </div>
-                <div class="bg-black/40 p-3 rounded-2xl border border-white/5 text-center">
-                    <p class="text-[7px] orbitron text-yellow-500 mb-1">ACCUMULATED</p>
-                    <p class="digits text-sm text-white">₦45k</p>
-                </div>
-            </div>
-
-            <button class="w-full py-4 bg-gradient-to-r from-cyan-600/20 to-purple-600/20 border border-cyan-400/40 rounded-2xl shadow-[0_0_15px_rgba(0,242,254,0.1)] hover:border-cyan-400 transition-all">
-                <span class="orbitron text-[10px] text-cyan-400 font-bold tracking-[2px]">WITHDRAW_PROFITS</span>
-            </button>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
+        <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-blue-500/10 rounded-[2.5rem] blur-2xl opacity-50"></div>
         
-        <div class="relative group">
-            <div class="relative bg-[#080c14] border border-white/10 rounded-[2rem] p-6 overflow-hidden">
-                <div class="flex justify-between items-start mb-6">
+        <div class="relative bg-[#080c14] border border-white/10 rounded-[2.5rem] p-8 overflow-hidden shadow-2xl">
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px]"></div>
+            
+            <div class="relative z-10">
+                <div class="flex justify-between items-center mb-8">
                     <div class="flex flex-col">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
-                            <span class="orbitron text-[9px] text-yellow-500 tracking-[3px]">API_NODE_V1</span>
-                        </div>
-                        <h4 class="text-[10px] text-white orbitron font-bold">NEURAL GOLD CORE</h4>
+                        <span class="orbitron text-[8px] text-cyan-400 tracking-[4px]">EXECUTIVE_VAULT</span>
+                        <span class="text-[10px] text-gray-500 font-mono">CORE_VERSION: 12.0.4</span>
                     </div>
-                    <div class="flex flex-col items-end">
-                        <span class="digits text-sm text-white font-bold">₦25,000</span>
-                        <span class="text-[7px] text-gray-500 orbitron">PRICE_TAG</span>
+                    <div class="h-2 w-12 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-cyan-500 w-3/4 animate-pulse"></div>
                     </div>
                 </div>
 
-                <div class="bg-white/[0.02] rounded-2xl p-4 border border-white/5 mb-6">
-                    <div class="flex justify-between mb-3">
-                        <span class="text-[8px] orbitron text-gray-500">HASH_BOOST</span>
-                        <span class="text-[10px] font-mono text-green-400">+15.5 TH/s</span>
-                    </div>
-                    <div class="w-full bg-white/5 h-[2px] rounded-full overflow-hidden">
-                        <div class="bg-yellow-500 h-full w-2/3 shadow-[0_0_8px_#ea7e08]"></div>
+                <div class="text-center mb-10">
+                    <p class="orbitron text-[9px] text-gray-500 tracking-[5px] mb-3 uppercase">Net Revenue Balance</p>
+                    <div class="flex items-center justify-center gap-3">
+                        <span class="text-3xl text-cyan-400 font-light digits">₦</span>
+                        <h2 class="text-5xl font-bold text-white tracking-tighter digits">4,850.00</h2>
                     </div>
                 </div>
 
-                <button class="w-full py-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl hover:bg-yellow-500/20 transition-all">
-                    <span class="orbitron text-[9px] text-yellow-500 font-bold tracking-[2px]">INITIALIZE_MINER</span>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="relative group p-4 rounded-3xl bg-white/[0.03] border border-white/5 overflow-hidden">
+                        <p class="text-[7px] orbitron text-gray-500 mb-1">TOTAL_EARNED</p>
+                        <p class="digits text-lg text-white font-bold">₦82,400</p>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-cyan-500/40 blur-md"></div>
+                    </div>
+                    <div class="relative group p-4 rounded-3xl bg-white/[0.03] border border-white/5 overflow-hidden">
+                        <p class="text-[7px] orbitron text-gray-500 mb-1">WITHDRAWN</p>
+                        <p class="digits text-lg text-white font-bold">₦77,550</p>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-purple-500/40 blur-md"></div>
+                    </div>
+                    <div class="relative group p-4 rounded-3xl bg-white/[0.03] border border-white/5 overflow-hidden">
+                        <p class="text-[7px] orbitron text-green-400 mb-1">RUNNING</p>
+                        <p class="digits text-lg text-white font-bold">03 <span class="text-[8px] text-gray-500">UNITS</span></p>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-green-500/40 blur-md"></div>
+                    </div>
+                    <div class="relative group p-4 rounded-3xl bg-white/[0.03] border border-white/5 overflow-hidden">
+                        <p class="text-[7px] orbitron text-red-500 mb-1">EXPIRED</p>
+                        <p class="digits text-lg text-white font-bold">08 <span class="text-[8px] text-gray-500">UNITS</span></p>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-red-500/40 blur-md"></div>
+                    </div>
+                </div>
+
+                <button class="w-full py-5 bg-gradient-to-r from-cyan-600/20 via-cyan-400/20 to-purple-600/20 border border-cyan-400/40 rounded-[1.5rem] shadow-[0_0_30px_rgba(0,242,254,0.1)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+                    <div class="flex items-center justify-center gap-3">
+                        <span class="orbitron text-[11px] text-cyan-400 font-bold tracking-[3px]">EXECUTE_WITHDRAWAL</span>
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </div>
                 </button>
             </div>
         </div>
+    </div>
+
+    <div class="max-w-md mx-auto space-y-4">
+        <p class="orbitron text-[9px] text-gray-600 tracking-[6px] text-center mb-6">Available Neural Units</p>
         
+        <div class="relative group bg-[#080c14] border border-white/5 rounded-[2rem] p-6 hover:border-yellow-500/30 transition-all duration-500">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-2xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
+                        <span class="text-yellow-500 text-xl">💎</span>
+                    </div>
+                    <div>
+                        <h4 class="orbitron text-xs text-white font-bold tracking-wider">NEURAL GOLD CORE</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">99.8% EFFICIENCY</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="digits text-lg text-white font-bold">₦25,000</span>
+                    <p class="text-[7px] orbitron text-gray-600 tracking-widest">UNIT_PRICE</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between gap-6 mb-6">
+                <div class="flex-1">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-[8px] orbitron text-gray-500 uppercase">Hash Boost</span>
+                        <span class="text-[10px] font-mono text-yellow-500">+15.5 TH/s</span>
+                    </div>
+                    <div class="h-[3px] bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-yellow-500 w-2/3 shadow-[0_0_10px_#eab308]"></div>
+                    </div>
+                </div>
+                <button class="px-6 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl hover:bg-yellow-500 hover:text-black transition-all">
+                    <span class="orbitron text-[9px] font-bold">INITIALIZE</span>
+                </button>
+            </div>
         </div>
+
+        <div class="relative group bg-[#080c14] border border-white/5 rounded-[2rem] p-6 hover:border-cyan-500/30 transition-all duration-500">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                        <span class="text-cyan-500 text-xl">⚡</span>
+                    </div>
+                    <div>
+                        <h4 class="orbitron text-xs text-white font-bold tracking-wider">CYBER FLUX CORE</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">100% STABILITY</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="digits text-lg text-white font-bold">₦50,000</span>
+                    <p class="text-[7px] orbitron text-gray-600 tracking-widest">UNIT_PRICE</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between gap-6 mb-6">
+                <div class="flex-1">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-[8px] orbitron text-gray-500 uppercase">Hash Boost</span>
+                        <span class="text-[10px] font-mono text-cyan-400">+35.0 TH/s</span>
+                    </div>
+                    <div class="h-[3px] bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-cyan-500 w-1/2 shadow-[0_0_10px_#06b6d4]"></div>
+                    </div>
+                </div>
+                <button class="px-6 py-3 bg-cyan-500/10 border border-cyan-500/30 rounded-xl hover:bg-cyan-500 hover:text-black transition-all">
+                    <span class="orbitron text-[9px] font-bold">INITIALIZE</span>
+                </button>
+            </div>
         </div>
-                        
+
+        <div class="relative group bg-[#080c14] border border-white/5 rounded-[2rem] p-6 hover:border-purple-500/30 transition-all duration-500">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                        <span class="text-purple-500 text-xl">🛰️</span>
+                    </div>
+                    <div>
+                        <h4 class="orbitron text-xs text-white font-bold tracking-wider">QUANTUM GHOST UNIT</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">MAX_LEVEL_SECURE</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="digits text-lg text-white font-bold">₦100,000</span>
+                    <p class="text-[7px] orbitron text-gray-600 tracking-widest">UNIT_PRICE</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between gap-6 mb-6">
+                <div class="flex-1">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-[8px] orbitron text-gray-500 uppercase">Hash Boost</span>
+                        <span class="text-[10px] font-mono text-purple-400">+80.0 TH/s</span>
+                    </div>
+                    <div class="h-[3px] bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-purple-500 w-3/4 shadow-[0_0_10px_#a855f7]"></div>
+                    </div>
+                </div>
+                <button class="px-6 py-3 bg-purple-500/10 border border-purple-400/30 rounded-xl hover:bg-purple-500 hover:text-black transition-all">
+                    <span class="orbitron text-[9px] font-bold">INITIALIZE</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+             
+        
 
 
 
