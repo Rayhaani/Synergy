@@ -357,26 +357,97 @@
     
                              
   
-             
-            <div id="panel-staking" class="hidden">
-                <div class="quantum-card border-purple-500/20">
-                    <div class="grid grid-cols-2 gap-6 mb-10">
-                        <div class="text-center">
-                            <p class="text-[8px] orbitron text-gray-500 mb-2">SECURED_ASSETS</p>
-                            <p class="digits text-xl text-white">₦0.00</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-[8px] orbitron text-gray-500 mb-2">VAULT_GROWTH</p>
-                            <p class="digits text-xl text-green-400">18.5%</p>
-                        </div>
-                    </div>
-                    <div class="relative mb-6">
-                        <input type="number" placeholder="0.00" class="w-full bg-black/50 border border-white/5 p-6 rounded-2xl digits text-center text-cyan-400 focus:outline-none focus:border-cyan-400">
-                    </div>
-                    <button class="w-full py-5 bg-gradient-to-r from-cyan-600 to-purple-600 text-white orbitron text-[10px] font-bold rounded-2xl">LOCK_LIQUIDITY</button>
+          <div id="panel-staking" class="hidden w-full space-y-8">
+    
+    <div class="max-w-md mx-auto relative">
+        <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-[2.5rem] blur-2xl"></div>
+        <div class="relative bg-[#080c14] border border-white/10 rounded-[2.5rem] p-8 overflow-hidden">
+            
+            <div class="flex justify-between items-center mb-8">
+                <span class="orbitron text-[8px] text-emerald-400 tracking-[4px]">STAKING_RESERVE</span>
+                <div class="flex gap-1">
+                    <div class="w-1 h-3 bg-emerald-500/50 rounded-full"></div>
+                    <div class="w-1 h-5 bg-emerald-500 rounded-full animate-pulse"></div>
                 </div>
             </div>
-         </section>
+
+            <div class="text-center mb-8">
+                <p class="orbitron text-[8px] text-gray-500 tracking-[4px] mb-2">TOTAL_STAKED_ASSETS</p>
+                <div class="flex items-center justify-center gap-2">
+                    <span class="text-2xl text-emerald-500 font-light digits">₦</span>
+                    <span class="digits text-4xl font-bold text-white tracking-tighter">150,000.00</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-center relative">
+                    <p class="text-[7px] orbitron text-gray-500 mb-1">ANNUAL_YIELD</p>
+                    <p class="digits text-emerald-400 text-sm">+18.5% APY</p>
+                    <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-emerald-500/20 blur-[2px]"></div>
+                </div>
+                <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-center relative">
+                    <p class="text-[7px] orbitron text-gray-500 mb-1">REWARDS_EARNED</p>
+                    <p class="digits text-white text-sm">₦12,450.00</p>
+                    <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-white/20 blur-[2px]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto">
+        <button class="w-full py-5 bg-gradient-to-r from-emerald-600/20 to-cyan-600/20 border border-emerald-500/30 rounded-2xl hover:border-emerald-400 transition-all group">
+            <div class="flex flex-col items-center">
+                <span class="orbitron text-[10px] text-emerald-400 font-bold tracking-[2px]">RESTAKE_MINING_PROFITS</span>
+                <span class="text-[7px] text-gray-500 mt-1 uppercase tracking-widest">Convert Mining Rewards to Staking Assets</span>
+            </div>
+        </button>
+    </div>
+
+    <div class="max-w-md mx-auto space-y-4 px-2">
+        <p class="orbitron text-[8px] text-gray-600 tracking-[6px] text-center mb-4 uppercase">Verified Staking Nodes</p>
+        
+        <div class="relative bg-[#080c14] border border-white/5 rounded-[2rem] p-6 group">
+            <div class="flex justify-between items-start">
+                <div class="flex gap-4">
+                    <div class="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center border border-yellow-500/20 uppercase font-bold text-yellow-500 text-[10px]">BNB</div>
+                    <div>
+                        <h4 class="orbitron text-[11px] text-white font-bold uppercase">Binance Smart Stake</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">Tier-1 Security | High Liquidity</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="digits text-emerald-400 font-bold">12.5%</span>
+                    <p class="text-[7px] orbitron text-gray-600 uppercase">Est_APY</p>
+                </div>
+            </div>
+            <button class="w-full mt-6 py-3 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-emerald-500 hover:text-black transition-all">
+                <span class="orbitron text-[9px] font-bold">STAKE_NOW</span>
+            </button>
+        </div>
+
+        <div class="relative bg-[#080c14] border border-white/5 rounded-[2rem] p-6 group">
+            <div class="flex justify-between items-start">
+                <div class="flex gap-4">
+                    <div class="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center border border-cyan-500/20 uppercase font-bold text-cyan-400 text-[10px]">LDO</div>
+                    <div>
+                        <h4 class="orbitron text-[11px] text-white font-bold uppercase">Lido Liquid Node</h4>
+                        <p class="text-[8px] text-gray-500 font-mono">Decentralized | No Lock Period</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="digits text-emerald-400 font-bold">15.2%</span>
+                    <p class="text-[7px] orbitron text-gray-600 uppercase">Est_APY</p>
+                </div>
+            </div>
+            <button class="w-full mt-6 py-3 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-emerald-500 hover:text-black transition-all">
+                <span class="orbitron text-[9px] font-bold">STAKE_NOW</span>
+            </button>
+        </div>
+
+    </div>
+          </div>
+             
+            
         
         
     </main>
