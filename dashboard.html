@@ -874,6 +874,17 @@ window.onclick = function(event) {
         menu.classList.remove('active');
     }
 }
+
+
+
+        // Idan mamba ya yi login, muna adana sunansa a local storage
+const currentUser = localStorage.getItem('synergy_user');
+
+// Misali idan ana son dauko kudin Sadiq
+db.collection("users").doc(currentUser).onSnapshot((doc) => {
+    const data = doc.data();
+    document.getElementById('total-yield').innerText = "₦" + data.balance;
+});
         
           
     </script>
