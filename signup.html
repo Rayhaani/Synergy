@@ -1,0 +1,38 @@
+<div class="glass-premium p-10 rounded-[32px] text-center max-w-sm mx-auto mt-20">
+    <h2 class="orbitron text-cyan-400 font-bold mb-6">BUDE ASUSU (SIGN UP)</h2>
+    <input type="text" id="new-username" placeholder="Zabi Sunan Mamba (misali: sadiq_01)" class="node-input-clean mb-4 w-full p-4 bg-black text-white rounded-xl border border-white/10">
+    <button onclick="registerMember()" class="w-full py-4 bg-cyan-500 rounded-xl font-bold text-black">REGISTER</button>
+    <p class="mt-4 text-xs text-gray-500">Kuna da asusu? <a href="auth.html" class="text-cyan-400">Shiga nan</a></p>
+</div>
+
+<script>
+async function registerMember() {
+    const username = document.getElementById('new-username').value.toLowerCase().trim();
+    
+    if(!username) {
+        alert("Don Allah rubuta sunan da kake so!");
+        return;
+    }
+
+    const userRef = db.collection("users").doc(username);
+    const doc = await userRef.get();
+
+    if (doc.exists) {
+        alert("Wannan sunan an riga an yi amfani da shi! Zabi wani daban.");
+    } else {
+        // Kirkirar sabon mamba tare da kudaden farko
+        await userRef.set({
+            balance: 0,
+            videoBalance: 0,
+            shareBalance: 0,
+            videosWatchedToday: 0,
+            lastActivityDate: new Date().toLocaleDateString('en-GB')
+        });
+        
+        localStorage.setItem('synergy_user', username);
+        alert("An bude asusunka cikin nasara!");
+        window.location.href = 'dashboard.html';
+    }
+}
+      </script>
+      
