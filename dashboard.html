@@ -347,7 +347,8 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const testUser = "mamba_001";
+
+        
 
         let player, currentCode = "", lastTime = 0, skipStrikes = 0;
 
@@ -462,7 +463,7 @@ async function authenticateNode() {
     const inputVal = document.getElementById('node-code').value.toUpperCase();
     
     if(inputVal === currentCode) {
-        const userRef = db.collection("users").doc(testUser);
+        const userRef = db.collection("users").doc(currentUser);
         
         try {
              // MUN GYARA: Daga 'balance' ya koma 'videoBalance'
@@ -532,7 +533,7 @@ function updateMemberStats(watchedCount) {
 
 // Kira wannan a cikin syncBalance() don mu dauko data daga Firebase
 function syncMemberDashboard() {
-    db.collection("users").doc(testUser).onSnapshot((doc) => {
+    db.collection("users").doc(currentUser).onSnapshot((doc) => {
         if (doc.exists) {
             const data = doc.data();
             const watched = data.videosWatchedToday || 0;
@@ -652,7 +653,7 @@ syncMemberDashboard();
     }
         
    function syncBalance() {
-    db.collection("users").doc(testUser).onSnapshot((doc) => {
+    db.collection("users").doc(currentUser).onSnapshot((doc) => {
         if (doc.exists) {
             const data = doc.data();
             const videoBal = data.videoBalance || 0;
@@ -677,7 +678,7 @@ syncMemberDashboard();
 const currentSessionId = Math.random().toString(36).substring(7);
 
 async function checkMultiLogin() {
-    const sessionRef = db.collection("active_sessions").doc(testUser);
+    const sessionRef = db.collection("active_sessions").doc(currentUser);
     
     // Saita sabon session
     await sessionRef.set({
@@ -842,7 +843,7 @@ function showTab(tabName) {
 
             if (hasLeftPage && timeElapsed >= 6) { 
                 // NAN NE GYARAN: Muna tura kudi zuwa shareBalance
-                await db.collection("users").doc(testUser).update({
+                await db.collection("users").doc(currentUser).update({
                     shareBalance: firebase.firestore.FieldValue.increment(50),
                     lastShareTime: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -895,6 +896,32 @@ window.onclick = function(event) {
       }
   });
 </script>
+
+
+    <script>
+  // 1. Dauko sunan mamban da ya yi login
+  const currentUser = localStorage.getItem('synergy_user');
+
+  // 2. Idan babu login, mayar da shi baya
+  if (!currentUser) {
+      window.location.href = 'auth.html';
+  }
+
+  // 3. Update din duka kudaden mamba daban-daban
+  db.collection("users").doc(currentUser).onSnapshot((doc) => {
+      if (doc.exists) {
+          const data = doc.data();
+          
+          // Babban kudi (Layi na 213)
+          const totalBalance = (data.videoBalance || 0) + (data.shareBalance || 0);
+          document.getElementById('total-balance-main').innerText = totalBalance.toLocaleString();
+          
+          // Kananan kudaden (Vaults)
+          document.getElementById('video-balance-sub').innerText = (data.videoBalance || 0).toLocaleString();
+          document.getElementById('share-balance-sub').innerText = (data.shareBalance || 0).toLocaleString();
+      }
+  });
+    </script>
     
           
 
