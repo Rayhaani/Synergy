@@ -1,27 +1,50 @@
-const API_URL = "https://synergy-backend-m42p.onrender.com"; 
+// 1. Naka Firebase Config din da ka samo
+const firebaseConfig = {
+  apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E",
+  authDomain: "synergy-protocol.firebaseapp.com",
+  projectId: "synergy-protocol",
+  storageBucket: "synergy-protocol.firebasestorage.app",
+  messagingSenderId: "179647543031",
+  appId: "1:179647543031:web:388da8a36e1bbbb55d85f2"
+};
 
-// 1. Wannan function din zai dauko kudin mamba daga ajiya (Storage)
-function getBalance() {
-    let currentBalance = localStorage.getItem('synergy_balance') || "0.00";
-    return parseFloat(currentBalance);
-}
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-// 2. Wannan zai kara kudi idan kallo ya yi kyau
-function updateWalletUI(amount) {
-    let newBalance = getBalance() + amount;
-    localStorage.setItem('synergy_balance', newBalance.toFixed(2));
+// 2. Link din Backend dinka na Render
+const API_URL = "https://synergy-backend-m42p.onrender.com";
+
+// 3. Function na kara kudi a Cloud (Firebase)
+async function updateCloudWallet(userId, amount) {
+    const userRef = database.ref('users/' + userId);
     
-    // Idan akwai element mai id="wallet-balance" a shafin, zai sauya
-    const balanceDisplay = document.getElementById('wallet-balance');
-    if (balanceDisplay) {
-        balanceDisplay.innerText = "$" + newBalance.toFixed(2);
-    }
+    userRef.once('value', (snapshot) => {
+        let currentData = snapshot.val();
+        let currentBalance = (currentData && currentData.balance) ? currentData.balance : 0;
+        let newBalance = currentBalance + amount;
+        
+        userRef.update({
+            balance: newBalance,
+            last_update: new Date().toISOString()
+        }).then(() => {
+            alert(`ALHAMDULLILAH! An tura $${amount} zuwa asusunka.`);
+            // Nuna sabon balance idan akwai wurin nuna shi a shafin
+            const balanceDisplay = document.getElementById('wallet-balance');
+            if (balanceDisplay) {
+                balanceDisplay.innerText = "$" + newBalance.toFixed(2);
+            }
+        });
+    });
 }
 
-// 3. Wannan shi ne babban aikin (The Verification)
+// 4. Babban Function na Verification (Wanda button dinka yake kira)
 async function executeVerification() {
-    const userId = "MAMBA_001"; // Daga baya zamu sa na kowa ya zama daban
-    const watchTime = 65; 
+    // A yanzu kowa zai zama MAMBA_001, daga baya zamu sa kowa ya zama daban
+    const userId = "MAMBA_001"; 
+    const watchTime = 65; // Misali na sakan 65
+
+    console.log("Checking with Render Backend...");
 
     try {
         const response = await fetch(`${API_URL}/api/verify-task`, {
@@ -33,13 +56,13 @@ async function executeVerification() {
         const data = await response.json();
         
         if(data.success) {
-            // IDAN YA YI NASARA: Muna kara $0.50 (Naira 750 misali)
-            updateWalletUI(0.50); 
-            alert("ALHAMDULLILAH! An tura $0.50 zuwa Wallet dinka. Sabon Balance: $" + localStorage.getItem('synergy_balance'));
+            // Idan Render ya tabbatar, sai mu kara kudi a Firebase
+            updateCloudWallet(userId, 0.50); 
         } else {
-            alert("Kallo bai isa ba!");
+            alert("Kallo bai isa ba! Ba za a tura kudi ba.");
         }
     } catch (error) {
-        alert("Akwai matsala da Server!");
+        console.error("Connection Error:", error);
+        alert("Ba a samu haduwa da Server ba.");
     }
-}
+                }
