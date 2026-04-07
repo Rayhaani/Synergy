@@ -1,38 +1,72 @@
-<div class="glass-premium p-10 rounded-[32px] text-center max-w-sm mx-auto mt-20">
-    <h2 class="orbitron text-cyan-400 font-bold mb-6">BUDE ASUSU (SIGN UP)</h2>
-    <input type="text" id="new-username" placeholder="Zabi Sunan Mamba (misali: sadiq_01)" class="node-input-clean mb-4 w-full p-4 bg-black text-white rounded-xl border border-white/10">
-    <button onclick="registerMember()" class="w-full py-4 bg-cyan-500 rounded-xl font-bold text-black">REGISTER</button>
-    <p class="mt-4 text-xs text-gray-500">Kuna da asusu? <a href="auth.html" class="text-cyan-400">Shiga nan</a></p>
-</div>
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNERGY | SIGN UP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #020617; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
 
-<script>
-async function registerMember() {
-    const username = document.getElementById('new-username').value.toLowerCase().trim();
-    
-    if(!username) {
-        alert("Don Allah rubuta sunan da kake so!");
-        return;
-    }
-
-    const userRef = db.collection("users").doc(username);
-    const doc = await userRef.get();
-
-    if (doc.exists) {
-        alert("Wannan sunan an riga an yi amfani da shi! Zabi wani daban.");
-    } else {
-        // Kirkirar sabon mamba tare da kudaden farko
-        await userRef.set({
-            balance: 0,
-            videoBalance: 0,
-            shareBalance: 0,
-            videosWatchedToday: 0,
-            lastActivityDate: new Date().toLocaleDateString('en-GB')
-        });
+    <div class="glass p-8 rounded-[32px] w-full max-w-md text-center">
+        <h1 style="letter-spacing: 5px;" class="text-cyan-400 font-bold mb-8">SYNERGY PROTOCOL</h1>
+        <h2 class="text-xl mb-6">BUDE ASUSU</h2>
         
-        localStorage.setItem('synergy_user', username);
-        alert("An bude asusunka cikin nasara!");
-        window.location.href = 'dashboard.html';
-    }
-}
-      </script>
+        <input type="text" id="new-user" placeholder="Username (misali: sadiq_01)" 
+               class="w-full bg-black/50 border border-white/10 p-4 rounded-2xl mb-4 outline-none focus:border-cyan-500">
+        
+        <button onclick="register()" class="w-full bg-cyan-500 text-black py-4 rounded-2xl font-bold hover:bg-cyan-400 transition-all">
+            CREATE ACCOUNT
+        </button>
+        
+        <p class="mt-6 text-gray-500 text-sm">Kana da asusu? <a href="auth.html" class="text-cyan-400">Log In</a></p>
+    </div>
+
+    <script>
+        // 1. Saka Config dinka a nan
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+            authDomain: "synergy-protocol.firebaseapp.com", 
+            projectId: "synergy-protocol" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function register() {
+            const user = document.getElementById('new-user').value.toLowerCase().trim();
+            
+            if(!user || user.length < 3) {
+                alert("Don Allah saka sunan da ya kai akalla haruffa 3");
+                return;
+            }
+
+            const userRef = db.collection("users").doc(user);
+            const doc = await userRef.get();
+
+            if (doc.exists) {
+                alert("Wannan sunan akwai shi! Gwada wani daban.");
+            } else {
+                // Saita sabon mamba da kudi 0
+                await userRef.set({
+                    videoBalance: 0,
+                    shareBalance: 0,
+                    videosWatchedToday: 0,
+                    lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
+                });
+                
+                localStorage.setItem('synergy_user', user);
+                alert("An bude asusunka: " + user);
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>
+
       
