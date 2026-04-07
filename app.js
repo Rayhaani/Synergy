@@ -1,24 +1,31 @@
-https://synergy-backend-m42p.onrender.com
 const API_URL = "https://synergy-backend-m42p.onrender.com"; 
 
-function completeTask(user_id, time_spent) {
-    // Wannan code din zai tambayi server din daka gina ko mutum ya kalla sosai
+// Wannan zai rika verify na mamba
+function executeVerification() {
+    const userId = "MAMBA_" + Math.floor(Math.random() * 1000); // Misali na mamba
+    const watchTime = 65; // Misali sakan 65 mamba ya kalla
+
+    console.log("Connecting to Synergy Backend...");
+
     fetch(`${API_URL}/api/verify-task`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            userId: user_id,
-            watchTime: time_spent // Misali sakan 60
+            userId: userId,
+            watchTime: watchTime 
         })
     })
     .then(res => res.json())
     .then(data => {
         if(data.success) {
-            // Idan kallo ya cika, mamba zai ga Code dinsa
-            document.getElementById('displayCode').innerText = data.code;
-            alert("An Karbi Kallonku! Code dinku ya fito.");
+            alert("ALHAMDULLILAH! Code dinka shi ne: " + data.code);
+            // Idan kana da wani wuri a UI da kake son nuna kudin, zaka saka anan
         } else {
-            alert("Ba ku kalla har sakan 60 ba!");
+            alert("Kallo bai isa ba! Server ta ce ba ku kalla har sakan 60 ba.");
         }
+    })
+    .catch(err => {
+        console.error("Server Error:", err);
+        alert("Akwai matsala wajen hadawa da Server. Duba intanet dinka.");
     });
 }
