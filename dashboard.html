@@ -222,19 +222,17 @@
         <!-- Nemo bangaren boxes na sama, ka sauya shi da wannan -->
 
 <section class="space-y-6">
-    <!-- Main Big Balance -->
     <div class="master-card rounded-[35px] p-8 text-center border-t-2 border-cyan-500/30">
         <p class="orbitron text-[9px] text-gray-400 mb-2 tracking-[3px]">Total Cumulative Yield</p>
         <h1 class="digits-terminal text-5xl text-white">
-            <span class="text-gray-500 text-2xl">₦</span><span id="total-balance-main">1,950</span>
+            <span class="text-gray-500 text-2xl">₦</span><span id="total-balance-main">0</span>
         </h1>
     </div>
 
-    <!-- Secondary Vaults (Slimmer & Cleaner) -->
     <div class="grid grid-cols-2 gap-4">
         <div class="master-card rounded-[24px] p-4 bg-white/[0.02]">
             <p class="orbitron text-[7px] text-gray-500 mb-1">Video Vault</p>
-            <h4 class="digits-terminal text-lg text-cyan-400">₦<span id="video-balance-sub">1,950</span></h4>
+            <h4 class="digits-terminal text-lg text-cyan-400">₦<span id="video-balance-sub">0</span></h4>
         </div>
         <div class="master-card rounded-[24px] p-4 bg-white/[0.02]">
             <p class="orbitron text-[7px] text-gray-500 mb-1">Share Vault</p>
@@ -242,6 +240,7 @@
         </div>
     </div>
 </section>
+        
         
 
 <style>
@@ -652,8 +651,7 @@ syncMemberDashboard();
     if(statusIcon) statusIcon.innerText = icon;
     }
         
-   
-     function syncBalance() {
+   function syncBalance() {
     db.collection("users").doc(testUser).onSnapshot((doc) => {
         if (doc.exists) {
             const data = doc.data();
@@ -661,16 +659,18 @@ syncMemberDashboard();
             const shareBal = data.shareBalance || 0;
             const totalBal = videoBal + shareBal;
 
-            // Wannan zai nuna kudaden a sababbin boxes dinka
-            if(document.getElementById('video-balance')) document.getElementById('video-balance').innerText = "₦" + videoBal.toLocaleString();
-            if(document.getElementById('share-balance')) document.getElementById('share-balance').innerText = "₦" + shareBal.toLocaleString();
-            if(document.getElementById('total-balance')) document.getElementById('total-balance').innerText = "₦" + totalBal.toLocaleString();
+            // Wannan zai nuna kudaden a sababbin boxes dinka nan take
+            document.getElementById('total-balance-main').innerText = totalBal.toLocaleString();
+            document.getElementById('video-balance-sub').innerText = videoBal.toLocaleString();
+            document.getElementById('share-balance-sub').innerText = shareBal.toLocaleString();
 
+            // Wannan kuma zai gyara sauran HUD (Rank, Progress bar, da sauran su)
             updateFuturisticHUD(data.videosWatchedToday || 0);
         }
     });
-}
-syncBalance();
+   }
+        
+     
         
 
         // 1. GENERATE SESSION ID
