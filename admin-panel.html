@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNERGY | CORE ADMIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --aqua: #00f2fe; --neon-red: #ff0055; --neon-gold: #ffac00; --bg: #030712; }
+        
+        body { 
+            background: var(--bg); color: #fff; 
+            font-family: 'Quicksand', sans-serif;
+            background-image: 
+                linear-gradient(to bottom, rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            min-height: 100vh;
+        }
+        
+        .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.01); 
+            backdrop-filter: blur(30px); 
+            border: 1px solid rgba(0, 242, 254, 0.1);
+        }
+
+        .stat-card-slim {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 2px solid var(--aqua);
+            padding: 10px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action { font-size: 10px; font-weight: 700; padding: 12px; border-radius: 10px; transition: all 0.3s ease; border: 1px solid transparent; text-transform: uppercase; white-space: nowrap; flex: 1; }
+        .btn-suspend { color: var(--neon-gold); border-color: rgba(255, 172, 0, 0.3); background: rgba(255, 172, 0, 0.05); }
+        .btn-suspend:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 15px rgba(255, 172, 0, 0.3); }
+        .btn-ban { color: var(--neon-red); border-color: rgba(255, 0, 85, 0.3); background: rgba(255, 0, 85, 0.05); }
+        .btn-ban:hover { background: var(--neon-red); color: white; box-shadow: 0 0 15px rgba(255, 0, 85, 0.3); }
+        .btn-delete { color: #fff; border-color: rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); }
+        .btn-delete:hover { background: #fff; color: black; }
+        
+        .btn-update { color: var(--aqua); border-color: rgba(0, 242, 254, 0.3); background: rgba(0, 242, 254, 0.05); padding: 10px 20px; font-size: 10px; font-weight: 700; border-radius: 8px; }
+
+        tr { cursor: pointer; transition: background 0.3s; }
+        tr:hover { background: rgba(0, 242, 254, 0.05); }
+
+        .details-row { display: none; }
+        .details-row.active { display: table-row; }
+
+        .glow-text { text-shadow: 0 0 10px var(--aqua); }
+        
+        table { table-layout: fixed; width: 100%; border-collapse: collapse; }
+        td, th { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 12px 8px; }
+        .v-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-10 text-center">
+            <h1 class="orbitron text-2xl font-bold glow-text">Core Command</h1>
+            <p class="text-[10px] text-cyan-400 tracking-[6px] uppercase">Synergy Protocol Management</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-10">
+            <div class="stat-card-slim text-center">
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Total Members</p>
+                <p id="total-members" class="text-lg font-bold">0</p>
+            </div>
+            <div class="stat-card-slim text-center" style="border-bottom-color: #22c55e;">
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Total Active</p>
+                <p id="total-active" class="text-lg font-bold text-green-400">0</p>
+            </div>
+            <div class="stat-card-slim text-center" style="border-bottom-color: #ef4444;">
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Total Inactive</p>
+                <p id="total-inactive" class="text-lg font-bold text-red-400">0</p>
+            </div>
+            <div class="stat-card-slim text-center" style="border-bottom-color: #ffac00;">
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Total Balance</p>
+                <p id="total-balance" class="text-lg font-bold text-orange-400">₦0</p>
+            </div>
+            <div class="stat-card-slim text-center" style="border-bottom-color: #a855f7;">
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Total Payout</p>
+                <p id="total-payout" class="text-lg font-bold text-purple-400">₦0</p>
+            </div>
+        </div>
+
+        <div class="glass-panel p-1 rounded-xl mb-6 flex items-center px-4">
+            <span class="text-cyan-400 mr-3 text-sm font-bold">SCAN:</span>
+            <input type="text" id="admin-search" oninput="searchNetwork()" placeholder="Search node database..." 
+                   class="w-full bg-transparent p-3 outline-none text-sm text-white placeholder-gray-600 font-medium">
+        </div>
+
+        <div class="glass-panel rounded-2xl border-t border-cyan-500/20 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-cyan-500/5 sticky top-0 backdrop-blur-md">
+                    <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                        <th class="w-[30%] pl-6">Username</th>
+                        <th class="w-[20%] text-center">Status</th>
+                        <th class="w-[25%] text-center">Verify</th>
+                        <th class="w-[25%] pr-6 text-right">Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table-body" class="divide-y divide-white/5">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const dummyUsers = [
+            { id: "sadiq dev", fullName: "Sadiq Abubakar", phone: "+234 801 000 0000", email: "sadiq@synergy.io", state: "Kano", videoBalance: 25000, status: "active", verified: true, payout: 5000 },
+            { id: "abdool tech", fullName: "Abdullahi Musa", phone: "+234 802 000 0000", email: "abdool@synergy.io", state: "Kaduna", videoBalance: 12000, status: "inactive", verified: false, payout: 2000 },
+            { id: "fatima node", fullName: "Fatima Ibrahim", phone: "+234 803 000 0000", email: "fatima@synergy.io", state: "Lagos", videoBalance: 18500, status: "active", verified: true, payout: 8000 }
+        ];
+
+        function toggleRow(id) {
+            const el = document.getElementById(`details-${id.replace(/\s+/g, '-')}`);
+            const isActive = el.classList.contains('active');
+            document.querySelectorAll('.details-row').forEach(row => row.classList.remove('active'));
+            if (!isActive) el.classList.add('active');
+        }
+
+        function render(data) {
+            const body = document.getElementById('user-table-body');
+            body.innerHTML = data.map(u => `
+                <tr onclick="toggleRow('${u.id}')">
+                    <td class="pl-6 py-5">
+                        <div class="text-cyan-400 font-bold text-sm tracking-wide capitalize">${u.id}</div>
+                    </td>
+                    <td class="text-center py-5">
+                        <span class="text-[9px] px-2 py-0.5 rounded-full ${u.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'} border font-bold uppercase">${u.status}</span>
+                    </td>
+                    <td class="text-center py-5">
+                        <span class="v-badge ${u.verified ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-400/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}">
+                            ${u.verified ? 'VERIFIED' : 'UNVERIFIED'}
+                        </span>
+                    </td>
+                    <td class="pr-6 text-right py-5 font-bold text-white text-sm">
+                        ₦${u.videoBalance.toLocaleString()}
+                    </td>
+                </tr>
+                <tr id="details-${u.id.replace(/\s+/g, '-')}" class="details-row bg-white/[0.03]">
+                    <td colspan="4" class="p-8 border-l-4 border-cyan-400">
+                        <div class="flex flex-col gap-8">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Full Name</span><br><span class="text-white">${u.fullName}</span></div>
+                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Phone</span><br><span class="text-white">${u.phone}</span></div>
+                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Email</span><br><span class="text-white">${u.email}</span></div>
+                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Location</span><br><span class="text-white">${u.state}</span></div>
+                            </div>
+                            
+                            <div class="space-y-6 pt-6 border-t border-white/5">
+                                <div class="flex items-center gap-3">
+                                    <input type="number" id="input-${u.id.replace(/\s+/g, '-')}" placeholder="New Balance ₦" 
+                                           class="bg-black/40 border border-white/10 p-2 text-xs rounded-lg outline-none text-white w-40 focus:border-cyan-400">
+                                    <button onclick="event.stopPropagation();" class="btn-update">Update Balance</button>
+                                </div>
+                                
+                                <div class="flex flex-row gap-3 w-full max-w-2xl">
+                                    <button onclick="event.stopPropagation();" class="btn-action btn-suspend">Suspend</button>
+                                    <button onclick="event.stopPropagation();" class="btn-action btn-ban">Ban Node</button>
+                                    <button onclick="event.stopPropagation();" class="btn-action btn-delete">Terminate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('total-members').innerText = data.length;
+            document.getElementById('total-active').innerText = data.filter(u => u.status === 'active').length;
+            document.getElementById('total-inactive').innerText = data.filter(u => u.status === 'inactive').length;
+            document.getElementById('total-balance').innerText = `₦${data.reduce((s, u) => s + u.videoBalance, 0).toLocaleString()}`;
+            document.getElementById('total-payout').innerText = `₦${data.reduce((s, u) => s + (u.payout || 0), 0).toLocaleString()}`;
+        }
+
+        function searchNetwork() {
+            const q = document.getElementById('admin-search').value.toLowerCase();
+            const f = dummyUsers.filter(u => u.id.toLowerCase().includes(q) || u.fullName.toLowerCase().includes(q));
+            render(f);
+        }
+
+        render(dummyUsers);
+    </script>
+</body>
+  </html>
