@@ -568,6 +568,48 @@ function checkAndResetDailyStats(userData) {
         });
     }
 }
+
+
+    // SYNERGY ANTI-SKIP & STRIKE ENGINE
+let skipStrikes = 0;
+let lastTime = 0;
+
+function setupSecurityTracker(player) {
+    const securityTicker = setInterval(() => {
+        // Idan bidiyo baya kunne, dakatar da ticker din
+        if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
+            return;
+        }
+
+        let currentTime = player.getCurrentTime();
+        
+        // --- ANTI-SKIP LOGIC ---
+        // Idan mamba ya yi gaba da bidiyon fiye da sakan 2.2
+        if (currentTime > lastTime + 2.2) { 
+            skipStrikes++;
+            
+            // Mayar da shi inda yake kallo
+            player.seekTo(lastTime); 
+            
+            if (skipStrikes >= 3) {
+                // Kulle shafin gaba daya (Protocol Breach)
+                clearInterval(securityTicker);
+                document.body.innerHTML = `
+                    <div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:20px; border: 5px solid #f87171;'>
+                        <h1 style="font-size: 40px;">PROTOCOL BREACH</h1>
+                        <p style='color:white; margin-top:20px; font-size: 18px;'>Your access has been suspended due to multiple skip attempts.</p>
+                        <p style='color:gray; font-size: 12px; margin-top: 10px;'>Strike Level: 3/3 - SECURITY LOCK ACTIVATED</p>
+                    </div>`;
+            } else {
+                // Nuna sanarwar strike
+                showSynergyAlert("STRIKE " + skipStrikes + "/3: NO SKIPPING ALLOWED!", "error");
+            }
+        } else {
+            // Idan tafiyar tana daidai, adana lokacin
+            lastTime = currentTime;
+        }
+    }, 1000); // Dubawa kowane sakan 1
+}
     
 </script>
 </body>
