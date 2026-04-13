@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNERGY | NODES ACTIVATION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        :root { --aqua: #00f2fe; --bg: #020617; }
+        body { background: var(--bg); color: #fff; font-family: 'Space Grotesk', sans-serif; min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.1), transparent); }
+        .glass-premium { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .orbitron { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+        .digits-terminal { font-family: 'Roboto Mono', monospace; }
+        .node-locked { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
+        .active-glow { box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); border-color: var(--aqua) !important; }
+        
+        @keyframes pulse-ring { 0% { transform: scale(.8); opacity: 0.5; } 100% { transform: scale(1.2); opacity: 0; } }
+        .status-dot { position: relative; }
+        .status-dot::before { content: ''; position: absolute; width: 100%; height: 100%; background: var(--aqua); border-radius: 50%; animation: pulse-ring 2s infinite; }
+    </style>
+</head>
+<body class="p-6">
+
+    <main class="max-w-xl mx-auto space-y-8">
+        <div class="text-center space-y-3 py-6">
+            <div class="status-dot w-3 h-3 bg-cyan-400 rounded-full mx-auto mb-4"></div>
+            <h1 class="orbitron text-lg font-bold">Nodes Activation</h1>
+            <p class="text-[10px] text-gray-500 tracking-[3px]">Protocol: Secure 5-Channel Verification</p>
+        </div>
+
+        <div class="glass-premium p-5 rounded-[24px] flex justify-between items-center border-l-4 border-cyan-500">
+            <div>
+                <p class="orbitron text-[8px] text-gray-500 mb-1">Network Status</p>
+                <h3 class="text-white text-sm font-bold"><span id="nodes-count" class="text-cyan-400">0</span> / 5 NODES ONLINE</h3>
+            </div>
+            <div id="status-badge" class="px-3 py-1 bg-white/5 rounded-full text-[9px] orbitron text-gray-400">Restricted Access</div>
+        </div>
+
+        <div id="player-zone" class="hidden space-y-6 animate-pulse-once">
+            <div class="aspect-video glass-premium rounded-[32px] overflow-hidden border border-cyan-500/30">
+                <div id="activation-player"></div>
+            </div>
+            <div class="text-center space-y-4">
+                <div id="timer-display" class="digits-terminal text-4xl text-cyan-400">02:00</div>
+                <div id="verify-form" class="hidden space-y-4">
+                    <input type="text" id="hash-input" maxlength="6" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-center digits-terminal text-xl outline-none focus:border-cyan-500" placeholder="ENTER HASH">
+                    <button onclick="confirmStep()" class="w-full bg-white text-black py-4 rounded-2xl orbitron text-[11px] font-bold">Validate Node</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="nodes-list" class="space-y-4">
+            <div id="node-card-1" class="glass-premium p-5 rounded-[28px] border border-white/5 transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">01</div>
+                        <div>
+                            <h4 class="text-xs font-bold orbitron">Nexus AI Node</h4>
+                            <p class="text-[9px] text-gray-500">Required: 120s Engagement</p>
+                        </div>
+                    </div>
+                    <button onclick="launchNode(1, 'dQw4w9WgXcQ')" class="bg-cyan-500 text-black px-4 py-2 rounded-lg orbitron text-[9px] font-bold">Activate</button>
+                </div>
+            </div>
+
+            <div id="node-card-2" class="node-locked glass-premium p-5 rounded-[28px] border border-white/5 transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-gray-500/10 flex items-center justify-center text-gray-500 border border-white/5">02</div>
+                        <h4 class="text-xs font-bold orbitron text-gray-500">Locked Node</h4>
+                    </div>
+                    <span class="text-[18px]">🔒</span>
+                </div>
+            </div>
+            </div>
+    </main>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // 1. Firebase Config (Change to your actual config)
+        const firebaseConfig = { apiKey: "YOUR_API_KEY", projectId: "synergy-protocol" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const currentUser = localStorage.getItem('synergy_user');
+
+        let player, activeNode = 0, currentHash = "", timer;
+
+        // 2. Load YouTube API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('activation-player', {
+                height: '100%', width: '100%',
+                playerVars: { 'controls': 0, 'disablekb': 1, 'modestbranding': 1 },
+                events: { 'onStateChange': handleState }
+            });
+        }
+
+        // 3. Launch Node
+        function launchNode(num, vid) {
+            activeNode = num;
+            document.getElementById('nodes-list').classList.add('hidden');
+            document.getElementById('player-zone').classList.remove('hidden');
+            player.loadVideoById(vid);
+            player.playVideo();
+        }
+
+        function handleState(event) {
+            if(event.data === YT.PlayerState.PLAYING) {
+                let timeLeft = 120; // 2 Minutes
+                clearInterval(timer);
+                timer = setInterval(() => {
+                    timeLeft--;
+                    let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                    document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
+                    
+                    if(timeLeft <= 0) {
+                        clearInterval(timer);
+                        currentHash = Math.random().toString(36).substring(2,8).toUpperCase();
+                        alert("SECURITY HASH: " + currentHash); // A gaske, nuna wannan a UI dinka na 95%
+                        document.getElementById('verify-form').classList.remove('hidden');
+                    }
+                }, 1000);
+            }
+        }
+
+        async function confirmStep() {
+            const val = document.getElementById('hash-input').value.toUpperCase();
+            if(val === currentHash) {
+                let count = parseInt(document.getElementById('nodes-count').innerText) + 1;
+                document.getElementById('nodes-count').innerText = count;
+                
+                // Reset UI for next node
+                document.getElementById('player-zone').classList.add('hidden');
+                document.getElementById('nodes-list').classList.remove('hidden');
+                document.getElementById('verify-form').classList.add('hidden');
+                document.getElementById('hash-input').value = "";
+
+                if(count === 5) {
+                    await db.collection("users").doc(currentUser).update({ isVerified: true });
+                    alert("PROTOCOL ACTIVATED! REDIRECTING...");
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert("NODE SECURED! UNLOCKING NEXT...");
+                    // Logic to unlock next card...
+                    document.getElementById(`node-card-${count+1}`).classList.remove('node-locked');
+                }
+            } else { alert("INVALID HASH"); }
+        }
+    </script>
+</body>
+</html>
