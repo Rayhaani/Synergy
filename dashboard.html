@@ -917,48 +917,58 @@ window.onclick = function(event) {
 
 
         <script>
-  // Wannan zai duba idan mamba ya yi login
-  const currentUser = localStorage.getItem('synergy_user');
+// 1. Bayanan Mamba (Sau ɗaya kacal)
+const currentUser = localStorage.getItem('synergy_user');
 
-  // Idan babu kowa, a mayar da shi shafin login (auth.html)
-  if (!currentUser) {
-      window.location.href = 'auth.html';
-  }
+if (!currentUser) {
+    window.location.href = 'auth.html';
+}
 
-  // Idan akwai mamba, a dauko kudin sa daga Firebase
-  db.collection("users").doc(currentUser).onSnapshot((doc) => {
-      if (doc.exists) {
-          const data = doc.data();
-          // Saka kudin a babban balance na dashboard
-          document.getElementById('total-balance-main').innerText = data.balance.toLocaleString();
-      }
-  });
-</script>
+// 2. Babban Aikin Dashboard (Syncing)
+async function startSynergySync() {
+    const userRef = db.collection("users").doc(currentUser);
+    
+    userRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // Sunan Mamba & Badge
+            const nameDisplay = document.getElementById('display-name');
+            if (nameDisplay) {
+                nameDisplay.innerText = data.fullName || data.username || "MEMBER_" + currentUser.substring(0, 4);
+            }
+            
+            const badge = document.getElementById('verified-badge');
+            if (badge) {
+                badge.style.display = (data.isVerified === true) ? 'flex' : 'none';
+            }
 
+            // Lissafin Kudade
+            const vBal = data.videoBalance || 0;
+            const sBal = data.shareBalance || 0;
+            const total = vBal + sBal;
 
-    <script>
-  // 1. Dauko sunan mamban da ya yi login
-  const currentUser = localStorage.getItem('synergy_user');
+            if(document.getElementById('total-balance-main')) {
+                document.getElementById('total-balance-main').innerText = total.toLocaleString();
+            }
+            if(document.getElementById('video-balance-sub')) {
+                document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
+            }
+            if(document.getElementById('share-balance-sub')) {
+                document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
+            }
+            
+            // HUD & Rank Update
+            updateFuturisticHUD(data.videosWatchedToday || 0);
+        }
+    });
+}
 
-  // 2. Idan babu login, mayar da shi baya
-  if (!currentUser) {
-      window.location.href = 'auth.html';
-  }
+// 3. Fara Aiki
+startSynergySync();
+checkMultiLogin();
 
-  // 3. Update din duka kudaden mamba daban-daban
-  db.collection("users").doc(currentUser).onSnapshot((doc) => {
-      if (doc.exists) {
-          const data = doc.data();
-          
-          // Babban kudi (Layi na 213)
-          const totalBalance = (data.videoBalance || 0) + (data.shareBalance || 0);
-          document.getElementById('total-balance-main').innerText = totalBalance.toLocaleString();
-          
-          // Kananan kudaden (Vaults)
-          document.getElementById('video-balance-sub').innerText = (data.videoBalance || 0).toLocaleString();
-          document.getElementById('share-balance-sub').innerText = (data.shareBalance || 0).toLocaleString();
-      }
-  });
+    
 
 
 // 1. Function na lura da bayanan mamba gaba daya
@@ -990,11 +1000,7 @@ async function syncUserIdentity() {
 
 // 2. Kira aikin
 syncUserIdentity();
-                        
-        
-    
-       
-    
+   </script>                     
 
         <script src="app.js"></script>
 </body>
