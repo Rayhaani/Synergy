@@ -492,19 +492,35 @@
     }
 
     async function executeVerification() {
-        const inputVal = document.getElementById('node-code').value.toUpperCase();
-        if(inputVal === currentCode && currentCode !== "") {
+    const inputVal = document.getElementById('node-code').value.toUpperCase();
+    // Tabbatar inputVal da currentCode sun yi daidai
+    if(inputVal === currentCode && currentCode !== "") {
+        try {
+            // Tabbatar currentUser yana nan
+            if(!currentUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
+
             await db.collection("users").doc(currentUser).update({
                 videoBalance: firebase.firestore.FieldValue.increment(150),
                 videosWatchedToday: firebase.firestore.FieldValue.increment(1),
-                lastActivityDate: new Date().toLocaleDateString('en-GB')
+                lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
             });
+            
             showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
-            setTimeout(() => location.reload(), 2000);
-        } else {
-            showSynergyAlert("INVALID CODE", "error");
+            
+            // Kar a yi reload nan take, bari alert din ya nuna
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+            
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            showSynergyAlert("DATABASE ERROR", "error");
         }
+    } else {
+        showSynergyAlert("INVALID CODE", "error");
     }
+    }
+        
 
     async function secureShareAndEarn(videoId) {
         try {
