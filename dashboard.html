@@ -404,29 +404,43 @@
         player.playVideo(); 
     }
 
-    function onPlayerStateChange(event) {
-        if (event.data === YT.PlayerState.PLAYING) {
-            const tracker = setInterval(() => {
-                if (player.getPlayerState() !== YT.PlayerState.PLAYING) { clearInterval(tracker); return; }
-                let currentTime = player.getCurrentTime();
-                let duration = player.getDuration();
-                let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
-                
-                // Anti-skip logic
-                if (currentTime > lastTime + 2.5) { player.seekTo(lastTime); } else { lastTime = currentTime; }
+   function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        // 1. Kira sabon garkuwar tsaro (Strikes)
+        if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
 
-                document.getElementById("ring").innerText = progress + "%";
-                document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
+        // 2. Fara lissafin progress da nuna verifier panel
+        const tracker = setInterval(() => {
+            if (player.getPlayerState() !== YT.PlayerState.PLAYING) { 
+                clearInterval(tracker); 
+                return; 
+            }
 
-                if (progress >= 5) { 
-                    const p = document.getElementById('verifier-panel'); 
+            let currentTime = player.getCurrentTime();
+            let duration = player.getDuration();
+            let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
+
+            // Mun cire tsohon Anti-skip din a nan domin kar ya yi fada da sabon Module din
+            
+            document.getElementById("ring").innerText = progress + "%";
+            document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
+
+            if (progress >= 5) { 
+                const p = document.getElementById('verifier-panel'); 
+                if(p) {
                     p.classList.add('is-visible-now'); 
-                    setTimeout(() => { p.style.opacity = "1"; p.style.transform = "translateY(0)"; p.style.pointerEvents = "all"; }, 50);
-                    if(currentCode === "") generateCode();
+                    setTimeout(() => { 
+                        p.style.opacity = "1"; 
+                        p.style.transform = "translateY(0)"; 
+                        p.style.pointerEvents = "all"; 
+                    }, 50);
                 }
-            }, 1000);
-        }
+                if(currentCode === "") generateCode();
+            }
+        }, 1000);
     }
+                        }
+    
 
     // 3. UI & INTERACTION FUNCTIONS
     function generateCode() { 
