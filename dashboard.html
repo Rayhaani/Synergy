@@ -907,12 +907,14 @@ function showTab(tabName) {
     menu.classList.toggle('active');
 }
 
-window.onclick = function(event) {
+window.addEventListener("click", function(event) {
     const menu = document.getElementById('google-nav');
-    if (menu && menu.classList.contains('active')) {
+    const trigger = document.querySelector('.menu-trigger');
+
+    if (!menu.contains(event.target) && !trigger.contains(event.target)) {
         menu.classList.remove('active');
     }
-}
+});
 
 
 
