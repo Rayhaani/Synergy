@@ -194,6 +194,47 @@
             display.innerText = "$" + balance;
         }
     };
+
+
+        // Wannan logic din zai kare Withdrawal ba tare da an taba HTML din ba
+async function lockWithdrawalLogic() {
+    const userRef = db.collection("users").doc(currentUser);
+    
+    userRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            // Nemo button din ta hanyar amfani da text dinsa tunda bashi da ID
+            const allButtons = document.querySelectorAll('button');
+            let withdrawBtn = Array.from(allButtons).find(b => b.textContent.includes('Process Transaction'));
+
+            if (withdrawBtn) {
+                if (data.isVerified === true) {
+                    // IDAN SHI VERIFIED NE
+                    withdrawBtn.disabled = false;
+                    withdrawBtn.style.opacity = "1";
+                    withdrawBtn.style.cursor = "pointer";
+                    withdrawBtn.innerText = "Process Transaction";
+                } else {
+                    // IDAN BA VERIFIED BA
+                    withdrawBtn.disabled = true;
+                    withdrawBtn.style.opacity = "0.3";
+                    withdrawBtn.style.cursor = "not-allowed";
+                    withdrawBtn.innerText = "LOCKED: ACTIVATE NODES";
+                    
+                    // Idan ya yi kokarin dannawa
+                    withdrawBtn.onclick = (e) => {
+                        e.preventDefault();
+                        showSynergyAlert("SAI KA YI ACTIVATION TUKUNA", "error");
+                    };
+                }
+            }
+        }
+    });
+}
+
+// Kira logic din
+lockWithdrawalLogic();
+        
     </script>
     
     <script src="app.js"></script>
