@@ -568,6 +568,51 @@ function checkAndResetDailyStats(userData) {
         });
     }
 }
+
+
+    let skipStrikes = 0;
+let lastTime = 0;
+let securityTicker = null; // Mun sanya shi a matsayin variable
+
+function setupSecurityTracker(playerInstance) {
+    // Mu tabbatar babu wani ticker din da yake gudu kafin mu fara sabo
+    if (securityTicker) clearInterval(securityTicker);
+
+    securityTicker = setInterval(() => {
+        try {
+            // Tabbatar player din a shirye yake
+            if (!playerInstance || typeof playerInstance.getPlayerState !== 'function') return;
+
+            // Idan bidiyo baya kunne, tsaya a nan
+            if (playerInstance.getPlayerState() !== YT.PlayerState.PLAYING) return;
+
+            let currentTime = playerInstance.getCurrentTime();
+
+            // --- ANTI-SKIP LOGIC ---
+            if (currentTime > lastTime + 2.5) { 
+                skipStrikes++;
+                playerInstance.seekTo(lastTime); 
+                
+                if (skipStrikes >= 3) {
+                    clearInterval(securityTicker);
+                    document.body.innerHTML = `
+                        <div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:20px;'>
+                            <h1 style="font-size: 30px; letter-spacing:5px;">PROTOCOL BREACH</h1>
+                            <p style='color:white; margin-top:20px;'>Access suspended: Multiple skip attempts detected.</p>
+                        </div>`;
+                } else {
+                    if (typeof showSynergyAlert === 'function') {
+                        showSynergyAlert("STRIKE " + skipStrikes + "/3: NO SKIPPING!", "error");
+                    }
+                }
+            } else {
+                lastTime = currentTime;
+            }
+        } catch (e) {
+            console.error("Security Tracker Error:", e);
+        }
+    }, 1000);
+}
     
 </script>
 </body>
