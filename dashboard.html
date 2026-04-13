@@ -907,14 +907,12 @@ function showTab(tabName) {
     menu.classList.toggle('active');
 }
 
-window.addEventListener("click", function(event) {
+window.onclick = function(event) {
     const menu = document.getElementById('google-nav');
-    const trigger = document.querySelector('.menu-trigger');
-
-    if (!menu.contains(event.target) && !trigger.contains(event.target)) {
+    if (menu && menu.classList.contains('active')) {
         menu.classList.remove('active');
     }
-});
+}
 
 
 
@@ -1048,6 +1046,7 @@ async function syncUserIdentity() {
 syncUserIdentity();
    </script>                     
 
-        <script src="app.js"></script>
+        <script> src="app.js"> 
+        </script>
 </body>
 </html>
