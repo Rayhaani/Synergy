@@ -961,29 +961,37 @@ window.onclick = function(event) {
   });
 
 
-
-        async function checkVerificationStatus() {
+// 1. Function na lura da bayanan mamba gaba daya
+async function syncUserIdentity() {
     const userRef = db.collection("users").doc(currentUser);
     
-    try {
-        const doc = await userRef.get();
-        if (doc.exists && doc.data().isVerified === true) {
-            // Idan mamba ya riga ya yi activation
-            document.getElementById('verified-badge').style.display = 'flex';
+    userRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
             
-            // Haka kuma zamu iya boye button din "Activate" idan har yana nan
-            const actBtn = document.getElementById('activation-link');
-            if(actBtn) actBtn.style.display = 'none';
+            // 1. Sanya Sunan Mamba (Idan babu suna a DB, zai nuna ID dinsa)
+            const nameDisplay = document.getElementById('display-name');
+            if (nameDisplay) {
+                nameDisplay.innerText = data.username || "NODE_" + currentUser.substring(0, 5);
+            }
+            
+            // 2. Duba idan mamba Verified ne
+            const badge = document.getElementById('verified-badge');
+            if (badge) {
+                if (data.isVerified === true) {
+                    badge.style.display = 'flex'; // Nuna badge
+                } else {
+                    badge.style.display = 'none'; // Boye badge
+                }
+            }
         }
-    } catch (error) {
-        console.log("Error checking verification:", error);
-    }
+    });
 }
 
-// Kira aikin nan take bayan shafin ya bude
-checkVerificationStatus();
+// 2. Kira aikin
+syncUserIdentity();
+                        
         
-    </script>
     
        
     
