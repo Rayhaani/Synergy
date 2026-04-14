@@ -151,21 +151,7 @@ function closeNotif() {
     document.getElementById('notification-bar').classList.remove('show');
 }
 
-// Gyararren Resend Function
-async function resendVerification() {
-    try {
-        const fbUser = firebase.auth().currentUser;
-        if (fbUser) {
-            await fbUser.sendEmailVerification();
-            // Sanarwa ta nasara kamar GitHub
-            showTopNotif("Your verification link has been resent", "success");
-        }
-    } catch (err) {
-        // Sanarwa ta kuskure kamar GitHub
-        showTopNotif("Security protocol active. Please wait a moment.", "error");
-    }
-        }
-        
+
         function showSuccessOverlay(email) {
             Swal.fire({
                 html: `
@@ -186,49 +172,94 @@ async function resendVerification() {
             });
         }
 
-       async function register() {
-            const btn = document.getElementById('reg-btn');
-            const mainCard = document.getElementById('main-register-card'); 
-            const email = document.getElementById('email').value.trim();
-            const user = document.getElementById('username').value.toLowerCase().trim();
-            const pass = document.getElementById('password').value.trim();
+       // 1. GYARARREN RESEND FUNCTION (Don ya fito a bar)
+async function resendVerification() {
+    try {
+        const fbUser = firebase.auth().currentUser;
+        if (fbUser) {
+            await fbUser.sendEmailVerification();
+            showTopNotif("Your verification link has been resent", "success");
+        }
+    } catch (err) {
+        showTopNotif("Security protocol active. Please wait a moment.", "error");
+    }
+}
 
-            btn.disabled = true;
-            btn.innerHTML = `<span class="orbitron animate-pulse">CONNECTING...</span>`;
+// 2. GYARARREN REGISTER FUNCTION (Don magance duplicate Email/User)
+async function register() {
+    const btn = document.getElementById('reg-btn');
+    const mainCard = document.getElementById('main-register-card'); 
+    const email = document.getElementById('email').value.trim();
+    const user = document.getElementById('username').value.toLowerCase().trim();
+    const pass = document.getElementById('password').value.trim();
 
-            try {
-                const userRef = db.collection("users").doc(user);
-                const doc = await userRef.get();
+    btn.disabled = true;
+    btn.innerHTML = `<span class="orbitron animate-pulse">CONNECTING...</span>`;
 
-                if (doc.exists) {
-                    Swal.fire({ title: 'NODE ERROR', html: `<p style="font-family: 'Quicksand', sans-serif;">Username active.</p>`, icon: 'error', background: '#020617', color: '#fff', confirmButtonText: 'OK', customClass: { title: 'orbitron', confirmButton: 'orbitron resend-btn-neon' } });
-                    btn.disabled = false; btn.innerText = "ACTIVATE PROTOCOL";
-                    return;
-                }
+    try {
+        // A. Duba idan Username yana nan
+        const userRef = db.collection("users").doc(user);
+        const doc = await userRef.get();
 
-                // GYARA 2: Babu delay, nuna overlay nan take
-                mainCard.style.display = 'none';
-                showSuccessOverlay(email);
+        if (doc.exists) {
+            showTopNotif("Username is already taken. Choose another.", "error");
+            btn.disabled = false;
+            btn.innerText = "ACTIVATE PROTOCOL";
+            return;
+        }
 
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, pass);
-                await userCredential.user.sendEmailVerification();
-
-                await userRef.set({
-                    uid: userCredential.user.uid,
-                    fullName: document.getElementById('full-name').value.trim(),
-                    email: email, username: user,
-                    state: document.getElementById('state').value.trim(),
-                    phoneNumber: document.getElementById('phone').value.trim(),
-                    videoBalance: 0, shareBalance: 0, rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (e) {
-                if (mainCard.style.display !== 'none') {
-                    btn.disabled = false; btn.innerText = "RETRY";
-                    Swal.fire({ title: 'SYSTEM FAILURE', html: `<p style="font-family: 'Quicksand', sans-serif;">${e.message}</p>`, icon: 'warning', background: '#020617', color: '#fff', confirmButtonText: 'RETRY', customClass: { title: 'orbitron', confirmButton: 'orbitron resend-btn-neon' } });
-                }
+        // B. Duba idan Email yana nan (Mafi mahimmanci)
+        try {
+            const signInMethods = await firebase.auth().fetchSignInMethodsForEmail(email);
+            if (signInMethods.length > 0) {
+                showTopNotif("Email address is already registered.", "error");
+                btn.disabled = false;
+                btn.innerText = "ACTIVATE PROTOCOL";
+                return;
             }
-                               } 
+        } catch (fetchErr) {
+            // Idan error ya fito nan, yawanci security limit ne ko network
+        }
+
+        // C. Idan komai ya yi, sai a nuna success overlay
+        mainCard.style.display = 'none';
+        showSuccessOverlay(email);
+
+        // D. Create account a background
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+        await userCredential.user.sendEmailVerification();
+
+        await userRef.set({
+            uid: userCredential.user.uid,
+            fullName: document.getElementById('full-name').value.trim(),
+            email: email, 
+            username: user,
+            state: document.getElementById('state').value.trim(),
+            phoneNumber: document.getElementById('phone').value.trim(),
+            videoBalance: 0, 
+            shareBalance: 0, 
+            rank: "IRON", 
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+    } catch (e) {
+        // Idan account creation ya gaza bayan overlay ya fito
+        if (e.code === 'auth/email-already-in-use') {
+            showTopNotif("Email already in use. Critical Error.", "error");
+        } else {
+            showTopNotif(e.message, "error");
+        }
         
+        // Dawo da form din idan an samu matsala
+        if (mainCard.style.display === 'none') {
+            mainCard.style.display = 'block';
+            Swal.close(); 
+        }
+        btn.disabled = false;
+        btn.innerText = "RETRY ACTIVATION";
+    }
+}
+    
     </script>
 </body>
     </html>
