@@ -163,80 +163,100 @@
             document.getElementById('sidebarOverlay').classList.toggle('active');
         }
 
-        const dummyUsers = [
-            { id: "sadiq dev", fullName: "Sadiq Abubakar", phone: "+234 801 000 0000", email: "sadiq@synergy.io", state: "Kano", videoBalance: 25000, status: "active", verified: true, payout: 5000 },
-            { id: "abdool tech", fullName: "Abdullahi Musa", phone: "+234 802 000 0000", email: "abdool@synergy.io", state: "Kaduna", videoBalance: 12000, status: "inactive", verified: false, payout: 2000 },
-            { id: "fatima node", fullName: "Fatima Ibrahim", phone: "+234 803 000 0000", email: "fatima@synergy.io", state: "Lagos", videoBalance: 18500, status: "active", verified: true, payout: 8000 }
-        ];
+            // 1. Wannan function din zai kwaso dukkan users daga Firestore
+    async function fetchUsers() {
+        const body = document.getElementById('user-table-body');
+        body.innerHTML = `<tr><td colspan="4" class="text-center py-10 orbitron text-[10px] text-cyan-400 animate-pulse">Scanning Network Database...</td></tr>`;
 
-        function toggleRow(id) {
-            const el = document.getElementById(`details-${id.replace(/\s+/g, '-')}`);
-            const isActive = el.classList.contains('active');
-            document.querySelectorAll('.details-row').forEach(row => row.classList.remove('active'));
-            if (!isActive) el.classList.add('active');
+        try {
+            // Karanto dukkan documents daga "users" collection
+            const snapshot = await db.collection("users").get();
+            const usersList = [];
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                usersList.push({
+                    id: doc.id, // Username din da yake document ID
+                    fullName: data.fullName || "N/A",
+                    phone: data.phoneNumber || "N/A",
+                    email: data.email || "N/A",
+                    state: data.state || "N/A",
+                    videoBalance: data.videoBalance || 0,
+                    status: data.isVerified ? "active" : "inactive", // Danganta status da isVerified
+                    verified: data.isVerified || false,
+                    payout: data.shareBalance || 0
+                });
+            });
+
+            // Adana su a waje daya don ayi search dasu
+            window.allUsers = usersList;
+            render(usersList);
+
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            body.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-red-500">FAILED TO CONNECT TO DATABASE.</td></tr>`;
+        }
+    }
+
+    // 2. Gyara render() function don ya dauki hoton bayanan na gaske
+    function render(data) {
+        const body = document.getElementById('user-table-body');
+        if (data.length === 0) {
+            body.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-gray-500">No nodes found in this sector.</td></tr>`;
+            return;
         }
 
-        function render(data) {
-            const body = document.getElementById('user-table-body');
-            body.innerHTML = data.map(u => `
-                <tr onclick="toggleRow('${u.id}')">
-                    <td class="pl-6 py-5">
-                        <div class="text-cyan-400 font-bold text-sm tracking-wide capitalize">${u.id}</div>
-                    </td>
-                    <td class="text-center py-5">
-                        <span class="text-[9px] px-2 py-0.5 rounded-full ${u.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'} border font-bold uppercase">${u.status}</span>
-                    </td>
-                    <td class="text-center py-5">
-                        <span class="v-badge ${u.verified ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-400/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}">
-                            ${u.verified ? 'VERIFIED' : 'UNVERIFIED'}
-                        </span>
-                    </td>
-                    <td class="pr-6 text-right py-5 font-bold text-white text-sm">
-                        ₦${u.videoBalance.toLocaleString()}
-                    </td>
-                </tr>
-                <tr id="details-${u.id.replace(/\s+/g, '-')}" class="details-row bg-white/[0.03]">
-                    <td colspan="4" class="p-8 border-l-4 border-cyan-400">
-                        <div class="flex flex-col gap-8">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Full Name</span><br><span class="text-white">${u.fullName}</span></div>
-                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Phone</span><br><span class="text-white">${u.phone}</span></div>
-                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Email</span><br><span class="text-white">${u.email}</span></div>
-                                <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Location</span><br><span class="text-white">${u.state}</span></div>
-                            </div>
-                            
-                            <div class="space-y-6 pt-6 border-t border-white/5">
-                                <div class="flex items-center gap-3">
-                                    <input type="number" id="input-${u.id.replace(/\s+/g, '-')}" placeholder="New Balance ₦" 
-                                           class="bg-black/40 border border-white/10 p-2 text-xs rounded-lg outline-none text-white w-40 focus:border-cyan-400">
-                                    <button onclick="event.stopPropagation();" class="btn-update">Update Balance</button>
-                                </div>
-                                
-                                <div class="flex flex-row gap-3 w-full max-w-2xl">
-                                    <button onclick="event.stopPropagation();" class="btn-action btn-suspend">Suspend</button>
-                                    <button onclick="event.stopPropagation();" class="btn-action btn-ban">Ban Node</button>
-                                    <button onclick="event.stopPropagation();" class="btn-action btn-delete">Terminate</button>
-                                </div>
-                            </div>
+        body.innerHTML = data.map(u => `
+            <tr onclick="toggleRow('${u.id}')">
+                <td class="pl-6 py-5">
+                    <div class="text-cyan-400 font-bold text-sm tracking-wide capitalize">${u.id}</div>
+                </td>
+                <td class="text-center py-5">
+                    <span class="text-[9px] px-2 py-0.5 rounded-full ${u.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'} border font-bold uppercase">${u.status}</span>
+                </td>
+                <td class="text-center py-5">
+                    <span class="v-badge ${u.verified ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-400/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}">
+                        ${u.verified ? 'VERIFIED' : 'UNVERIFIED'}
+                    </span>
+                </td>
+                <td class="pr-6 text-right py-5 font-bold text-white text-sm">
+                    ₦${u.videoBalance.toLocaleString()}
+                </td>
+            </tr>
+            <tr id="details-${u.id.replace(/\s+/g, '-')}" class="details-row bg-white/[0.03]">
+                <td colspan="4" class="p-8 border-l-4 border-cyan-400">
+                    <div class="flex flex-col gap-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                            <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Full Name</span><br><span class="text-white">${u.fullName}</span></div>
+                            <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Phone</span><br><span class="text-white">${u.phone}</span></div>
+                            <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Email</span><br><span class="text-white">${u.email}</span></div>
+                            <div><span class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Location</span><br><span class="text-white">${u.state}</span></div>
                         </div>
-                    </td>
-                </tr>
-            `).join('');
-            
-            document.getElementById('total-members').innerText = data.length;
-            document.getElementById('total-active').innerText = data.filter(u => u.status === 'active').length;
-            document.getElementById('total-inactive').innerText = data.filter(u => u.status === 'inactive').length;
-            document.getElementById('total-balance').innerText = `₦${data.reduce((s, u) => s + u.videoBalance, 0).toLocaleString()}`;
-            document.getElementById('total-payout').innerText = `₦${data.reduce((s, u) => s + (u.payout || 0), 0).toLocaleString()}`;
-        }
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Update Stats Bar
+        document.getElementById('total-members').innerText = data.length;
+        document.getElementById('total-active').innerText = data.filter(u => u.status === 'active').length;
+        document.getElementById('total-inactive').innerText = data.filter(u => u.status === 'inactive').length;
+        document.getElementById('total-balance').innerText = `₦${data.reduce((s, u) => s + u.videoBalance, 0).toLocaleString()}`;
+        document.getElementById('total-payout').innerText = `₦${data.reduce((s, u) => s + (u.payout || 0), 0).toLocaleString()}`;
+    }
 
-        function searchNetwork() {
-            const q = document.getElementById('admin-search').value.toLowerCase();
-            const f = dummyUsers.filter(u => u.id.toLowerCase().includes(q) || u.fullName.toLowerCase().includes(q));
-            render(f);
-        }
+    // Kira fetchUsers maimakon render(dummyUsers)
+    fetchUsers();
 
-        render(dummyUsers);
+    // Gyara Search shima
+    function searchNetwork() {
+        const q = document.getElementById('admin-search').value.toLowerCase();
+        const f = window.allUsers.filter(u => u.id.toLowerCase().includes(q) || u.fullName.toLowerCase().includes(q));
+        render(f);
+                }
+        
+
+        
     </script>
 </body>
                                          </html>
