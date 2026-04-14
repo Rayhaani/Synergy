@@ -43,10 +43,44 @@
             letter-spacing: 2px;
         }
         .resend-btn-neon:hover { background: var(--aqua) !important; color: #000 !important; box-shadow: 0 0 30px var(--aqua); }
-    </style>
+
+
+        /* GITHUB STYLE NOTIFICATION BAR */
+#notification-bar {
+    position: fixed;
+    top: -100px; /* Boyayye a farko */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 450px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-family: 'Space Grotesk', sans-serif;
+    z-index: 9999;
+    transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 242, 254, 0.3);
+}
+
+.notif-success { background: #0c2d21; color: #3fb950; border-color: #238636 !important; }
+.notif-error { background: #2d1616; color: #f85149; border-color: #da3633 !important; }
+
+#notification-bar.show { top: 20px; } /* Zai fito idan an kira shi */
+
+.close-notif { cursor: pointer; font-weight: bold; font-size: 18px; margin-left: 15px; }
+        
+    
+            </style>
 </head>
 <body>
-
+<div id="notification-bar">
+    <span id="notif-message"></span>
+    <span class="close-notif" onclick="closeNotif()">×</span>
+</div>
+    
     <div id="main-register-card" class="glass-card p-6 rounded-[35px] w-full max-w-md mx-4 relative z-10">
         <div class="text-center mb-6">
             <div class="w-12 h-12 bg-cyan-500 rounded-full mx-auto mb-4 shadow-[0_0_20px_#00f2fe]"></div>
@@ -101,19 +135,37 @@
         }
 
         // GYARA 3: GitHub Style Top Notification (Resend logic)
-        async function resendVerification() {
-            const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000, timerProgressBar: true, background: '#020617', color: '#fff' });
-            try {
-                const fbUser = firebase.auth().currentUser;
-                if (fbUser) {
-                    await fbUser.sendEmailVerification();
-                    Toast.fire({ icon: 'success', title: 'Verification link resent successfully' });
-                }
-            } catch (err) {
-                Toast.fire({ icon: 'error', title: 'Security limit reached. Please wait.' });
-            }
-        }
+        // Function na nuna sanarwa a sama (GitHub Style)
+function showTopNotif(message, type) {
+    const bar = document.getElementById('notification-bar');
+    const msg = document.getElementById('notif-message');
+    
+    bar.className = (type === 'success') ? 'notif-success show' : 'notif-error show';
+    msg.innerText = message;
 
+    // Zai bace bayan sakan 5
+    setTimeout(closeNotif, 5000);
+}
+
+function closeNotif() {
+    document.getElementById('notification-bar').classList.remove('show');
+}
+
+// Gyararren Resend Function
+async function resendVerification() {
+    try {
+        const fbUser = firebase.auth().currentUser;
+        if (fbUser) {
+            await fbUser.sendEmailVerification();
+            // Sanarwa ta nasara kamar GitHub
+            showTopNotif("Your verification link has been resent", "success");
+        }
+    } catch (err) {
+        // Sanarwa ta kuskure kamar GitHub
+        showTopNotif("Security protocol active. Please wait a moment.", "error");
+    }
+        }
+        
         function showSuccessOverlay(email) {
             Swal.fire({
                 html: `
