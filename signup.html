@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
 
     <style>
         :root { --aqua: #00f2fe; --purple: #7000ff; --bg: #020617; }
@@ -160,29 +162,68 @@
         }
 
         async function register() {
-            const fullName = document.getElementById('full-name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const user = document.getElementById('username').value.toLowerCase().trim();
-            const state = document.getElementById('state').value.trim();
-            const phone = document.getElementById('phone').value.trim();
+    // 1. Karbo bayanan inputs (Mun bar su yadda suke don kar rikici ya faru)
+    const fullName = document.getElementById('full-name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const user = document.getElementById('username').value.toLowerCase().trim();
+    const state = document.getElementById('state').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    // MUHIMMI: Tunda baka da input na password a form dinka, 
+    // na sa wannan a matsayin default password din kowa na yanzu.
+    // Zaka iya sauya shi daga baya.
+    const defaultPassword = "SynergyUser123"; 
 
-            const userRef = db.collection("users").doc(user);
-            const doc = await userRef.get();
+    const userRef = db.collection("users").doc(user);
 
-            if (doc.exists) {
-                alert("Protocol Error: Username active.");
-            } else {
-                try {
-                    await userRef.set({
-                        fullName, email, state, phoneNumber: phone,
-                        videoBalance: 0, shareBalance: 0, videosWatchedToday: 0,
-                        rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    localStorage.setItem('synergy_user', user);
-                    window.location.href = 'dashboard.html';
-                } catch (e) { alert("Database Failure."); }
-            }
+    try {
+        // 2. Duba idan username ya riga ya wanzu
+        const doc = await userRef.get();
+        if (doc.exists) {
+            alert("PROTOCOL ERROR: Username already registered in node.");
+            return;
         }
+
+        // 3. Kirkiri User a Firebase Authentication
+        // Wannan shi ne babban garkuwan da zai hana shiga dashboard ba login
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, defaultPassword);
+        const fbUser = userCredential.user;
+
+        // 4. Tura Verification Link zuwa email din mamba
+        await fbUser.sendEmailVerification();
+
+        // 5. Adana bayanan a Firestore (Yanzu mun hada da 'uid' na gaskiya)
+        await userRef.set({
+            uid: fbUser.uid, 
+            fullName: fullName,
+            email: email,
+            state: state,
+            phoneNumber: phone,
+            username: user,
+            videoBalance: 0,
+            shareBalance: 0,
+            videosWatchedToday: 0,
+            rank: "IRON",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' }),
+            isVerified: false // Za mu sauya wannan zuwa true idan yayi verify
+        });
+
+        // 6. Sanarwa da kuma kora zuwa shafin Login
+        alert("INITIALIZATION SUCCESS! \n\nAn tura verification link zuwa email dinka. Don Allah duba 'Inbox' ko 'Spam' sannan kayi verify kafin kayi login.");
+        
+        // Dole mu yi logout dinsa anan don kar ya wuce dashboard kai tsaye
+        await firebase.auth().signOut();
+        
+        // Tura shi shafin login
+        window.location.href = 'login.html';
+
+    } catch (e) {
+        console.error("Registration Error:", e);
+        alert("CRITICAL ERROR: " + e.message);
+    }
+                                          }
+                
     </script>
 </body>
 </html>
