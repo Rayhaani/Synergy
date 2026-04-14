@@ -61,11 +61,6 @@
             <div id="step-user" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">Username</label><input type="text" id="username" oninput="validateForm()" class="input-node"></div>
             <div id="step-state" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">State</label><input type="text" id="state" oninput="validateForm()" class="input-node"></div>
             <div id="step-phone" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">Phone Number</label><input type="tel" id="phone" oninput="validateForm()" class="input-node"></div>
-           <div id="step-pass" class="hidden">
-    <label class="orbitron text-gray-500 ml-1 mb-2 block">Create Password</label>
-    <input type="password" id="password" oninput="validateForm()" class="input-node" placeholder="••••••••">
-           </div>
-            
             <button id="reg-btn" onclick="register()" disabled class="w-full bg-white text-black py-4 rounded-2xl font-bold orbitron mt-4 opacity-20 cursor-not-allowed transition-all duration-500">ACTIVATE PROTOCOL</button>
         </div>
     </div>
@@ -76,38 +71,23 @@
         const db = firebase.firestore();
 
         function validateForm() {
-    const fullName = document.getElementById('full-name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const user = document.getElementById('username').value.trim();
-    const state = document.getElementById('state').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const pass = document.getElementById('password').value.trim();
-
-    const steps = [ 
-        { el: 'step-email', valid: fullName.split(' ').length >= 2 }, 
-        { el: 'step-user', valid: email.includes('@') && email.includes('.') }, 
-        { el: 'step-state', valid: user.length >= 3 }, 
-        { el: 'step-phone', valid: state.length >= 3 }, 
-        { el: 'step-pass', valid: phone.length >= 10 }, // Wannan zai fito da password box
-        { el: 'reg-btn', valid: pass.length >= 6 }      // Wannan zai bude button idan pass ya kai harafi 6
-    ];
-
-    let completed = 0;
-    steps.forEach(s => {
-        const target = document.getElementById(s.el);
-        if (s.valid) {
-            if (target.id === 'reg-btn') { 
-                target.disabled = false; 
-                target.style.opacity = "1"; 
-            } else { 
-                target.classList.remove('hidden'); 
-            }
-            completed++;
+            const fullName = document.getElementById('full-name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const user = document.getElementById('username').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const steps = [ { el: 'step-email', valid: fullName.split(' ').length >= 2 }, { el: 'step-user', valid: email.includes('@') && email.includes('.') }, { el: 'step-state', valid: user.length >= 3 }, { el: 'step-phone', valid: state.length >= 3 }, { el: 'reg-btn', valid: phone.length >= 10 } ];
+            let completed = 0;
+            steps.forEach(s => {
+                const target = document.getElementById(s.el);
+                if (s.valid) {
+                    if (target.id === 'reg-btn') { target.disabled = false; target.style.opacity = "1"; }
+                    else { target.classList.remove('hidden'); }
+                    completed++;
+                }
+            });
+            document.getElementById('progress-text').innerText = `Initialize Sequence: ${Math.round((completed/5)*100)}%`;
         }
-    });
-    document.getElementById('progress-text').innerText = `Initialize Sequence: ${Math.round((completed/6)*100)}%`;
-        }
-        
 
 
       
@@ -162,9 +142,7 @@ function showSuccessOverlay(email) {
 }
 
 // 2. MAIN REGISTER FUNCTION (Sharp & Global Standard)
-
-
- async function register() {
+async function register() {
     const btn = document.getElementById('reg-btn');
     const mainCard = document.getElementById('main-register-card'); 
     const email = document.getElementById('email').value.trim();
@@ -222,12 +200,18 @@ function showSuccessOverlay(email) {
             });
         }
     }
- } 
-
-
+}
         
+
+
+
+                    
+
+
+          
+
         
         
     </script>
 </body>
-</html>
+    </html>
