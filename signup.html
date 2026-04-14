@@ -162,68 +162,58 @@
         }
 
         async function register() {
-    // 1. Karbo bayanan inputs (Mun bar su yadda suke don kar rikici ya faru)
+    const btn = document.getElementById('reg-btn');
     const fullName = document.getElementById('full-name').value.trim();
     const email = document.getElementById('email').value.trim();
     const user = document.getElementById('username').value.toLowerCase().trim();
     const state = document.getElementById('state').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    
-    // MUHIMMI: Tunda baka da input na password a form dinka, 
-    // na sa wannan a matsayin default password din kowa na yanzu.
-    // Zaka iya sauya shi daga baya.
-    const defaultPassword = "SynergyUser123"; 
+    const password = "SynergyUser123"; 
 
-    const userRef = db.collection("users").doc(user);
+    // 1. Hana mutum danna button sau biyu (Debouncing)
+    btn.disabled = true;
+    btn.innerText = "PROCESSING...";
 
     try {
-        // 2. Duba idan username ya riga ya wanzu
+        const userRef = db.collection("users").doc(user);
         const doc = await userRef.get();
+
         if (doc.exists) {
-            alert("PROTOCOL ERROR: Username already registered in node.");
+            alert("Error: Username already exists.");
+            btn.disabled = false;
+            btn.innerText = "ACTIVATE PROTOCOL";
             return;
         }
 
-        // 3. Kirkiri User a Firebase Authentication
-        // Wannan shi ne babban garkuwan da zai hana shiga dashboard ba login
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, defaultPassword);
-        const fbUser = userCredential.user;
+        // 2. Kirkiri Account a Firebase Auth
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        await userCredential.user.sendEmailVerification();
 
-        // 4. Tura Verification Link zuwa email din mamba
-        await fbUser.sendEmailVerification();
-
-        // 5. Adana bayanan a Firestore (Yanzu mun hada da 'uid' na gaskiya)
+        // 3. Adana bayanai a Firestore
         await userRef.set({
-            uid: fbUser.uid, 
-            fullName: fullName,
-            email: email,
-            state: state,
-            phoneNumber: phone,
-            username: user,
-            videoBalance: 0,
-            shareBalance: 0,
-            videosWatchedToday: 0,
-            rank: "IRON",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' }),
-            isVerified: false // Za mu sauya wannan zuwa true idan yayi verify
+            uid: userCredential.user.uid,
+            fullName, email, state, phoneNumber: phone, username: user,
+            videoBalance: 0, shareBalance: 0, videosWatchedToday: 0,
+            rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // 6. Sanarwa da kuma kora zuwa shafin Login
-        alert("INITIALIZATION SUCCESS! \n\nAn tura verification link zuwa email dinka. Don Allah duba 'Inbox' ko 'Spam' sannan kayi verify kafin kayi login.");
+        // 4. Simple & Professional Notification (Ba tare da kora zuwa wani shafi ba)
+        alert("Registration successful! Kindly verify your email and proceed to login.");
         
-        // Dole mu yi logout dinsa anan don kar ya wuce dashboard kai tsaye
+        // Cire shi daga current session
         await firebase.auth().signOut();
         
-        // Tura shi shafin login
-        window.location.href = 'login.html';
+        // Maimakon window.location, za mu iya barin shi a nan ko mu kira custom modal
+        // Idan kana so ya tafi login bayan ya danna OK:
+        // window.location.href = "login.html";
 
     } catch (e) {
-        console.error("Registration Error:", e);
-        alert("CRITICAL ERROR: " + e.message);
+        btn.disabled = false;
+        btn.innerText = "ACTIVATE PROTOCOL";
+        alert("Registration failed: " + e.message);
     }
-                                          }
-                
+        }
+        
     </script>
 </body>
 </html>
