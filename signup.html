@@ -164,14 +164,11 @@ function showSuccessOverlay(email) {
 // 2. MAIN REGISTER FUNCTION (Sharp & Global Standard)
 
 
-  async function register() {
+ async function register() {
     const btn = document.getElementById('reg-btn');
     const mainCard = document.getElementById('main-register-card'); 
     const email = document.getElementById('email').value.trim();
     const user = document.getElementById('username').value.toLowerCase().trim();
-    
-    // WANNAN SHINE GYARAN: Karbo password din da user ya rubuta a sabon box din
-    const pass = document.getElementById('password').value.trim(); 
 
     btn.disabled = true;
     btn.innerHTML = `<span class="orbitron animate-pulse">CONNECTING...</span>`;
@@ -183,7 +180,7 @@ function showSuccessOverlay(email) {
         if (doc.exists) {
             Swal.fire({
                 title: 'NODE ERROR',
-                html: `<p style="font-family: 'Quicksand', sans-serif; font-size: 15px;">Username already active.</p>`,
+                html: `<p style="font-family: 'Quicksand', sans-serif; font-size: 15px;">Username already active in the protocol.</p>`,
                 icon: 'error', background: '#020617', color: '#fff',
                 confirmButtonText: 'ACKNOWLEDGE',
                 customClass: { title: 'orbitron', confirmButton: 'orbitron resend-btn-neon' }
@@ -193,27 +190,23 @@ function showSuccessOverlay(email) {
             return;
         }
 
-        // Nuna overlay nan take (Ba tare da jiran Firebase ba)
+        // Nuna overlay nan take (Fast Experience)
         mainCard.style.display = 'none';
         showSuccessOverlay(email);
 
-        // AMFANI DA SABON PASSWORD: Maimakon tsohon default din
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+        // Firebase background operation
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, "SynergyUser123");
         const fbUser = userCredential.user;
         await fbUser.sendEmailVerification();
 
         await userRef.set({
             uid: fbUser.uid,
             fullName: document.getElementById('full-name').value.trim(),
-            email: email, 
-            username: user,
+            email: email, username: user,
             state: document.getElementById('state').value.trim(),
             phoneNumber: document.getElementById('phone').value.trim(),
-            videoBalance: 0, 
-            shareBalance: 0, 
-            videosWatchedToday: 0,
-            rank: "IRON", 
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            videoBalance: 0, shareBalance: 0, videosWatchedToday: 0,
+            rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
     } catch (e) {
@@ -229,7 +222,9 @@ function showSuccessOverlay(email) {
             });
         }
     }
-  }
+ } 
+
+
         
         
         
