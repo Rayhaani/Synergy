@@ -124,29 +124,28 @@
         }
 
         async function login() {
-            const loginID = document.getElementById('login-id').value.toLowerCase().trim();
-            const loginPass = document.getElementById('login-pass').value.trim();
-            const status = document.getElementById('progress-text');
-            
-            status.innerText = "Verifying Credentials...";
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
 
-            try {
-                // Domin Username
-                const userRef = db.collection("users").doc(loginID);
-                const doc = await userRef.get();
+    try {
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
+        const user = userCredential.user;
 
-                if (doc.exists) {
-                    // Tabbatar da Password (Idan kana amfani da field a matsayin 'password' a signup)
-                    // Amma a code din da ka turo babu password field, zan yi amfani da logic na username kawai
-                    localStorage.setItem('synergy_user', loginID);
-                    status.innerText = "Access Granted";
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
-                } else {
-                    status.innerText = "Access Denied";
-                    alert("Account not found.");
-                }
-            } catch (e) { alert("System Link Failure."); }
+        // Bincika idan ya danna link din email
+        if (!user.emailVerified) {
+            showTopNotif("Please verify your email first.", "error"); // GitHub Bar zata fito
+            return;
         }
+
+        // Idan komai ya yi, tura shi Dashboard
+        window.location.href = "dashboard.html";
+
+    } catch (error) {
+        // Maimakon wancan tsohon alert din, yi amfani da GitHub Bar
+        showTopNotif("Account not found or invalid credentials.", "error"); 
+    }
+    }
+        
     </script>
 </body>
 </html>
