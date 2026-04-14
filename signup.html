@@ -130,31 +130,31 @@
 
         function showSuccessOverlay(fbUser, email) {
     Swal.fire({
-        title: 'NODE SECURED',
+        title: 'PROTOCOL DEPLOYED',
         html: `
-            <div style="border-top: 1px solid rgba(0,242,254,0.2); padding-top: 20px;">
-                <p class="orbitron" style="font-size: 8px; color: #888; letter-spacing: 5px;">Awaiting Neural Activation</p>
-                <h2 style="font-family: 'Space Grotesk'; color: #fff; margin: 15px 0;">${email}</h2>
-                <div style="height: 2px; width: 50px; background: var(--aqua); margin: 0 auto; box-shadow: 0 0 10px var(--aqua);"></div>
+            <div style="padding: 10px;">
+                <div style="font-size: 30px; margin-bottom: 15px;">📡</div>
+                <p style="font-family: 'Syncopate'; font-size: 9px; color: #00f2fe;">TRANSMISSION SENT TO:</p>
+                <p style="font-size: 18px; font-weight: bold; margin: 10px 0;">${email}</p>
+                <p style="font-size: 10px; color: #555; font-style: italic;">Check your secure vault (inbox/spam)</p>
             </div>`,
-        background: 'rgba(2, 6, 23, 0.98)',
-        backdrop: `rgba(0,0,10,0.85) url("https://www.transparenttextures.com/patterns/carbon-fibre.png")`,
+        background: '#000',
+        color: '#fff',
         showConfirmButton: true,
-        confirmButtonText: 'RESEND ENCRYPTED LINK',
+        confirmButtonText: 'RE-TRIGGER SIGNAL',
         allowOutsideClick: false,
         customClass: {
-            popup: 'synergy-popup',
-            title: 'orbitron',
-            confirmButton: 'resend-btn-neon'
+            popup: 'border-2 border-cyan-500 rounded-[50px]',
+            confirmButton: 'bg-transparent border border-cyan-500 text-cyan-500 px-10 py-4 rounded-full orbitron hover:bg-cyan-500 hover:text-black transition-all'
         }
     }).then(async (result) => {
         if (result.isConfirmed) {
             await fbUser.sendEmailVerification();
-            Swal.fire({ icon: 'success', title: 'SENT', background: '#020617', color: '#fff', timer: 1500, showConfirmButton: false });
-            setTimeout(() => showSuccessOverlay(fbUser, email), 2000);
+            showSuccessOverlay(fbUser, email);
         }
     });
         }
+        
         
     </script>
 </body>
