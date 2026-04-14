@@ -89,82 +89,74 @@
             document.getElementById('progress-text').innerText = `Initialize Sequence: ${Math.round((completed/5)*100)}%`;
         }
 
-       async function register() {
-    const card = document.getElementById('main-register-card');
+
+async function register() {
     const btn = document.getElementById('reg-btn');
+    const formContainer = document.getElementById('form-container'); // Id na babban div din form dinka
     const fullName = document.getElementById('full-name').value.trim();
     const email = document.getElementById('email').value.trim();
     const user = document.getElementById('username').value.toLowerCase().trim();
     const state = document.getElementById('state').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    
+    const password = "SynergyUser123"; 
+
     btn.disabled = true;
-    btn.innerText = "AUTHENTICATING...";
+    btn.innerHTML = `<span class="animate-pulse">INITIALIZING...</span>`;
 
     try {
         const userRef = db.collection("users").doc(user);
         const doc = await userRef.get();
 
         if (doc.exists) {
-            Swal.fire({ 
-                icon: 'error', 
-                title: 'NODE ERROR', 
-                text: 'Username already active.', 
-                background: '#020617', 
-                color: '#fff',
-                customClass: { title: 'orbitron' }
-            });
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Username already taken.', confirmButtonColor: '#00f2fe' });
             btn.disabled = false;
             btn.innerText = "ACTIVATE PROTOCOL";
             return;
         }
 
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, "SynergyUser123");
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
         const fbUser = userCredential.user;
         await fbUser.sendEmailVerification();
 
         await userRef.set({
-            uid: fbUser.uid, fullName, email, username: user, state, phoneNumber: phone,
-            videoBalance: 0, shareBalance: 0, videosWatchedToday: 0, rank: "IRON",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            uid: fbUser.uid,
+            fullName, email, state, phoneNumber: phone, username: user,
+            videoBalance: 0, shareBalance: 0, videosWatchedToday: 0,
+            rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Instant Hide: Boye form din registration din
-        card.style.display = 'none';
+        // 1. BOYAYYE: Boye dukkan sauran abubuwan dake shafin (Background)
+        formContainer.style.display = 'none'; 
+        document.getElementById('progress-text').style.opacity = '0';
 
-        // WANNAN SHINE GYARARRAN OVERLAY (Professional Notification)
+        // 2. OVERLAY: Nuna sako tare da "Resend Verification"
         Swal.fire({
-            title: 'REGISTRATION SUCCESSFUL',
-            html: `<p style="font-family:'Space Grotesk'; font-size:14px; opacity:0.8;">Kindly verify your email to activate your node:<br><b style="color:#00f2fe;">${email}</b></p>`,
+            title: 'Registration Successful',
+            html: `A verification link has been sent to <b>${email}</b>.<br><br>Kindly verify your email to activate your account.`,
             icon: 'success',
             background: '#020617',
             color: '#fff',
-            confirmButtonText: 'RESEND VERIFICATION',
+            showCancelButton: true,
+            confirmButtonText: 'I UNDERSTAND',
+            cancelButtonText: 'RESEND EMAIL',
             confirmButtonColor: '#00f2fe',
-            allowOutsideClick: false,
-            customClass: {
-                popup: 'glass-card',
-                title: 'orbitron', // Font din dake kan Dashboard
-                confirmButton: 'orbitron' // Button font dake kan Dashboard
-            }
+            cancelButtonColor: '#7000ff',
+            allowOutsideClick: false
         }).then(async (result) => {
             if (result.isConfirmed) {
-                // Functional Resend: Zai sake tura email din
+                // Idan ya danna Understand, muna so ya fita (Logout) sannan ya jira link
+                await firebase.auth().signOut();
+                // Zaka iya tura shi Login page anan tunda ya gama
+                window.location.href = 'login.html'; 
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Idan ya danna Resend Email
                 try {
                     await fbUser.sendEmailVerification();
-                    Swal.fire({ 
-                        icon: 'success', 
-                        title: 'SENT', 
-                        text: 'Verification link resent successfully.', 
-                        timer: 2000, 
-                        showConfirmButton: false,
-                        background: '#020617',
-                        color: '#fff'
-                    });
-                    // Sake nuna babban overlay din bayan 2 seconds
-                    setTimeout(() => register(), 2000); 
+                    Swal.fire({ icon: 'success', title: 'Sent!', text: 'Verification email resent successfully.', timer: 2000, showConfirmButton: false });
+                    // Maimaita babban overlay din
+                    registerSuccessOverlay(email, fbUser);
                 } catch (err) {
-                    Swal.fire({ icon: 'error', title: 'LIMIT', text: 'Please wait a moment.', background: '#020617', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: 'Limit Reached', text: 'Please wait a moment before requesting another email.' });
                 }
             }
         });
@@ -172,20 +164,9 @@
     } catch (e) {
         btn.disabled = false;
         btn.innerText = "ACTIVATE PROTOCOL";
-        Swal.fire({
-            icon: 'error',
-            title: 'SYSTEM ERROR',
-            text: e.message,
-            confirmButtonColor: '#7000ff',
-            background: '#020617',
-            color: '#fff',
-            customClass: { title: 'orbitron' }
-        });
+        Swal.fire({ icon: 'error', title: 'System Error', text: e.message, confirmButtonColor: '#7000ff' });
     }
-       }
-        
-
-         
+}
 
         
         
