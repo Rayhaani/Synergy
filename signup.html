@@ -16,11 +16,34 @@
         body { background: var(--bg); color: #fff; font-family: 'Space Grotesk', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 3px; font-size: 10px; }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(0, 242, 254, 0.3); transition: all 0.5s ease; }
-        .input-node { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 15px; outline: none; color: white; font-family: 'Space Grotesk', sans-serif; transition: 0.3s; }
+        .input-node { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 15px; outline: none; color: white; transition: 0.3s; }
         .input-node:focus { border-color: var(--aqua); box-shadow: 0 0 15px rgba(0, 242, 254, 0.1); }
         .fade-out { opacity: 0; transform: scale(0.9); pointer-events: none; }
-        .swal2-styled.swal2-confirm { background: linear-gradient(90deg, #00f2fe, #0099ff) !important; border-radius: 12px !important; font-family: 'Syncopate', sans-serif !important; font-size: 10px !important; padding: 15px 30px !important; }
-        .swal2-styled.swal2-deny { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 12px !important; font-family: 'Syncopate', sans-serif !important; font-size: 10px !important; }
+
+        /* FUTURISTIC OVERLAY STYLING */
+        .synergy-popup {
+            background: rgba(2, 6, 23, 0.95) !important;
+            border: 2px solid var(--aqua) !important;
+            border-radius: 40px !important;
+            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2) !important;
+        }
+        .resend-btn-neon {
+            background: transparent !important;
+            border: 1px solid var(--aqua) !important;
+            color: var(--aqua) !important;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            font-family: 'Syncopate', sans-serif !important;
+            font-size: 11px !important;
+            padding: 16px 40px !important;
+            border-radius: 20px !important;
+            transition: 0.4s !important;
+            letter-spacing: 2px;
+        }
+        .resend-btn-neon:hover {
+            background: var(--aqua) !important;
+            color: #000 !important;
+            box-shadow: 0 0 30px var(--aqua);
+        }
     </style>
 </head>
 <body>
@@ -33,29 +56,12 @@
         </div>
 
         <div id="form-content" class="space-y-4">
-            <div>
-                <label class="orbitron text-gray-500 ml-1 mb-2 block">Full Name</label>
-                <input type="text" id="full-name" oninput="validateForm()" class="input-node">
-            </div>
-            <div id="step-email" class="hidden">
-                <label class="orbitron text-gray-500 ml-1 mb-2 block">Email Address</label>
-                <input type="email" id="email" oninput="validateForm()" class="input-node">
-            </div>
-            <div id="step-user" class="hidden">
-                <label class="orbitron text-gray-500 ml-1 mb-2 block">Username</label>
-                <input type="text" id="username" oninput="validateForm()" class="input-node">
-            </div>
-            <div id="step-state" class="hidden">
-                <label class="orbitron text-gray-500 ml-1 mb-2 block">State</label>
-                <input type="text" id="state" oninput="validateForm()" class="input-node">
-            </div>
-            <div id="step-phone" class="hidden">
-                <label class="orbitron text-gray-500 ml-1 mb-2 block">Phone Number</label>
-                <input type="tel" id="phone" oninput="validateForm()" class="input-node">
-            </div>
-            <button id="reg-btn" onclick="register()" disabled class="w-full bg-white text-black py-4 rounded-2xl font-bold orbitron mt-4 opacity-20 cursor-not-allowed transition-all duration-500">
-                ACTIVATE PROTOCOL
-            </button>
+            <div><label class="orbitron text-gray-500 ml-1 mb-2 block">Full Name</label><input type="text" id="full-name" oninput="validateForm()" class="input-node"></div>
+            <div id="step-email" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">Email Address</label><input type="email" id="email" oninput="validateForm()" class="input-node"></div>
+            <div id="step-user" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">Username</label><input type="text" id="username" oninput="validateForm()" class="input-node"></div>
+            <div id="step-state" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">State</label><input type="text" id="state" oninput="validateForm()" class="input-node"></div>
+            <div id="step-phone" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-2 block">Phone Number</label><input type="tel" id="phone" oninput="validateForm()" class="input-node"></div>
+            <button id="reg-btn" onclick="register()" disabled class="w-full bg-white text-black py-4 rounded-2xl font-bold orbitron mt-4 opacity-20 cursor-not-allowed transition-all duration-500">ACTIVATE PROTOCOL</button>
         </div>
     </div>
 
@@ -70,40 +76,24 @@
             const user = document.getElementById('username').value.trim();
             const state = document.getElementById('state').value.trim();
             const phone = document.getElementById('phone').value.trim();
-
-            const steps = [
-                { el: 'step-email', valid: fullName.split(' ').length >= 2 },
-                { el: 'step-user', valid: email.includes('@') && email.includes('.') },
-                { el: 'step-state', valid: user.length >= 3 },
-                { el: 'step-phone', valid: state.length >= 3 },
-                { el: 'reg-btn', valid: phone.length >= 10 }
-            ];
-
+            const steps = [ { el: 'step-email', valid: fullName.split(' ').length >= 2 }, { el: 'step-user', valid: email.includes('@') && email.includes('.') }, { el: 'step-state', valid: user.length >= 3 }, { el: 'step-phone', valid: state.length >= 3 }, { el: 'reg-btn', valid: phone.length >= 10 } ];
             let completed = 0;
             steps.forEach(s => {
                 const target = document.getElementById(s.el);
                 if (s.valid) {
-                    if (target.id === 'reg-btn') {
-                        target.disabled = false;
-                        target.style.opacity = "1";
-                    } else {
-                        target.classList.remove('hidden');
-                    }
+                    if (target.id === 'reg-btn') { target.disabled = false; target.style.opacity = "1"; }
+                    else { target.classList.remove('hidden'); }
                     completed++;
                 }
             });
-
             document.getElementById('progress-text').innerText = `Initialize Sequence: ${Math.round((completed/5)*100)}%`;
         }
 
         async function register() {
             const card = document.getElementById('main-register-card');
             const btn = document.getElementById('reg-btn');
-            const fullName = document.getElementById('full-name').value.trim();
             const email = document.getElementById('email').value.trim();
             const user = document.getElementById('username').value.toLowerCase().trim();
-            const state = document.getElementById('state').value.trim();
-            const phone = document.getElementById('phone').value.trim();
             
             btn.disabled = true;
             btn.innerText = "AUTHENTICATING...";
@@ -111,12 +101,9 @@
             try {
                 const userRef = db.collection("users").doc(user);
                 const doc = await userRef.get();
-
-                if (doc.exists) {
-                    Swal.fire({ icon: 'error', title: 'NODE ERROR', text: 'Username already active.', background: '#020617', color: '#fff' });
-                    btn.disabled = false;
-                    btn.innerText = "ACTIVATE PROTOCOL";
-                    return;
+                if (doc.exists) { 
+                    Swal.fire({ icon: 'error', title: 'NODE ERROR', text: 'Username active.', background: '#020617', color: '#fff' }); 
+                    btn.disabled = false; btn.innerText = "ACTIVATE PROTOCOL"; return; 
                 }
 
                 const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, "SynergyUser123");
@@ -124,35 +111,45 @@
                 await fbUser.sendEmailVerification();
 
                 await userRef.set({
-                    uid: fbUser.uid, fullName, email, username: user, state, phoneNumber: phone,
-                    videoBalance: 0, shareBalance: 0, videosWatchedToday: 0, rank: "IRON",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    uid: fbUser.uid, fullName: document.getElementById('full-name').value.trim(), email, username: user,
+                    state: document.getElementById('state').value.trim(), phoneNumber: document.getElementById('phone').value.trim(),
+                    videoBalance: 0, shareBalance: 0, videosWatchedToday: 0, rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 card.classList.add('fade-out');
                 setTimeout(() => { card.style.display = 'none'; }, 500);
 
-                Swal.fire({
-                    title: 'REGISTRATION COMPLETE',
-                    html: `<p style="font-family:'Space Grotesk'; font-size:14px; opacity:0.7;">Protocol initialization link sent to:<br><b style="color:#00f2fe;">${email}</b></p>`,
-                    icon: 'success', background: '#020617', color: '#fff', showDenyButton: true,
-                    confirmButtonText: 'I UNDERSTAND', denyButtonText: 'RESEND EMAIL', allowOutsideClick: false,
-                    customClass: { popup: 'glass-card', title: 'orbitron' }
-                }).then(async (result) => {
-                    if (result.isConfirmed) {
-                        await firebase.auth().signOut();
-                        window.location.href = 'login.html';
-                    } else if (result.isDenied) {
-                        await fbUser.sendEmailVerification();
-                        Swal.fire({ title: 'SENT', text: 'Check your inbox/spam.', icon: 'success', timer: 2000, showConfirmButton: false });
-                    }
-                });
+                // FEATURISTIC OVERLAY (WORLD-CLASS DESIGN)
+                showSuccessOverlay(fbUser, email);
 
             } catch (e) {
-                btn.disabled = false;
-                btn.innerText = "RETRY ACTIVATION";
+                btn.disabled = false; btn.innerText = "RETRY ACTIVATION";
                 Swal.fire({ icon: 'error', title: 'SYSTEM FAILURE', text: e.message });
             }
+        }
+
+        function showSuccessOverlay(fbUser, email) {
+            Swal.fire({
+                title: 'NODE INITIALIZED',
+                html: `<div class="p-4"><p class="text-[12px] opacity-60 mb-4 uppercase tracking-[2px]">Verification matrix deployed to:</p><h2 class="text-cyan-400 font-bold tracking-widest text-[16px]">${email}</h2><p class="mt-6 text-[10px] text-gray-500 uppercase">Awaiting network activation via email link.</p></div>`,
+                background: '#020617',
+                color: '#fff',
+                showConfirmButton: true,
+                confirmButtonText: 'RESEND VERIFICATION',
+                allowOutsideClick: false,
+                customClass: { popup: 'synergy-popup', title: 'orbitron', confirmButton: 'resend-btn-neon' }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        await fbUser.sendEmailVerification();
+                        Swal.fire({ icon: 'success', title: 'RE-DEPLOYED', text: 'New verification link sent successfully.', background: '#020617', color: '#fff', timer: 2500, showConfirmButton: false });
+                        setTimeout(() => showSuccessOverlay(fbUser, email), 3000);
+                    } catch (err) {
+                        Swal.fire({ icon: 'error', title: 'LIMIT REACHED', text: 'Please wait before requesting again.', background: '#020617', color: '#fff' });
+                        setTimeout(() => showSuccessOverlay(fbUser, email), 3000);
+                    }
+                }
+            });
         }
     </script>
 </body>
