@@ -90,7 +90,7 @@
         }
 
 
-       // 1. WANNAN SHINE FUNCTION DIN OVERLAY DIN KAWAI (Yana magance Empty Page)
+       // Function don nuna Success Overlay
 function showSuccessOverlay(email) {
     Swal.fire({
         html: `
@@ -135,17 +135,21 @@ function showSuccessOverlay(email) {
                         title: 'Email resent successfully'
                     });
 
-                    // Muna dawo da overlay din maimakon refresh na register()
                     setTimeout(() => showSuccessOverlay(email), 3100); 
                 }
             } catch (err) {
+                // GYARA: Syncopate Heading da Quicksand Body anan
                 Swal.fire({
-                    icon: 'error',
                     title: 'LIMIT REACHED',
-                    text: 'Security protocol active. Please wait a moment before retrying.',
+                    html: `<p style="font-family: 'Quicksand', sans-serif; font-size: 14px;">Security protocol active. Please wait a moment before retrying.</p>`,
+                    icon: 'error',
                     background: '#020617',
                     color: '#fff',
-                    confirmButtonColor: '#7000ff'
+                    confirmButtonColor: '#7000ff',
+                    customClass: {
+                        title: 'orbitron', // Official Heading Font
+                        confirmButton: 'orbitron'
+                    }
                 });
                 setTimeout(() => showSuccessOverlay(email), 3000);
             }
@@ -153,7 +157,7 @@ function showSuccessOverlay(email) {
     });
 }
 
-// 2. WANNAN SHINE MAIN REGISTER FUNCTION DINKA
+// Main Register Function
 async function register() {
     const btn = document.getElementById('reg-btn');
     const mainCard = document.getElementById('main-register-card'); 
@@ -168,7 +172,14 @@ async function register() {
         const doc = await userRef.get();
 
         if (doc.exists) {
-            Swal.fire({ icon: 'error', title: 'NODE ERROR', text: 'Username active.', background: '#020617', color: '#fff' });
+            Swal.fire({ 
+                title: 'NODE ERROR', 
+                text: 'Username active.', 
+                icon: 'error',
+                background: '#020617', 
+                color: '#fff',
+                customClass: { title: 'orbitron' }
+            });
             btn.disabled = false;
             btn.innerText = "ACTIVATE PROTOCOL";
             return;
@@ -176,6 +187,8 @@ async function register() {
 
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, "SynergyUser123");
         const fbUser = userCredential.user;
+        
+        // Mun tura email anan kawai (Once)
         await fbUser.sendEmailVerification();
 
         await userRef.set({
@@ -189,18 +202,26 @@ async function register() {
             rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Boye form din kawai idan aikin ya gama
         mainCard.style.display = 'none';
-        // Kira overlay din daban don ya fito sharp
         showSuccessOverlay(email);
 
     } catch (e) {
         btn.disabled = false;
         btn.innerText = "RETRY ACTIVATION";
-        Swal.fire({ icon: 'error', title: 'SYSTEM FAILURE', text: e.message, background: '#020617', color: '#fff' });
+        Swal.fire({ 
+            title: 'SYSTEM FAILURE', 
+            html: `<p style="font-family: 'Quicksand', sans-serif;">${e.message}</p>`,
+            icon: 'error',
+            background: '#020617', 
+            color: '#fff',
+            customClass: { title: 'orbitron' }
+        });
     }
-        }
+                }
                 
+}
+
+
 
                     
 
