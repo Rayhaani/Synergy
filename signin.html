@@ -83,69 +83,107 @@
     </div>
 
     <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
-            authDomain: "synergy-protocol.firebaseapp.com", 
-            projectId: "synergy-protocol" 
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        function validateLogin() {
-            const loginID = document.getElementById('login-id').value.trim();
-            const loginPass = document.getElementById('login-pass').value.trim();
-            const btn = document.getElementById('login-btn');
-
-            // Step 1 check
-            if (loginID.length >= 3) {
-                show(2);
-            } else {
-                hide(2);
-            }
-
-            // Unlock button if both are filled
-            if (loginID.length >= 3 && loginPass.length >= 6) {
-                btn.disabled = false;
-                btn.classList.remove('btn-locked');
-            } else {
-                btn.disabled = true;
-                btn.classList.add('btn-locked');
-            }
-        }
-
-        function show(id) {
-            const el = document.getElementById(`step-${id}`);
-            if(el) { el.classList.remove('step-hidden'); el.classList.add('step-visible'); }
-        }
-
-        function hide(id) {
-            const el = document.getElementById(`step-${id}`);
-            if(el) { el.classList.add('step-hidden'); el.classList.remove('step-visible'); }
-        }
-
-        async function login() {
-    const email = document.getElementById('login-email').value.trim();
-    const pass = document.getElementById('login-pass').value.trim();
-
-    try {
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
-        const user = userCredential.user;
-
-        // Bincika idan ya danna link din email
-        if (!user.emailVerified) {
-            showTopNotif("Please verify your email first.", "error"); // GitHub Bar zata fito
-            return;
-        }
-
-        // Idan komai ya yi, tura shi Dashboard
-        window.location.href = "dashboard.html";
-
-    } catch (error) {
-        // Maimakon wancan tsohon alert din, yi amfani da GitHub Bar
-        showTopNotif("Account not found or invalid credentials.", "error"); 
-    }
-    }
         
+    const firebaseConfig = { 
+        apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+        authDomain: "synergy-protocol.firebaseapp.com", 
+        projectId: "synergy-protocol" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 1. ADD THE NOTIFICATION SYSTEM (Dole ne don sanarwa ta fito)
+    function showTopNotif(message, type) {
+        // Idan babu bar din a shafin, mu samar da ita yanzu
+        let bar = document.getElementById('notification-bar');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'notification-bar';
+            bar.style = "position:fixed; top:-100px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; padding:12px; border-radius:8px; display:flex; justify-content:space-between; z-index:9999; transition:0.4s; font-size:12px; font-family:sans-serif; border:1px solid rgba(0,242,254,0.3);";
+            document.body.appendChild(bar);
+        }
+        
+        bar.style.background = (type === 'success') ? '#0c2d21' : '#2d1616';
+        bar.style.color = (type === 'success') ? '#3fb950' : '#f85149';
+        bar.innerHTML = `<span>${message}</span><span style="cursor:pointer" onclick="this.parentElement.style.top='-100px'">×</span>`;
+        
+        bar.style.top = '20px';
+        setTimeout(() => { bar.style.top = '-100px'; }, 5000);
+    }
+
+    function validateLogin() {
+        const loginID = document.getElementById('login-id').value.trim();
+        const loginPass = document.getElementById('login-pass').value.trim();
+        const btn = document.getElementById('login-btn');
+
+        if (loginID.length >= 3) { show(2); } else { hide(2); }
+
+        if (loginID.length >= 3 && loginPass.length >= 6) {
+            btn.disabled = false;
+            btn.classList.remove('btn-locked');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('btn-locked');
+        }
+    }
+
+    function show(id) {
+        const el = document.getElementById(`step-${id}`);
+        if(el) { el.classList.remove('step-hidden'); el.classList.add('step-visible'); }
+    }
+
+    function hide(id) {
+        const el = document.getElementById(`step-${id}`);
+        if(el) { el.classList.add('step-hidden'); el.classList.remove('step-visible'); }
+    }
+
+    // 2. FIXED LOGIN FUNCTION (Updated ID to match HTML)
+    async function login() {
+        const loginInput = document.getElementById('login-id').value.trim();
+        const pass = document.getElementById('login-pass').value.trim();
+        const btn = document.getElementById('login-btn');
+
+        btn.innerText = "CONNECTING...";
+        btn.disabled = true;
+
+        try {
+            let email = loginInput;
+
+            // Idan username ne aka saka maimakon email, mu nemo email din a Firestore
+            if (!loginInput.includes('@')) {
+                const userRef = db.collection("users").doc(loginInput.toLowerCase());
+                const doc = await userRef.get();
+                if (doc.exists) {
+                    email = doc.data().email;
+                } else {
+                    showTopNotif("Identity not found in the protocol.", "error");
+                    btn.innerText = "ACCESS PROTOCOL";
+                    btn.disabled = false;
+                    return;
+                }
+            }
+
+            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
+            const user = userCredential.user;
+
+            if (!user.emailVerified) {
+                showTopNotif("Access Denied: Verify your email first.", "error");
+                btn.innerText = "ACCESS PROTOCOL";
+                btn.disabled = false;
+                return;
+            }
+
+            showTopNotif("Access Granted! Opening Dashboard...", "success");
+            setTimeout(() => { window.location.href = "dashboard.html"; }, 1500);
+
+        } catch (error) {
+            showTopNotif("Invalid credentials. Try again.", "error");
+            btn.innerText = "ACCESS PROTOCOL";
+            btn.disabled = false;
+        }
+    }
+
+    
     </script>
 </body>
 </html>
