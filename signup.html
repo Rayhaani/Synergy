@@ -89,74 +89,103 @@
             document.getElementById('progress-text').innerText = `Initialize Sequence: ${Math.round((completed/5)*100)}%`;
         }
 
-        async function register() {
-            const card = document.getElementById('main-register-card');
-            const btn = document.getElementById('reg-btn');
-            const email = document.getElementById('email').value.trim();
-            const user = document.getElementById('username').value.toLowerCase().trim();
-            
-            btn.disabled = true;
-            btn.innerText = "AUTHENTICATING...";
+       async function register() {
+    const card = document.getElementById('main-register-card');
+    const btn = document.getElementById('reg-btn');
+    const fullName = document.getElementById('full-name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const user = document.getElementById('username').value.toLowerCase().trim();
+    const state = document.getElementById('state').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    btn.disabled = true;
+    btn.innerText = "AUTHENTICATING...";
 
-            try {
-                const userRef = db.collection("users").doc(user);
-                const doc = await userRef.get();
-                if (doc.exists) { 
-                    Swal.fire({ icon: 'error', title: 'NODE ERROR', text: 'Username active.', background: '#020617', color: '#fff' }); 
-                    btn.disabled = false; btn.innerText = "ACTIVATE PROTOCOL"; return; 
-                }
+    try {
+        const userRef = db.collection("users").doc(user);
+        const doc = await userRef.get();
 
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, "SynergyUser123");
-                const fbUser = userCredential.user;
-                await fbUser.sendEmailVerification();
-
-                await userRef.set({
-                    uid: fbUser.uid, fullName: document.getElementById('full-name').value.trim(), email, username: user,
-                    state: document.getElementById('state').value.trim(), phoneNumber: document.getElementById('phone').value.trim(),
-                    videoBalance: 0, shareBalance: 0, videosWatchedToday: 0, rank: "IRON", createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                card.classList.add('fade-out');
-                setTimeout(() => { card.style.display = 'none'; }, 500);
-
-                // FEATURISTIC OVERLAY (WORLD-CLASS DESIGN)
-                showSuccessOverlay(fbUser, email);
-
-            } catch (e) {
-                btn.disabled = false; btn.innerText = "RETRY ACTIVATION";
-                Swal.fire({ icon: 'error', title: 'SYSTEM FAILURE', text: e.message });
-            }
-        }
-
-         // WANNAN SHINE ZAI TSAYA A OVERLAY (Professional Notification)
-            Swal.fire({
-                title: 'Registration Successful',
-                text: 'Kindly verify your email and proceed to login.',
-                icon: 'success',
-                background: '#020617',
+        if (doc.exists) {
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'NODE ERROR', 
+                text: 'Username already active.', 
+                background: '#020617', 
                 color: '#fff',
-                confirmButtonText: 'PROCEED',
-                confirmButtonColor: '#00f2fe',
-                allowOutsideClick: false 
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    await firebase.auth().signOut();
-                    // Zai tsaya anan, ba zai tura mutum ko ina ba har sai ya duba email
-                    btn.innerText = "AWAITING VERIFICATION";
-                }
+                customClass: { title: 'orbitron' }
             });
-
-        } catch (e) {
             btn.disabled = false;
             btn.innerText = "ACTIVATE PROTOCOL";
-            Swal.fire({
-                icon: 'error',
-                title: 'System Error',
-                text: e.message,
-                confirmButtonColor: '#7000ff'
-            });
+            return;
         }
+
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, "SynergyUser123");
+        const fbUser = userCredential.user;
+        await fbUser.sendEmailVerification();
+
+        await userRef.set({
+            uid: fbUser.uid, fullName, email, username: user, state, phoneNumber: phone,
+            videoBalance: 0, shareBalance: 0, videosWatchedToday: 0, rank: "IRON",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Instant Hide: Boye form din registration din
+        card.style.display = 'none';
+
+        // WANNAN SHINE GYARARRAN OVERLAY (Professional Notification)
+        Swal.fire({
+            title: 'REGISTRATION SUCCESSFUL',
+            html: `<p style="font-family:'Space Grotesk'; font-size:14px; opacity:0.8;">Kindly verify your email to activate your node:<br><b style="color:#00f2fe;">${email}</b></p>`,
+            icon: 'success',
+            background: '#020617',
+            color: '#fff',
+            confirmButtonText: 'RESEND VERIFICATION',
+            confirmButtonColor: '#00f2fe',
+            allowOutsideClick: false,
+            customClass: {
+                popup: 'glass-card',
+                title: 'orbitron', // Font din dake kan Dashboard
+                confirmButton: 'orbitron' // Button font dake kan Dashboard
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                // Functional Resend: Zai sake tura email din
+                try {
+                    await fbUser.sendEmailVerification();
+                    Swal.fire({ 
+                        icon: 'success', 
+                        title: 'SENT', 
+                        text: 'Verification link resent successfully.', 
+                        timer: 2000, 
+                        showConfirmButton: false,
+                        background: '#020617',
+                        color: '#fff'
+                    });
+                    // Sake nuna babban overlay din bayan 2 seconds
+                    setTimeout(() => register(), 2000); 
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'LIMIT', text: 'Please wait a moment.', background: '#020617', color: '#fff' });
+                }
+            }
+        });
+
+    } catch (e) {
+        btn.disabled = false;
+        btn.innerText = "ACTIVATE PROTOCOL";
+        Swal.fire({
+            icon: 'error',
+            title: 'SYSTEM ERROR',
+            text: e.message,
+            confirmButtonColor: '#7000ff',
+            background: '#020617',
+            color: '#fff',
+            customClass: { title: 'orbitron' }
+        });
     }
+       }
+        
+
+         
 
         
         
