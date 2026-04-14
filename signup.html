@@ -122,17 +122,54 @@
             popup: 'rounded-[35px] border border-cyan-500/30 shadow-2xl',
             confirmButton: 'resend-btn-neon' 
         }
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            // Functional Resend
-            const userAuth = firebase.auth().currentUser;
-            if(userAuth) {
-                await userAuth.sendEmailVerification();
-                Swal.fire({ icon: 'success', title: 'SENT', background: '#020617', color: '#fff', timer: 1500, showConfirmButton: false });
-                setTimeout(() => register(), 2000);
+
+                    }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    // Muna duba idan akwai user din a nan take
+                    const fbUser = firebase.auth().currentUser;
+                    
+                    if (fbUser) {
+                        await fbUser.sendEmailVerification();
+                        
+                        // Nuna karamin sako (Toast) maimakon babban overlay
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            background: '#020617',
+                            color: '#fff'
+                        });
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Email resent successfully'
+                        });
+
+                        // Muhimmi: Maimaita nuna babban overlay din bayan 3 seconds
+                        // Domin tabbatar da cewa mai amfani bai fita ba har sai ya gama
+                        setTimeout(() => register(), 3100); 
+
+                    }
+                } catch (err) {
+                    // Wannan shine yake nuna LIMIT din idan an danna sau da yawa
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'LIMIT REACHED',
+                        text: 'Security protocol active. Please wait a moment before retrying.',
+                        background: '#020617',
+                        color: '#fff',
+                        confirmButtonColor: '#7000ff'
+                    });
+                    
+                    // Koda an samu error, muna son babban overlay ya dawo
+                    setTimeout(() => register(), 3000);
+                }
             }
-        }
-    });
+        });
+          
 
     // 3. BACKGROUND PROCESSING: Firebase tana aiki a baya yayin da overlay yake a bude
     try {
