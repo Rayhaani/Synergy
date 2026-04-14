@@ -89,7 +89,8 @@
             document.getElementById('progress-text').innerText = `Initialize Sequence: ${Math.round((completed/5)*100)}%`;
         }
 
-async function register() {
+
+       async function register() {
     const btn = document.getElementById('reg-btn');
     const mainCard = document.getElementById('main-register-card'); 
     const fullName = document.getElementById('full-name').value.trim();
@@ -99,7 +100,7 @@ async function register() {
     const phone = document.getElementById('phone').value.trim();
     const password = "SynergyUser123"; 
 
-    // Don ya zama sharp, muna boye form din nan take
+    // Don ya zama sharp
     mainCard.style.opacity = '0.5';
     btn.disabled = true;
     btn.innerHTML = `<span class="orbitron animate-pulse">CONNECTING...</span>`;
@@ -134,20 +135,20 @@ async function register() {
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Cire background form din gaba daya don overlay ya fito sharp
         mainCard.style.display = 'none';
 
-        // EXACT OVERLAY (Circle + Font + Single Resend Button)
+        // GYARARRAN OVERLAY (Official Text + Space Grotesk Font)
         Swal.fire({
             html: `
-                <div class="flex flex-col items-center">
+                <div class="flex flex-col items-center" style="font-family:'Space Grotesk';">
                     <div class="w-12 h-12 bg-cyan-500 rounded-full mb-6 shadow-[0_0_20px_#00f2fe]"></div>
-                    <h2 class="orbitron text-white text-xl mb-4">REGISTRATION SUCCESSFUL</h2>
-                    <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px dashed rgba(0,242,254,0.3); width: 100%;">
-                        <p class="orbitron" style="font-size: 8px; color: #00f2fe; margin-bottom: 10px;">Target Node:</p>
-                        <p style="font-family:'Space Grotesk'; font-size: 14px; color: #fff;">${email}</p>
-                        <p class="orbitron" style="font-size: 8px; color: #00f2fe; margin-top: 15px; margin-bottom: 5px;">Status:</p>
-                        <p style="font-family:'Space Grotesk'; font-size: 12px; color: #a5dc86;">AWAITING VERIFICATION...</p>
+                    <h2 class="orbitron text-white text-xl mb-6">REGISTRATION SUCCESSFUL</h2>
+                    <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; border: 1px dashed rgba(0,242,254,0.3); width: 100%; color: #fff; text-align: center;">
+                        <p style="font-size: 15px; line-height: 1.6;">
+                            Email sent to <b style="color:#00f2fe;">${email}</b>, 
+                            please check your email to verify your account.
+                        </p>
+                        <p class="orbitron" style="font-size: 8px; color: #a5dc86; margin-top: 15px;">AWAITING VERIFICATION...</p>
                     </div>
                 </div>`,
             background: '#020617',
@@ -164,14 +165,14 @@ async function register() {
                     await fbUser.sendEmailVerification();
                     Swal.fire({ 
                         icon: 'success', 
-                        title: 'RE-DEPLOYED', 
-                        text: 'Link sent to your node.', 
+                        title: 'SENT', 
+                        text: 'Verification email resent successfully.', 
                         timer: 2000, 
-                        showConfirmButton: false,
-                        background: '#020617',
-                        color: '#fff'
+                        showConfirmButton: false, 
+                        background: '#020617', 
+                        color: '#fff' 
                     });
-                    setTimeout(() => register(), 2000); 
+                    setTimeout(() => register(), 2500); 
                 } catch (err) {
                     Swal.fire({ icon: 'error', title: 'LIMIT', text: 'Wait a moment.', background: '#020617', color: '#fff' });
                 }
@@ -184,8 +185,8 @@ async function register() {
         btn.innerText = "RETRY ACTIVATION";
         Swal.fire({ icon: 'error', title: 'SYSTEM FAILURE', text: e.message, background: '#020617', color: '#fff' });
     }
-        }
-        
+                                                                                                                                                                                                                                                                  }
+                                                                                         
         
         
 
