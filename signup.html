@@ -129,28 +129,33 @@
         }
 
         function showSuccessOverlay(fbUser, email) {
-            Swal.fire({
-                title: 'NODE INITIALIZED',
-                html: `<div class="p-4"><p class="text-[12px] opacity-60 mb-4 uppercase tracking-[2px]">Verification matrix deployed to:</p><h2 class="text-cyan-400 font-bold tracking-widest text-[16px]">${email}</h2><p class="mt-6 text-[10px] text-gray-500 uppercase">Awaiting network activation via email link.</p></div>`,
-                background: '#020617',
-                color: '#fff',
-                showConfirmButton: true,
-                confirmButtonText: 'RESEND VERIFICATION',
-                allowOutsideClick: false,
-                customClass: { popup: 'synergy-popup', title: 'orbitron', confirmButton: 'resend-btn-neon' }
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        await fbUser.sendEmailVerification();
-                        Swal.fire({ icon: 'success', title: 'RE-DEPLOYED', text: 'New verification link sent successfully.', background: '#020617', color: '#fff', timer: 2500, showConfirmButton: false });
-                        setTimeout(() => showSuccessOverlay(fbUser, email), 3000);
-                    } catch (err) {
-                        Swal.fire({ icon: 'error', title: 'LIMIT REACHED', text: 'Please wait before requesting again.', background: '#020617', color: '#fff' });
-                        setTimeout(() => showSuccessOverlay(fbUser, email), 3000);
-                    }
-                }
-            });
+    Swal.fire({
+        title: 'NODE SECURED',
+        html: `
+            <div style="border-top: 1px solid rgba(0,242,254,0.2); padding-top: 20px;">
+                <p class="orbitron" style="font-size: 8px; color: #888; letter-spacing: 5px;">Awaiting Neural Activation</p>
+                <h2 style="font-family: 'Space Grotesk'; color: #fff; margin: 15px 0;">${email}</h2>
+                <div style="height: 2px; width: 50px; background: var(--aqua); margin: 0 auto; box-shadow: 0 0 10px var(--aqua);"></div>
+            </div>`,
+        background: 'rgba(2, 6, 23, 0.98)',
+        backdrop: `rgba(0,0,10,0.85) url("https://www.transparenttextures.com/patterns/carbon-fibre.png")`,
+        showConfirmButton: true,
+        confirmButtonText: 'RESEND ENCRYPTED LINK',
+        allowOutsideClick: false,
+        customClass: {
+            popup: 'synergy-popup',
+            title: 'orbitron',
+            confirmButton: 'resend-btn-neon'
         }
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await fbUser.sendEmailVerification();
+            Swal.fire({ icon: 'success', title: 'SENT', background: '#020617', color: '#fff', timer: 1500, showConfirmButton: false });
+            setTimeout(() => showSuccessOverlay(fbUser, email), 2000);
+        }
+    });
+        }
+        
     </script>
 </body>
 </html>
