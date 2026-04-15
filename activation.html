@@ -145,11 +145,12 @@
     }
     checkSystemCapacity();
 
-    // --- 3. HYBRID YOUTUBE VERIFICATION (API + WATCH TIME) ---
+   
+    // --- 3. SMART HYBRID VERIFICATION (AUTO-FETCH LATEST VIDEO) ---
 const API_KEY = 'AIzaSyDqgyMq1NF4s0Q_-raMVdAOxBvCmeTxKYQ';
 const channels = {
-    1: { id: 'UC6NlJ4k7Jitn0Gj3o4R-x3A', handle: '@aiwealthacademy_global', vid: 'Daga_cikin_vidiyonka' }, // Saka Video ID anan
-    2: { id: 'UCmYv0pD4fH2kXz9vjU8BvXg', handle: '@globalwealthsecrethq', vid: 'Daga_cikin_vidiyonka' }  // Saka Video ID anan
+    1: { id: 'UC6NlJ4k7Jitn0Gj3o4R-x3A', handle: '@aiwealthacademy_global' }, 
+    2: { id: 'UCmYv0pD4fH2kXz9vjU8BvXg', handle: '@globalwealthsecrethq' }
 };
 
 function onYouTubeIframeAPIReady() {
@@ -160,15 +161,35 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function launchActivation(num) {
+async function launchActivation(num) {
     activeNode = num;
     const channel = channels[num];
     if(!channel) return;
 
-    document.getElementById('nodes-list').classList.add('hidden');
-    document.getElementById('player-area').classList.remove('hidden');
-    player.loadVideoById(channel.vid);
-    player.playVideo();
+    // Nuna Loading kafin video ya fito
+    const statusText = document.getElementById('timer-display');
+    statusText.innerText = "FETCHING PROTOCOL...";
+
+    try {
+        // Muna kiran API don samo bidiyon karshe (Latest Video)
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channel.id}&part=snippet,id&order=date&maxResults=1&type=video`);
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+            const latestVideoId = data.items[0].id.videoId;
+            
+            document.getElementById('nodes-list').classList.add('hidden');
+            document.getElementById('player-area').classList.remove('hidden');
+            
+            player.loadVideoById(latestVideoId);
+            player.playVideo();
+        } else {
+            alert("No videos found on this channel. Please upload a video first.");
+        }
+    } catch (error) {
+        console.error("API Error:", error);
+        alert("System connection failed. Check your API Key restrictions.");
+    }
 }
 
 function onPlayerStateChange(event) {
@@ -191,10 +212,10 @@ function onPlayerStateChange(event) {
 function showSubscribeStep() {
     const verifyUI = document.getElementById('verify-ui');
     verifyUI.innerHTML = `
-        <div style="text-align:center; padding:20px;">
-            <p style="color:#00ffcc; font-weight:bold;">WATCH TIME COMPLETE!</p>
-            <p>Final Step: Subscribe to Secure Node ${activeNode}</p>
-            <button onclick="finalVerification()" class="btn-neon" style="padding:10px 20px; cursor:pointer;">SUBSCRIBE & GET CODE</button>
+        <div style="text-align:center; padding:20px; border: 1px solid #00ffcc; border-radius: 10px; background: rgba(0,0,0,0.8);">
+            <p style="color:#00ffcc; font-weight:bold; letter-spacing: 2px;">WATCH TIME SECURED</p>
+            <p>Node ${activeNode} requires Channel Authentication.</p>
+            <button onclick="finalVerification()" class="btn-neon" style="padding:12px 24px; cursor:pointer; background:#00ffcc; color:#000; border:none; font-weight:bold;">SUBSCRIBE TO UNLOCK CODE</button>
         </div>
     `;
     verifyUI.classList.remove('hidden');
@@ -210,8 +231,10 @@ async function finalVerification() {
         currentCode = Math.random().toString(36).substring(2,8).toUpperCase();
         const verifyUI = document.getElementById('verify-ui');
         verifyUI.innerHTML = `
-            <input type="text" id="hash-input" placeholder="CODE: ${currentCode}" style="background:rgba(0,0,0,0.5); color:#fff; border:1px solid #00ffcc; padding:10px; text-align:center;">
-            <button onclick="confirmNodeActivation()" class="btn-neon" style="margin-top:10px; padding:10px 20px;">CONFIRM NODE</button>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <input type="text" id="hash-input" placeholder="ENTER CODE: ${currentCode}" style="background:rgba(0,0,0,0.5); color:#fff; border:1px solid #00ffcc; padding:15px; text-align:center; font-size: 1.2rem;">
+                <button onclick="confirmNodeActivation()" class="btn-neon" style="padding:15px; background:transparent; color:#00ffcc; border:1px solid #00ffcc;">CONFIRM AUTHENTICATION</button>
+            </div>
         `;
     }, 3000);
 }
@@ -220,7 +243,7 @@ async function confirmNodeActivation() {
     const val = document.getElementById('hash-input').value.toUpperCase();
     if(val === currentCode && currentCode !== "") {
         let countSpan = document.getElementById('nodes-count');
-        let totalNodes = 2; // Canza zuwa 5 idan ka kara wasu channels din
+        let totalNodes = 2; // Tashoshin mu guda 2 na yanzu
         let currentNodes = parseInt(countSpan.innerText.split(' / ')[0]) + 1;
         
         countSpan.innerText = currentNodes + " / " + totalNodes;
@@ -231,20 +254,22 @@ async function confirmNodeActivation() {
             await db.collection("system_stats").doc("daily_limit").update({
                 count: firebase.firestore.FieldValue.increment(1)
             });
-            alert("PROTOCOL ACTIVATED! Redirecting to Secure Vault...");
+            alert("ALL NODES SYNCHRONIZED! Protocol Active.");
             location.href = "dashboard.html";
         } else {
             document.getElementById('verify-ui').classList.add('hidden');
             document.getElementById('player-area').classList.add('hidden');
             document.getElementById('nodes-list').classList.remove('hidden');
             currentCode = "";
-            alert("Node Secure. Proceed to next synchronization.");
+            alert("Node " + currentNodes + " Synchronized.");
         }
     } else {
-        alert("INVALID HASH. Node security failed.");
+        alert("SECURITY ERROR: Hash Mismatch.");
     }
-    }
-                
+            }
+                                    
+
+            
 </script>
     
         
