@@ -5,18 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SYNERGY | ORBITAL SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
         body { 
             background: radial-gradient(circle at center, #050a15 0%, #000 100%);
-            color: #fff; font-family: 'Space Grotesk', sans-serif;
-            height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center;
+            color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: flex-start;
+            padding: 10px 20px; 
         }
         .orbitron { font-family: 'Syncopate', sans-serif; }
 
-        /* The Core */
+        /* NAV LOGO & MENU */
+        .header-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            z-index: 100;
+            margin-top: 10px; 
+            margin-bottom: 40px; 
+            position: relative;
+        }
+        .nav-logo {
+            font-weight: 800;
+            letter-spacing: -1px;
+            font-size: 24px;
+        }
+        .menu-icon {
+            width: 30px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .menu-bar {
+            width: 100%;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        .menu-bar.short { width: 60%; align-self: flex-end; }
+
+        /* PASSIONATE SMALL MENU */
+        #side-menu {
+            position: absolute;
+            top: 40px; 
+            right: 0;
+            width: 180px; 
+            background: rgba(10, 15, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 12px;
+            z-index: 1000;
+            display: none; 
+            flex-direction: column;
+            padding: 15px 0;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        }
+        #side-menu.active { display: flex; }
+        
+        .menu-link {
+            padding: 12px 25px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #888;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+        }
+
+        /* EFFECT: Canza kala da gungurawa zuwa dama */
+        .menu-link:hover { 
+            color: #00f2fe; 
+            padding-left: 35px; /* Gungurawar nan ce */
+            background: rgba(0, 242, 254, 0.05);
+        }
+
+        /* HERO SECTION */
+        .hero-layer {
+            width: 100%;
+            text-align: center;
+            z-index: 50;
+            margin-bottom: 20px; 
+        }
+        .hero-h1 {
+            font-size: clamp(2.2rem, 10vw, 3.8rem);
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            line-height: 1.1;
+            margin: 0;
+        }
+        .hero-h1 span { color: #00f2fe; }
+        .hero-p {
+            font-size: 13px;
+            color: #888;
+            max-width: 350px;
+            margin: 20px auto 0;
+            line-height: 1.6;
+        }
+
+        /* ORBITAL SYSTEM */
+        .main-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex-grow: 1;
+            min-height: 350px;
+        }
         .core-system {
-            width: 200px; height: 200px;
+            width: 140px; height: 140px;
             background: radial-gradient(circle, #00f2fe 0%, transparent 70%);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -28,146 +139,114 @@
             0%, 100% { transform: scale(1); opacity: 0.8; }
             50% { transform: scale(1.1); opacity: 1; }
         }
-
-        /* Orbiting Items */
         .orbit-container {
-            position: absolute; width: 500px; height: 500px;
+            position: absolute; 
+            width: 300px; height: 300px;
             border: 1px solid rgba(0, 242, 254, 0.1);
             border-radius: 50%;
             animation: rotate 20s linear infinite;
         }
         .node-item {
-            position: absolute; width: 80px; height: 80px;
+            position: absolute; 
+            width: 65px; height: 65px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             animation: counter-rotate 20s linear infinite;
             cursor: pointer; transition: 0.3s;
         }
         .node-item:hover { border-color: #00f2fe; background: rgba(0, 242, 254, 0.1); transform: scale(1.1); }
-
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes counter-rotate { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 
-        /* Positions */
-        .n1 { top: -40px; left: 50%; margin-left: -40px; }
-        .n2 { bottom: -40px; left: 50%; margin-left: -40px; }
-        .n3 { left: -40px; top: 50%; margin-top: -40px; }
-        .n4 { right: -40px; top: 50%; margin-top: -40px; }
-   
-    
-    /* HERO SECTION CORE STYLES */
-.hero-layer {
-    position: absolute;
-    top: 12%;
-    width: 100%;
-    text-align: center;
-    z-index: 50;
-    pointer-events: none;
-}
+        .n1 { top: -32.5px; left: 50%; margin-left: -32.5px; }
+        .n2 { bottom: -32.5px; left: 50%; margin-left: -32.5px; }
+        .n3 { left: -32.5px; top: 50%; margin-top: -32.5px; }
+        .n4 { right: -32.5px; top: 50%; margin-top: -32.5px; }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 15px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(0, 242, 254, 0.2);
-    border-radius: 100px;
-    font-size: 9px;
-    font-family: 'Syncopate', sans-serif;
-    letter-spacing: 2px;
-    color: #00f2fe;
-    margin-bottom: 20px;
-}
-
-.pulse-dot {
-    width: 6px;
-    height: 6px;
-    background: #00f2fe;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #00f2fe;
-    animation: pulse-glow 2s infinite;
-}
-
-@keyframes pulse-glow {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.5; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-.hero-h1 {
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 900;
-    letter-spacing: -0.05em;
-    line-height: 1;
-    background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.4) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0;
-}
-
-.hero-p {
-    font-size: 14px;
-    color: #888;
-    max-width: 500px;
-    margin: 15px auto 0;
-    line-height: 1.6;
-    letter-spacing: 1px;
-    font-weight: 300;
-}
-        
-            
+        .footer-info {
+            text-align: center;
+            width: 100%;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="hero-layer">
-    <div class="hero-badge">
-        <span class="pulse-dot"></span>
-        v4.0.1 GLOBAL INFRASTRUCTURE ACTIVE
-    </div>
-    <h1 class="hero-h1">SYNERGY PROTOCOL</h1>
-    <p class="hero-p">
-        Decentralized YouTube Automation & Neural Verification Ecosystem. <br>
-        Building the future of digital trust and automated yields.
-    </div>
-</div>
+    <header class="header-nav">
+        <div class="nav-logo">
+            SYNERGY<span class="text-cyan-400">.</span>
+        </div>
+        <div class="menu-icon" id="menuBtn">
+            <div class="menu-bar"></div>
+            <div class="menu-bar short"></div>
+            <div class="menu-bar"></div>
+        </div>
 
-    
-    <div class="relative flex items-center justify-center">
+        <nav id="side-menu">
+            <a href="#" class="menu-link orbitron">Home</a>
+            <a href="#" class="menu-link orbitron">Signup</a>
+            <a href="#" class="menu-link orbitron">Sign In</a>
+            <a href="#" class="menu-link orbitron">Contact Us</a>
+            <a href="#" class="menu-link orbitron">About Us</a>
+        </nav>
+    </header>
+
+    <div class="hero-layer">
+        <h1 class="hero-h1">Ready to <span>scale</span> your automation?</h1>
+        <p class="hero-p">
+            Synergy is the world's first neural verification ecosystem. Save up to 90% of your time with automated YouTube nodes.
+        </p>
+    </div>
+
+    <div class="main-container">
         <div class="core-system">
-            <div class="text-black orbitron text-xs font-black text-center">SYNERGY<br>CORE</div>
+            <div class="text-black orbitron text-[10px] font-black text-center">SYNERGY<br>CORE</div>
         </div>
 
         <div class="orbit-container">
             <div onclick="location.href='activation.html'" class="node-item n1">
                 <span class="text-lg">⚡</span>
-                <span class="text-[8px] orbitron mt-1">Activate</span>
+                <span class="text-[7px] orbitron mt-1">Activate</span>
             </div>
             <div class="node-item n2">
                 <span class="text-lg">📊</span>
-                <span class="text-[8px] orbitron mt-1">Stats</span>
+                <span class="text-[7px] orbitron mt-1">Stats</span>
             </div>
             <div class="node-item n3">
                 <span class="text-lg">🔒</span>
-                <span class="text-[8px] orbitron mt-1">Security</span>
+                <span class="text-[7px] orbitron mt-1">Security</span>
             </div>
             <div class="node-item n4">
                 <span class="text-lg">💰</span>
-                <span class="text-[8px] orbitron mt-1">Yield</span>
+                <span class="text-[7px] orbitron mt-1">Yield</span>
             </div>
-        </div>
-
-        <div class="absolute -bottom-40 text-center w-[600px] space-y-4">
-            <h2 class="orbitron text-2xl tracking-[10px] opacity-50">Global Infrastructure</h2>
-            <p class="text-xs text-gray-500 font-light tracking-widest leading-relaxed">
-                A multi-layered ecosystem designed for seamless YouTube automation. <br> Powered by Synergy Protocol Neural Nodes.
-            </p>
         </div>
     </div>
 
+    <div class="footer-info">
+        <h2 class="orbitron text-[10px] tracking-[8px] opacity-30 uppercase">Global Infrastructure</h2>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const sideMenu = document.getElementById('side-menu');
+
+        menuBtn.onclick = (e) => {
+            sideMenu.classList.toggle('active');
+            e.stopPropagation();
+        }
+
+        document.onclick = (e) => {
+            if (!sideMenu.contains(e.target) && e.target !== menuBtn) {
+                sideMenu.classList.remove('active');
+            }
+        }
+    </script>
+
 </body>
-</html>
+                </html>
+                
