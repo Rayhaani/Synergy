@@ -125,18 +125,28 @@
 
     // 1. Wannan zai duba status dinka koda kayi refresh
     async function syncProgress() {
-        if (!currentUser) { location.href = "signin.html"; return; }
-        
-        const userDoc = await db.collection("users").doc(currentUser).get();
-        if (userDoc.exists && userDoc.data().isVerified === true) {
-            location.href = "dashboard.html"; return;
-        }
-
-        // Duba idan akwai Node din da aka riga aka gama a LocalStorage
-        let completedNodes = JSON.parse(localStorage.getItem('completed_nodes') || "[]");
-        updateUI(completedNodes);
+    if (!currentUser) { location.href = "signin.html"; return; }
+    
+    // 1. Duba idan riga an gama duka activation
+    const userDoc = await db.collection("users").doc(currentUser).get();
+    if (userDoc.exists && userDoc.data().isVerified === true) {
+        location.href = "dashboard.html"; 
+        return;
     }
 
+    // 2. Nemo logs din mutum daga database maimakon browser data
+    const snapshot = await db.collection("subscription_logs")
+                           .where("user", "==", currentUser)
+                           .get();
+    
+    let completedNodes = [];
+    snapshot.forEach(doc => {
+        completedNodes.push(doc.data().node_id);
+    });
+
+    updateUI(completedNodes);
+    }
+    
     function updateUI(completed) {
         const count = completed.length;
         document.getElementById('nodes-count').innerText = `${count} / 2`;
