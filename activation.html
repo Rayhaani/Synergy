@@ -110,7 +110,6 @@
         
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    // 1. FIREBASE & AUTH (Tsarin ka na asali - NO CHANGES)
     const firebaseConfig = { 
         apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
         authDomain: "synergy-protocol.firebaseapp.com", 
@@ -124,31 +123,18 @@
     const db = firebase.firestore();
     const currentUser = localStorage.getItem('synergy_user');
 
-    let player, activeNode = 0, currentCode = "", timerInterval;
-
-    // 2. CONGESTION CONTROL (Tsarin ka na asali - NO CHANGES)
-    async function checkSystemCapacity() {
-        const today = new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' });
-        const capacityRef = db.collection("system_stats").doc("daily_limit");
-        try {
-            const doc = await capacityRef.get();
-            let limitData = doc.data();
-            if (!limitData || limitData.date !== today) {
-                let rawLimit = Math.floor(Math.random() * 46); 
-                let newLimit = (rawLimit < 7) ? 0 : rawLimit;
-                await capacityRef.set({ date: today, count: 0, limit: newLimit });
-                limitData = { count: 0, limit: newLimit, date: today };
-            }
-            const shutter = document.getElementById('congestion-shutter');
-            const main = document.getElementById('main-content');
-            if (limitData.limit === 0 || limitData.count >= limitData.limit) {
-                shutter.style.display = 'flex'; main.style.display = 'none';
-            }
-        } catch (e) { console.error(e); }
+    // MATAKI NA FARKO: Duba idan mutum ya riga ya gama
+    async function checkUserStatus() {
+        if (!currentUser) { location.href = "login.html"; return; }
+        
+        const userDoc = await db.collection("users").doc(currentUser).get();
+        if (userDoc.exists && userDoc.data().isVerified === true) {
+            location.href = "dashboard.html"; // Tura shi dashboard idan ya riga ya gama
+        }
     }
-    checkSystemCapacity();
+    checkUserStatus();
 
-    // 3. NODES & LINKS
+    let player, activeNode = 0, currentCode = "", timerInterval;
     const nodeData = {
         1: { videoId: 'DIGSUvDZDmA', handle: '@aiwealthacademy_global' }, 
         2: { videoId: '97lr8_QJaVU', handle: '@globalwealthsecrethq' }
@@ -183,15 +169,13 @@
         }
     }
 
-    // 4. FEATURISTIC UI FOR SUBSCRIBE BUTTON
     function showSubscribeStep() {
         const verifyUI = document.getElementById('verify-ui');
         const data = nodeData[activeNode];
         verifyUI.innerHTML = `
-            <div class="p-8 border-t-2 border-cyan-500 rounded-[30px] bg-black/60 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(0,242,254,0.2)] animate-pulse">
-                <p class="orbitron text-[10px] text-cyan-400 tracking-[4px] mb-6">Neural Link Ready</p>
+            <div class="p-8 border-t-2 border-cyan-500 rounded-[30px] bg-black/60 backdrop-blur-3xl shadow-[0_-20px_50px_rgba(0,242,254,0.2)]">
                 <button onclick="window.open('https://youtube.com/${data.handle}?sub_confirmation=1', '_blank'); startVerificationProcess();" 
-                        class="w-full py-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 text-black orbitron text-[11px] font-black shadow-[0_0_30px_#00f2fe] transition-all hover:scale-105 active:scale-95">
+                        class="w-full py-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 text-black orbitron text-[11px] font-black">
                     INITIALIZE SUBSCRIPTION
                 </button>
             </div>
@@ -199,23 +183,14 @@
         verifyUI.classList.remove('hidden');
     }
 
-    // 5. SECURE VERIFICATION BOX (THE NEW LOGIC)
     function startVerificationProcess() {
         const verifyUI = document.getElementById('verify-ui');
-        verifyUI.innerHTML = `
-            <div class="p-6 space-y-4 text-center">
-                <div class="w-10 h-10 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                <p class="orbitron text-[9px] text-gray-400">Syncing with Neural Nodes...</p>
-            </div>
-        `;
-        
+        verifyUI.innerHTML = `<div class="p-6 text-center animate-pulse orbitron text-[9px] text-cyan-400">Syncing...</div>`;
         setTimeout(() => {
             verifyUI.innerHTML = `
-                <div class="p-6 border border-white/10 rounded-[30px] bg-white/5 backdrop-blur-xl space-y-5">
-                    <div class="text-[9px] orbitron text-yellow-500">Identity Verification</div>
-                    <input type="text" id="yt-username" class="w-full bg-black/40 border border-cyan-500/30 rounded-xl p-4 text-center text-white digits-terminal outline-none focus:border-cyan-500" placeholder="YOUTUBE USERNAME">
-                    <p class="text-[8px] text-gray-500 uppercase tracking-widest">Enter the name you used to subscribe to reveal your Code.</p>
-                    <button onclick="revealFinalCode()" class="w-full py-4 glass-premium rounded-xl orbitron text-[10px] text-cyan-400 border border-cyan-500/50 hover:bg-cyan-500/10">GENERATE HASH</button>
+                <div class="p-6 border border-white/10 rounded-[30px] bg-white/5 space-y-5">
+                    <input type="text" id="yt-username" class="w-full bg-black/40 border border-cyan-500/30 rounded-xl p-4 text-center text-white outline-none" placeholder="YOUTUBE USERNAME">
+                    <button id="gen-btn" onclick="revealFinalCode()" class="w-full py-4 glass-premium rounded-xl orbitron text-[10px] text-cyan-400 border border-cyan-500/50">GENERATE HASH</button>
                 </div>
             `;
         }, 5000);
@@ -225,17 +200,15 @@
         const username = document.getElementById('yt-username').value;
         if(username.length < 3) { alert("Invalid Username"); return; }
         
+        document.getElementById('gen-btn').disabled = true; // Kashe maballin don hana double click
         currentCode = "SYN-" + Math.floor(1000 + Math.random() * 9000);
         const verifyUI = document.getElementById('verify-ui');
         
         verifyUI.innerHTML = `
-            <div class="p-6 border-2 border-green-500/30 rounded-[35px] bg-green-500/5 backdrop-blur-2xl space-y-6">
-                <div class="space-y-1">
-                    <p class="orbitron text-[8px] text-green-400">Authentication Code</p>
-                    <h2 class="digits-terminal text-4xl text-white font-bold tracking-tighter">${currentCode}</h2>
-                </div>
-                <input type="text" id="hash-input" class="w-full bg-black/50 border border-green-500/30 rounded-xl p-4 text-center text-white text-xl digits-terminal" placeholder="PASTE CODE">
-                <button onclick="confirmNodeActivation('${username}')" class="w-full py-5 btn-neon rounded-2xl orbitron text-[11px] font-black text-white">SECURE NODE</button>
+            <div class="p-6 border-2 border-green-500/30 rounded-[35px] bg-green-500/5 space-y-6">
+                <h2 class="digits-terminal text-4xl text-white text-center font-bold">${currentCode}</h2>
+                <input type="text" id="hash-input" class="w-full bg-black/50 border border-green-500/30 rounded-xl p-4 text-center text-white" placeholder="ENTER CODE">
+                <button id="secure-btn" onclick="confirmNodeActivation('${username}')" class="w-full py-5 btn-neon rounded-2xl orbitron text-[11px] font-black">SECURE NODE</button>
             </div>
         `;
     }
@@ -243,31 +216,42 @@
     async function confirmNodeActivation(ytName) {
         const val = document.getElementById('hash-input').value.toUpperCase();
         if(val === currentCode) {
-            // Adana Sunansa a Firebase
-            await db.collection("subscription_logs").add({
-                youtube_handle: ytName,
-                node_id: activeNode,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                user: currentUser
-            });
+            const secureBtn = document.getElementById('secure-btn');
+            secureBtn.disabled = true; // KARIYAR DOUBLE CLICK
+            secureBtn.innerText = "SYNCHRONIZING...";
 
-            let countSpan = document.getElementById('nodes-count');
-            let currentNodes = parseInt(countSpan.innerText.split(' / ')[0]) + 1;
-            countSpan.innerText = currentNodes + " / 2";
-            document.getElementById('progress-bar').style.width = (currentNodes * 50) + "%";
+            try {
+                // Adana Log a Firebase
+                await db.collection("subscription_logs").add({
+                    youtube_handle: ytName,
+                    node_id: activeNode,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    user: currentUser
+                });
 
-            if(currentNodes === 2) {
-                await db.collection("users").doc(currentUser).update({ isVerified: true });
-                alert("ALL NODES SYNCHRONIZED!");
-                location.href = "dashboard.html";
-            } else {
-                document.getElementById('verify-ui').classList.add('hidden');
-                document.getElementById('player-area').classList.add('hidden');
-                document.getElementById('nodes-list').classList.remove('hidden');
-                alert("Node Secured. Proceed to Next.");
+                let countSpan = document.getElementById('nodes-count');
+                let currentNodes = parseInt(countSpan.innerText.split(' / ')[0]) + 1;
+                
+                // KARIYA: Kar ya bar lissafi ya wuce 2
+                if (currentNodes > 2) currentNodes = 2;
+
+                countSpan.innerText = currentNodes + " / 2";
+                document.getElementById('progress-bar').style.width = (currentNodes * 50) + "%";
+
+                if(currentNodes === 2) {
+                    await db.collection("users").doc(currentUser).update({ isVerified: true });
+                    setTimeout(() => { location.href = "dashboard.html"; }, 2000);
+                } else {
+                    alert("Node 1 Secured.");
+                    location.reload(); // Wannan zai dawo da shi ya kalli na biyun cikin natsuwa
+                }
+            } catch (e) {
+                alert("Connection Error. Try again.");
+                secureBtn.disabled = false;
             }
         } else { alert("HASH ERROR"); }
     }
+            
         </script>
     
         
