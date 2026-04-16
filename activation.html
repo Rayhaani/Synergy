@@ -244,42 +244,57 @@
 
        async function confirmNodeActivation(ytName) {
     const val = document.getElementById('hash-input').value.toUpperCase();
-    if(val === currentCode) {
+    if (val === currentCode) {
         const secureBtn = document.getElementById('secure-btn');
         secureBtn.disabled = true;
-        secureBtn.innerText = "FINALIZING...";
+        secureBtn.innerText = "SYNCHRONIZING...";
 
         try {
-            // 1. Ajiye log (Muna sa shi a 'try' don koda network ya dan yi jinkiri bai tsayar da mu ba)
-            db.collection("subscription_logs").add({
-                youtube_handle: ytName,
-                node_id: activeNode,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                user: currentUser
-            });
+            // 1. Shirya ayyukan da za a tura Firebase lokaci guda
+            const logRef = db.collection("subscription_logs").doc();
+            const userRef = db.collection("users").doc(currentUser);
 
-            if(activeNode == 2) {
-                // 2. Sabunta Database a background
-                db.collection("users").doc(currentUser).update({ isVerified: true });
-                
-                // 3. TILASTA REDIRECT (Wannan ne amsar kukan ka)
-                alert("PROTOCOL FULLY ACTIVE!");
-                window.location.replace("dashboard.html"); 
+            // 2. Idan Node 2 ne, muna so mu yi Log sannan mu yi Update a lokaci guda
+            if (activeNode == 2) {
+                await Promise.all([
+                    logRef.set({
+                        youtube_handle: ytName,
+                        node_id: activeNode,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        user: currentUser
+                    }),
+                    userRef.update({ isVerified: true })
+                ]);
+
+                // 3. Wannan shi ne babban sirrin: Jira sakan 1 don Firebase ya daidaita
+                secureBtn.innerText = "PROTOCOL UNLOCKED!";
+                setTimeout(() => {
+                    window.location.replace("dashboard.html");
+                }, 1500);
+
             } else {
-                alert("Node 1 Secured Successfully.");
-                location.reload(); 
+                // Idan Node 1 ne kawai
+                await logRef.set({
+                    youtube_handle: ytName,
+                    node_id: activeNode,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    user: currentUser
+                });
+                alert("Node 1 Secured. Ready for Node 2.");
+                location.reload();
             }
+
         } catch (e) {
-            // Koda an samu error wajen 'add', muddin Node 2 ne, mu tura shi
-            if(activeNode == 2) {
-                window.location.replace("dashboard.html");
-            } else {
-                secureBtn.disabled = false;
-                alert("Network busy, please try again.");
-            }
+            console.error("Critical Error:", e);
+            secureBtn.disabled = false;
+            secureBtn.innerText = "RETRY SECURE";
+            alert("Network lag detected. Please tap again.");
         }
-    } else { alert("WRONG CODE"); }
-                      }
+    } else {
+        alert("INVALID AUTH CODE");
+    }
+       }
+    
     
     
     
