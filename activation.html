@@ -243,41 +243,47 @@
     }
 
         async function confirmNodeActivation(ytName) {
-        const val = document.getElementById('hash-input').value.toUpperCase();
-        if(val === currentCode) {
-            const secureBtn = document.getElementById('secure-btn');
-            secureBtn.disabled = true;
-            secureBtn.innerText = "SYNCHRONIZING...";
+    const val = document.getElementById('hash-input').value.toUpperCase();
+    if(val === currentCode) {
+        const secureBtn = document.getElementById('secure-btn');
+        secureBtn.disabled = true;
+        secureBtn.innerText = "FINALIZING...";
 
-            try {
-                // 1. Ajiye log a Database
-                await db.collection("subscription_logs").add({
-                    youtube_handle: ytName,
-                    node_id: activeNode,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    user: currentUser
-                });
+        try {
+            // 1. Ajiye log na wannan Node din
+            await db.collection("subscription_logs").add({
+                youtube_handle: ytName,
+                node_id: activeNode,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                user: currentUser
+            });
 
-                // 2. Duba nawa aka kammala
-                const snapshot = await db.collection("subscription_logs")
-                                       .where("user", "==", currentUser).get();
+            // 2. Maimakon mu jira 'size', mu duba 'activeNode' din
+            // Idan mutum yana kan Node 2 ne, to ya riga ya gama kenan
+            if(activeNode == 2) {
+                // Sabunta matsayin sa a Database
+                await db.collection("users").doc(currentUser).update({ isVerified: true });
                 
-                // Idan wannan shi ne na biyu ko fiye, to an gama
-                if(snapshot.size >= 2) {
-                    await db.collection("users").doc(currentUser).update({ isVerified: true });
-                    alert("PROTOCOL FULLY ACTIVE!");
-                    window.location.href = "dashboard.html"; // Tabbataccen redirect
-                } else {
-                    alert("Node 1 Secured. Proceed to next.");
-                    location.reload(); 
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Connection error. Try again.");
-                secureBtn.disabled = false;
+                // Cire duk wani sauran jinkiri (Persistence fix)
+                localStorage.removeItem('completed_nodes'); 
+                
+                alert("PROTOCOL FULLY ACTIVE! Redirecting...");
+                window.location.replace("dashboard.html"); // Wannan zai tura ka ko ana so ko ba a so
+            } else {
+                alert("Node 1 Secured Successfully.");
+                location.reload(); 
             }
-        } else { alert("WRONG CODE"); }
-                        }
+        } catch (e) {
+            console.error("Firebase Error:", e);
+            // Idan kuskuren ya faru, mu bar shi ya sake danyawa
+            secureBtn.disabled = false;
+            secureBtn.innerText = "SECURE NODE";
+            alert("Network Timeout. Please tap SECURE NODE again.");
+        }
+    } else { 
+        alert("INVALID AUTH CODE"); 
+    }
+                    }
     
 
             
