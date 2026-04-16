@@ -11,8 +11,9 @@
             background: radial-gradient(circle at center, #050a15 0%, #000 100%);
             color: #fff; 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            height: 100vh; 
-            overflow: hidden; 
+            height: auto; 
+            min-height: 100vh;
+            overflow-x: hidden; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
@@ -22,173 +23,104 @@
         .orbitron { font-family: 'Syncopate', sans-serif; }
 
         /* NAV LOGO & MENU */
-        .header-nav {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            z-index: 100;
-            margin-top: 10px; 
-            margin-bottom: 40px; 
-            position: relative;
-        }
-        .nav-logo {
-            font-weight: 800;
-            letter-spacing: -1px;
-            font-size: 24px;
-        }
-        .menu-icon {
-            width: 30px;
-            height: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            z-index: 1001;
-        }
-        .menu-bar {
-            width: 100%;
-            height: 2px;
-            background: #fff;
-            border-radius: 2px;
-            transition: 0.3s;
-        }
+        .header-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; z-index: 100; margin-top: 10px; margin-bottom: 30px; position: relative; }
+        .nav-logo { font-weight: 800; letter-spacing: -1px; font-size: 24px; }
+        .menu-icon { width: 30px; height: 20px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 1001; }
+        .menu-bar { width: 100%; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
         .menu-bar.short { width: 60%; align-self: flex-end; }
 
         /* PASSIONATE SMALL MENU */
-        #side-menu {
-            position: absolute;
-            top: 40px; 
-            right: 0;
-            width: 180px; 
-            background: rgba(10, 15, 25, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 12px;
-            z-index: 1000;
-            display: none; 
-            flex-direction: column;
-            padding: 15px 0;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-        }
+        #side-menu { position: absolute; top: 40px; right: 0; width: 180px; background: rgba(10, 15, 25, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 12px; z-index: 1000; display: none; flex-direction: column; padding: 15px 0; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
         #side-menu.active { display: flex; }
-        
-        .menu-link {
-            padding: 12px 25px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #888;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: block;
-        }
-
-        /* EFFECT: Canza kala da gungurawa zuwa dama */
-        .menu-link:hover { 
-            color: #00f2fe; 
-            padding-left: 35px; /* Gungurawar nan ce */
-            background: rgba(0, 242, 254, 0.05);
-        }
+        .menu-link { padding: 12px 25px; font-size: 10px; font-weight: 700; color: #888; text-decoration: none; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; letter-spacing: 2px; display: block; }
+        .menu-link:hover { color: #00f2fe; padding-left: 35px; background: rgba(0, 242, 254, 0.05); }
 
         /* HERO SECTION */
-        .hero-layer {
-            width: 100%;
-            text-align: center;
-            z-index: 50;
-            margin-bottom: 20px; 
-        }
-        .hero-h1 {
-            font-size: clamp(2.2rem, 10vw, 3.8rem);
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            line-height: 1.1;
-            margin: 0;
-        }
+        .hero-layer { width: 100%; text-align: center; z-index: 50; margin-bottom: 10px; }
+        .hero-h1 { font-size: clamp(2.2rem, 10vw, 3.8rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1.1; margin: 0; }
         .hero-h1 span { color: #00f2fe; }
-        .hero-p {
-            font-size: 13px;
-            color: #888;
-            max-width: 350px;
-            margin: 20px auto 0;
-            line-height: 1.6;
-        }
+        .hero-p { font-size: 13px; color: #888; max-width: 350px; margin: 15px auto 0; line-height: 1.6; }
 
         /* ORBITAL SYSTEM */
-        .main-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            flex-grow: 1;
-            min-height: 350px;
-        }
-        .core-system {
-            width: 140px; height: 140px;
-            background: radial-gradient(circle, #00f2fe 0%, transparent 70%);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 50px rgba(0, 242, 254, 0.4);
-            position: relative; z-index: 10;
-            animation: pulse 4s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-        .orbit-container {
-            position: absolute; 
-            width: 300px; height: 300px;
-            border: 1px solid rgba(0, 242, 254, 0.1);
-            border-radius: 50%;
-            animation: rotate 20s linear infinite;
-        }
-        .node-item {
-            position: absolute; 
-            width: 65px; height: 65px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            animation: counter-rotate 20s linear infinite;
-            cursor: pointer; transition: 0.3s;
-        }
+        .main-container { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 300px; min-height: 280px; }
+        .core-system { width: 100px; height: 100px; background: radial-gradient(circle, #00f2fe 0%, transparent 70%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0, 242, 254, 0.4); position: relative; z-index: 10; animation: pulse 4s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        .orbit-container { position: absolute; width: 220px; height: 220px; border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 50%; animation: rotate 20s linear infinite; }
+        .node-item { position: absolute; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: counter-rotate 20s linear infinite; cursor: pointer; transition: 0.3s; }
         .node-item:hover { border-color: #00f2fe; background: rgba(0, 242, 254, 0.1); transform: scale(1.1); }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes counter-rotate { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+        .n1 { top: -25px; left: 50%; margin-left: -25px; }
+        .n2 { bottom: -25px; left: 50%; margin-left: -25px; }
+        .n3 { left: -25px; top: 50%; margin-top: -25px; }
+        .n4 { right: -25px; top: 50%; margin-top: -25px; }
 
-        .n1 { top: -32.5px; left: 50%; margin-left: -32.5px; }
-        .n2 { bottom: -32.5px; left: 50%; margin-left: -32.5px; }
-        .n3 { left: -32.5px; top: 50%; margin-top: -32.5px; }
-        .n4 { right: -32.5px; top: 50%; margin-top: -32.5px; }
+        /* SECTIONS STYLING */
+        .content-section { width: 100%; max-width: 800px; padding: 20px; }
+        .section-title { font-size: 10px; color: #00f2fe; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 25px; text-align: center; opacity: 0.7; }
+        
+        /* FEATURISTIC LIVE STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 40px; }
+        .stat-card { background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 16px; padding: 18px 10px; text-align: center; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #00f2fe, transparent); }
+        .stat-value { font-size: 16px; color: #fff; font-weight: 800; }
+        .stat-label { font-size: 7px; color: #00f2fe; text-transform: uppercase; margin-top: 5px; letter-spacing: 2px; font-weight: 700; }
+        .live-dot { width: 4px; height: 4px; background: #00f2fe; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; box-shadow: 0 0 10px #00f2fe; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .footer-info {
-            text-align: center;
-            width: 100%;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
+        /* SECURITY LOGIC SECTION */
+        .security-box { background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(0,242,254,0.02) 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; margin-bottom: 40px; position: relative; }
+        .security-tag { position: absolute; top: -10px; left: 20px; background: #00f2fe; color: #000; font-size: 8px; font-weight: 900; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; }
+        .logic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
+        .logic-item h4 { font-size: 10px; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .logic-item p { font-size: 11px; color: #666; line-height: 1.6; }
+
+        .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+        .how-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; }
+        
+        .workflow-list { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 40px; }
+        .work-step { display: flex; align-items: center; gap: 20px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid #00f2fe; padding: 15px; border-radius: 0 12px 12px 0; }
+        .step-num { font-size: 18px; font-weight: 800; color: rgba(0, 242, 254, 0.3); }
+        .step-text h4 { font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 4px; }
+        .step-text p { font-size: 11px; color: #666; }
+
+        /* QUOTES & FAQ CSS */
+        .quote-container { width: 100%; overflow: hidden; position: relative; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.01); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1); text-align: center; }
+        .quote-slide { display: none; animation: fadeIn 0.5s ease-in; }
+        .quote-slide.active { display: block; }
+        .quote-text { font-style: italic; font-size: 16px; color: #ccc; margin-bottom: 15px; }
+        .quote-author { color: #00f2fe; font-size: 10px; font-weight: 800; letter-spacing: 2px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .faq-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+        .faq-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; }
+        .faq-body { padding: 0 15px; max-height: 0; overflow: hidden; transition: 0.3s ease-out; font-size: 11px; color: #666; line-height: 1.6; }
+        .faq-item.active .faq-body { padding: 10px 15px 15px; max-height: 200px; }
+        .faq-item.active .faq-header { color: #00f2fe; }
+
+        /* PROFESSIONAL FOOTER CSS */
+        .footer-minimal { width: 100%; max-width: 800px; margin-top: 80px; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .footer-logo { font-size: 18px; font-weight: 800; margin-bottom: 15px; opacity: 0.8; }
+        .footer-legal-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+        .legal-link { font-size: 10px; color: #555; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .legal-link:hover { color: #00f2fe; }
+        .footer-disclaimer { font-size: 9px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto 25px; padding: 0 20px; }
+        .footer-copyright { font-size: 9px; color: #444; letter-spacing: 2px; }
+
+        @media (max-width: 600px) { .how-grid, .logic-grid { grid-template-columns: 1fr; } .footer-legal-links { gap: 10px; } }
     </style>
 </head>
 <body>
 
     <header class="header-nav">
-        <div class="nav-logo">
-            Synergy<span class="text-cyan-400"></span>
-        </div>
+        <div class="nav-logo">Synergy<span class="text-cyan-400"></span></div>
         <div class="menu-icon" id="menuBtn">
             <div class="menu-bar"></div>
             <div class="menu-bar short"></div>
             <div class="menu-bar"></div>
         </div>
-
         <nav id="side-menu">
-
-            <a href="home.html" class="menu-link orbitron">Home</a>
+            <a href="index.html" class="menu-link orbitron">Home</a>
             <a href="signup.html" class="menu-link orbitron">Signup</a>
             <a href="signin.html" class="menu-link orbitron">Sign In</a>
             <a href="contact.html" class="menu-link orbitron">Contact Us</a>
@@ -197,57 +129,167 @@
     </header>
 
     <div class="hero-layer">
-        <h1 class="hero-h1">Ready to turn your digital effort into <span>real yeild</span>?</h1>
-        <p class="hero-p">
-        Synergy is the decentralized engine where human effort meets neural verification. Complete daily tasks and earn rewards on the most trusted task protocol.    
-        </p>
+        <h1 class="hero-h1">Ready to turn your digital effort into <span>Real Yield.</span></h1>
+        <p class="hero-p">Synergy is the decentralized engine where human effort meets neural verification. Complete daily tasks and earn rewards on the most trusted task protocol.</p>
     </div>
 
     <div class="main-container">
-        <div class="core-system">
-            <div class="text-black orbitron text-[10px] font-black text-center">SYNERGY<br>CORE</div>
-        </div>
-
+        <div class="core-system"><div class="text-black orbitron text-[8px] font-black text-center">SYNERGY<br>CORE</div></div>
         <div class="orbit-container">
-            <div onclick="location.href='activation.html'" class="node-item n1">
-                <span class="text-lg">⚡</span>
-                <span class="text-[7px] orbitron mt-1">Activate</span>
-            </div>
-            <div class="node-item n2">
-                <span class="text-lg">📊</span>
-                <span class="text-[7px] orbitron mt-1">Stats</span>
-            </div>
-            <div class="node-item n3">
-                <span class="text-lg">🔒</span>
-                <span class="text-[7px] orbitron mt-1">Security</span>
-            </div>
-            <div class="node-item n4">
-                <span class="text-lg">💰</span>
-                <span class="text-[7px] orbitron mt-1">Yield</span>
-            </div>
+            <div onclick="location.href='app.html'" class="node-item n1"><span class="text-sm">🚀</span><span class="text-[6px] orbitron mt-1">App</span></div>
+            <div class="node-item n2"><span class="text-sm">📊</span><span class="text-[6px] orbitron mt-1">Stats</span></div>
+            <div class="node-item n3"><span class="text-sm">🔒</span><span class="text-[6px] orbitron mt-1">Security</span></div>
+            <div class="node-item n4"><span class="text-sm">💰</span><span class="text-[6px] orbitron mt-1">Earn</span></div>
         </div>
     </div>
 
-    <div class="footer-info">
-        <h2 class="orbitron text-[10px] tracking-[8px] opacity-30 uppercase">Global Infrastructure</h2>
+    <div class="content-section">
+        <h2 class="section-title orbitron">Live Network Monitor</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value orbitron">1,248</div>
+                <div class="stat-label"><span class="live-dot"></span>Active Nodes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orbitron">42.5K</div>
+                <div class="stat-label"><span class="live-dot"></span>Total Txn</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orbitron">0.001ms</div>
+                <div class="stat-label"><span class="live-dot"></span>Latency</div>
+            </div>
+        </div>
+
+        <div class="security-box">
+            <div class="security-tag orbitron">Shield v2.0</div>
+            <h2 class="orbitron text-[12px] text-white mb-4">Security Infrastructure</h2>
+            <div class="logic-grid">
+                <div class="logic-item">
+                    <h4 class="orbitron"><span>🛡️</span> Blockchain Encryption</h4>
+                    <p>All task data is hashed and encrypted using SHA-256 protocols, ensuring that your contributions and earnings are immutable.</p>
+                </div>
+                <div class="logic-item">
+                    <h4 class="orbitron"><span>🔑</span> Secure API Tunnels</h4>
+                    <p>Synergy utilizes TLS 1.3 secure tunnels for real-time data transmission, preventing any third-party fraud or unauthorized access.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title orbitron">The Protocol</h2>
+        <div class="how-grid">
+            <div class="how-card">
+                <h3 class="orbitron text-[10px] text-cyan-400 mb-2">Neural Verification</h3>
+                <p class="text-[11px] text-gray-500">Nodes verify human actions, ensuring authenticity for clients and rewards for workers.</p>
+            </div>
+            <div class="how-card">
+                <h3 class="orbitron text-[10px] text-cyan-400 mb-2">Smart Yield</h3>
+                <p class="text-[11px] text-gray-500">Instant distribution protocol. Earnings are calculated and split directly to your wallet.</p>
+            </div>
+        </div>
+
+        <h2 class="section-title orbitron">The Process</h2>
+        <div class="workflow-list">
+            <div class="work-step">
+                <span class="step-num">01</span>
+                <div class="step-text">
+                    <h4 class="orbitron">Create Identity</h4>
+                    <p>Register your account and connect to the Synergy Neural Network.</p>
+                </div>
+            </div>
+            <div class="work-step">
+                <span class="step-num">02</span>
+                <div class="step-text">
+                    <h4 class="orbitron">Execute Tasks</h4>
+                    <p>Select available tasks and perform verification actions on the platform.</p>
+                </div>
+            </div>
+            <div class="work-step">
+                <span class="step-num">03</span>
+                <div class="step-text">
+                    <h4 class="orbitron">Neural Verification</h4>
+                    <p>Our decentralized nodes verify the authenticity of your completed tasks in real-time.</p>
+                </div>
+            </div>
+            <div class="work-step">
+                <span class="step-num">04</span>
+                <div class="step-text">
+                    <h4 class="orbitron">Collect Yield</h4>
+                    <p>Once verified, rewards are automatically credited to your secure balance instantly.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title orbitron">Visionary Quotes</h2>
+        <div class="quote-container">
+            <div class="quote-slide active">
+                <p class="quote-text">"Our goal is to create a digital economy where every second of human effort is recognized."</p>
+                <p class="quote-author orbitron">— FOUNDER ALPHA</p>
+            </div>
+            <div class="quote-slide">
+                <p class="quote-text">"Decentralization is not just tech; it is the freedom of global workforce participation."</p>
+                <p class="quote-author orbitron">— FOUNDER BETA</p>
+            </div>
+            <div class="quote-slide">
+                <p class="quote-text">"Synergy Core bridges the gap between neural intelligence and human potential."</p>
+                <p class="quote-author orbitron">— FOUNDER GAMMA</p>
+            </div>
+        </div>
+
+        <h2 class="section-title orbitron">Intelligence Base (FAQ)</h2>
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-header" onclick="toggleFaq(this)">What is Synergy? <span>+</span></div>
+                <div class="faq-body">Synergy is a decentralized task protocol powered by neural verification.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-header" onclick="toggleFaq(this)">How do I earn? <span>+</span></div>
+                <div class="faq-body">By completing digital tasks that are verified by our global network nodes.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-header" onclick="toggleFaq(this)">Is it secure? <span>+</span></div>
+                <div class="faq-body">Yes, all data is encrypted via blockchain and transmitted through secure API tunnels.</div>
+            </div>
+        </div>
+
+        <footer class="footer-minimal">
+            <div class="footer-logo orbitron">SYNERGY<span class="text-cyan-400">.</span></div>
+            
+            <div class="footer-legal-links">
+                <a href="#" class="legal-link">Terms & Conditions</a>
+                <a href="#" class="legal-link">Privacy Policy</a>
+                <a href="#" class="legal-link">Risk Disclosure</a>
+                <a href="#" class="legal-link">Contact Support</a>
+            </div>
+
+            <p class="footer-disclaimer">
+                Disclaimer: Synergy is a task-based verification protocol. Participation involves digital tasks and does not guarantee fixed financial returns. Cryptocurrency values are volatile; ensure you understand the risks before interacting with decentralized ecosystems.
+            </p>
+
+            <p class="footer-copyright orbitron">© 2026 SYNERGY PROTOCOL. ALL RIGHTS RESERVED.</p>
+        </footer>
     </div>
 
     <script>
         const menuBtn = document.getElementById('menuBtn');
         const sideMenu = document.getElementById('side-menu');
+        menuBtn.onclick = (e) => { sideMenu.classList.toggle('active'); e.stopPropagation(); }
+        document.onclick = (e) => { if (!sideMenu.contains(e.target) && e.target !== menuBtn) { sideMenu.classList.remove('active'); } }
 
-        menuBtn.onclick = (e) => {
-            sideMenu.classList.toggle('active');
-            e.stopPropagation();
-        }
+        let currentQuote = 0;
+        const quotes = document.querySelectorAll('.quote-slide');
+        setInterval(() => {
+            quotes[currentQuote].classList.remove('active');
+            currentQuote = (currentQuote + 1) % quotes.length;
+            quotes[currentQuote].classList.add('active');
+        }, 4000);
 
-        document.onclick = (e) => {
-            if (!sideMenu.contains(e.target) && e.target !== menuBtn) {
-                sideMenu.classList.remove('active');
-            }
+        function toggleFaq(header) {
+            header.parentElement.classList.toggle('active');
+            const icon = header.querySelector('span');
+            icon.innerText = header.parentElement.classList.contains('active') ? '-' : '+';
         }
     </script>
 
 </body>
-                </html>
+    </html>
                 
