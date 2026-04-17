@@ -387,6 +387,31 @@
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
+
+    // Wannan code din zai fatattaki duk wanda ba verified ba
+const checkAccess = () => {
+    const user = localStorage.getItem('synergy_user');
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    db.collection("users").doc(user).get().then((doc) => {
+        if (doc.exists) {
+            const userData = doc.data();
+            if (userData.isVerified !== true) {
+                // Idan 'false' ne ko babu shi ma kwata-kwata
+                window.location.href = "activation.html";
+            }
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+};
+
+// Kira function din nan take
+checkAccess();
+    
     // 1. INITIALIZATION
     const firebaseConfig = { 
         apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
