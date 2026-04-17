@@ -269,50 +269,50 @@
     }
 
     async function confirmNodeActivation(ytName) {
-        const val = document.getElementById('hash-input').value.toUpperCase();
-        if (val === currentCode) {
-            const secureBtn = document.getElementById('secure-btn');
-            secureBtn.disabled = true;
-            secureBtn.innerText = "SYNCHRONIZING...";
-            localStorage.setItem('temp_verified', 'true');
+    const val = document.getElementById('hash-input').value.toUpperCase();
+    if (val === currentCode) {
+        const secureBtn = document.getElementById('secure-btn');
+        secureBtn.disabled = true;
+        secureBtn.innerText = "SYNCHRONIZING...";
 
-            try {
-                // Timeout promise na sakan 10 don gujewa Network Lag
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
+        try {
+            // A. Adana log na subscription
+            await db.collection("subscription_logs").add({
+                youtube_handle: ytName || "USER",
+                node_id: activeNode,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                user: currentUser
+            });
+
+            // B. Idan wannan shi ne Node na karshe (Node 2)
+            if (activeNode == 2) {
+                // Muna tura update din isVerified
+                await db.collection("users").doc(currentUser).update({ isVerified: true });
                 
-                const uploadPromise = db.collection("subscription_logs").add({
-                    youtube_handle: ytName || "USER",
-                    node_id: activeNode,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    user: currentUser
-                });
-
-                await Promise.race([uploadPromise, timeoutPromise]);
-
-                if (activeNode == 2) {
-                    await db.collection("users").doc(currentUser).update({ isVerified: true });
-                    alert("PROTOCOL UNLOCKED!");
-                    window.location.replace("dashboard.html");
-                } else {
-                    alert("Node 1 Secured Successfully.");
-                    setTimeout(() => location.reload(), 1200);
-                }
-            } catch (e) {
-                console.log("Network Lag Bypass active");
-                if (activeNode == 2) {
-                    window.location.replace("dashboard.html");
-                } else {
-                    alert("Node registered. Refreshing...");
-                    location.reload();
-                }
+                // Muna saka alamar "Verified" a browser kafin mu tafi
+                localStorage.setItem('synergy_verified_status', 'true'); 
+                
+                alert("PROTOCOL UNLOCKED!");
+                window.location.replace("dashboard.html");
+            } else {
+                alert("Node 1 Secured Successfully.");
+                location.reload();
             }
-        } else {
-            alert("INVALID CODE");
+        } catch (e) {
+            console.error("Lag detected, but proceeding...");
+            if (activeNode == 2) {
+                // Koda an samu error na network, tunda ya gama kallo, mu bar shi ya shiga
+                localStorage.setItem('synergy_verified_status', 'true');
+                window.location.replace("dashboard.html");
+            } else {
+                location.reload();
+            }
         }
+    } else {
+        alert("INVALID CODE");
     }
-
-    // Gudanar da sync lokacin da aka bude shafi
-    syncProgress();
+        }
+    
 
 
             
