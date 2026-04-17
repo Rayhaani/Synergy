@@ -167,36 +167,76 @@
     }
 
     function controlWithdrawButton(isVerified, balance) {
-        const btn = document.getElementById('withdraw-btn');
-        if (!btn) return;
+    const btn = document.getElementById('withdraw-btn');
+    if (!btn) return;
 
-        if (isVerified === true) {
-            btn.disabled = false; 
-            btn.style.opacity = "1"; 
-            btn.innerText = "Process Transaction";
-            
-            btn.onclick = () => {
-                // Duba idan akwai bayanan banki
-                if (!userBankData || !userBankData.accountNumber) {
-                    alert("SETTLEMENT REQUIRED: Please update your bank account details to proceed with the withdrawal.");
-                    openWithdrawalModal();
-                    return;
-                }
+    if (isVerified === true) {
+        btn.disabled = false; 
+        btn.style.opacity = "1"; 
+        btn.innerText = "Process Transaction";
+        
+        btn.onclick = async () => {
+            // 1. Check if bank details are missing
+            if (!userBankData || !userBankData.accountNumber) {
+                alert("SETTLEMENT PROFILE INCOMPLETE: Please update your bank account details to proceed with the withdrawal.");
+                openWithdrawalModal();
+                return;
+            }
 
-                const amount = document.getElementById('withdraw-amount').value;
-                if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); }
-                else if (amount > balance) { alert("INSUFFICIENT EQUITY"); }
-                else if (amount < 2000) { alert("MINIMUM WITHDRAWAL: ₦2,000"); }
-                else { 
-                    alert(`TRANSACTION INITIALIZED: ₦${amount} to ${userBankData.bankName}`); 
-                }
-            };
-        } else {
-            btn.disabled = true; 
-            btn.style.opacity = "0.3"; 
-            btn.innerText = "LOCKED: ACTIVATE NODES";
-        }
+            const amountInput = document.getElementById('withdraw-amount');
+            const amount = parseFloat(amountInput.value);
+
+            // 2. Validation Checks
+            if (!amount || amount <= 0) { 
+                alert("INVALID AMOUNT: Please enter a valid figure."); 
+                return;
+            }
+            if (amount > balance) { 
+                alert("INSUFFICIENT EQUITY: Your balance is lower than the requested amount."); 
+                return;
+            }
+            if (amount < 2000) { 
+                alert("LIMIT RESTRICTION: Minimum withdrawal amount is ₦2,000."); 
+                return;
+            }
+
+            // 3. Firebase Connection & Admin Monitor Integration
+            try {
+                btn.disabled = true; // To prevent double clicking
+                btn.innerText = "Processing...";
+
+                const requestData = {
+                    userId: currentActiveUser,
+                    amount: amount,
+                    bankDetails: userBankData, // Dukkan bayanan bankin mutum
+                    status: "pending",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                // Tura bayanan zuwa collection na Admin
+                await db.collection("withdrawals").add(requestData);
+                
+                alert("TRANSACTION SUCCESSFUL: Your withdrawal request has been sent and is awaiting admin approval.");
+                
+                // Clear the input field
+                amountInput.value = "";
+                btn.innerText = "Process Transaction";
+                btn.disabled = false;
+
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                alert("CONNECTION ERROR: Failed to reach the server. Please check your internet.");
+                btn.innerText = "Process Transaction";
+                btn.disabled = false;
+            }
+        };
+    } else {
+        btn.disabled = true; 
+        btn.style.opacity = "0.3"; 
+        btn.innerText = "LOCKED: ACTIVATE NODES";
     }
+        }
+     
 
     function updateTransactionHistory(data) {
         const historyContainer = document.getElementById('history-list');
@@ -216,19 +256,36 @@
     function closeWithdrawalModal() { document.getElementById('withdrawal-modal').classList.add('hidden'); }
 
     async function saveWithdrawalDetails() {
-        const bank = document.getElementById('bank-name').value;
-        const accNum = document.getElementById('account-number').value;
-        const accName = document.getElementById('account-name').value;
-        if (!bank || !accNum || !accName) { alert("Please fill all settlement fields!"); return; }
+    const bank = document.getElementById('bank-name').value;
+    const accNum = document.getElementById('account-number').value;
+    const accName = document.getElementById('account-name').value;
 
-        try {
-            await db.collection("users").doc(currentActiveUser).update({
-                bankDetails: { bankName: bank, accountNumber: accNum, accountName: accName, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }
-            });
-            alert("SETTLEMENT DETAILS SECURED!");
-            closeWithdrawalModal();
-        } catch (error) { alert("System Error. Try again."); }
+    if (!bank || !accNum || !accName) { 
+        alert("REQUIRED: All fields must be filled!"); 
+        return; 
     }
+
+    try {
+        // Tabbatar da cewa muna da User ID
+        if(!currentActiveUser) throw new Error("No active user found");
+
+        await db.collection("users").doc(currentActiveUser).update({
+            bankDetails: {
+                bankName: bank,
+                accountNumber: accNum,
+                accountName: accName,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }
+        });
+        
+        alert("SUCCESS: Bank details secured in the cloud!");
+        closeWithdrawalModal();
+    } catch (error) {
+        console.error("Firebase Error:", error);
+        alert("CONNECTION ERROR: Failed to sync with database.");
+    }
+    }
+     
 
     function toggleGoogleMenu(event) {
         event.stopPropagation();
