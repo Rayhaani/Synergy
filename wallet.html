@@ -8,51 +8,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --aqua: #00f2fe; --purple: #7000ff; --bg: #020617; }
-        
-        body { 
-            background: var(--bg); 
-            color: #fff; 
-            font-family: 'Inter', sans-serif; 
-            background-image: radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.1), transparent), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); 
-            min-height: 100vh;
-            margin: 0; padding: 0;
-        }
-
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; background-image: radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.1), transparent), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); min-height: 100vh; margin: 0; padding: 0; }
         .orbitron { font-family: 'Syncopate', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
-
-        .google-popup {
-            position: absolute; top: 50px; right: 0; width: 180px;
-            background: #151515; border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px; z-index: 10000; padding: 8px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
-            opacity: 0; transform: scale(0.9); pointer-events: none;
-            transform-origin: top right;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .google-popup { position: absolute; top: 50px; right: 0; width: 180px; background: #151515; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; z-index: 10000; padding: 8px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9); opacity: 0; transform: scale(0.9); pointer-events: none; transform-origin: top right; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .google-popup.active { opacity: 1; transform: scale(1); pointer-events: auto; }
-        .menu-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 10px 14px; border-radius: 10px;
-            color: #efefef; font-size: 13px; font-weight: 500;
-            transition: 0.2s; cursor: pointer;
-        }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; color: #efefef; font-size: 13px; font-weight: 500; transition: 0.2s; cursor: pointer; }
         .menu-item:hover { background: rgba(255, 255, 255, 0.08); }
         .menu-item svg { width: 16px; height: 16px; stroke: #888; fill: none; stroke-width: 2; }
         .menu-divider { height: 1px; background: rgba(255, 255, 255, 0.05); margin: 4px 0; }
-
-        .master-card {
-            background: rgba(255, 255, 255, 0.015);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-top: 1px solid rgba(0, 242, 254, 0.2);
-        }
-
-        /* BOLDED LAMBOBI KAWAI */
+        .master-card { background: rgba(255, 255, 255, 0.015); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.04); border-top: 1px solid rgba(0, 242, 254, 0.2); }
         .digits-terminal { font-family: 'Roboto Mono', monospace; font-weight: 700; color: #00f2fe; }
-        
-        /* GYARA: Normal font ga Enter Amount */
         .input-normal { font-family: 'Roboto Mono', monospace; font-weight: 300 !important; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.8s ease-out forwards; }
     </style>
@@ -66,60 +32,28 @@
             </div>
             <h1 class="orbitron text-[13px] text-white font-bold tracking-[4px] whitespace-nowrap uppercase">Synergy Protocol</h1>
         </div>
-
         <div class="relative">
             <div class="menu-trigger cursor-pointer p-2 hover:bg-white/5 rounded-lg transition-all" onclick="toggleGoogleMenu(event)">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle>
                 </svg>
             </div>
-
-            
-            <!-- POPUP MENU (Compact & Connected) -->
-        <div id="google-nav" class="google-popup" style="width: 165px; padding: 6px;">
-            <div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='dashboard.html'">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span style="font-size: 13px;">Dashboard</span>
-            </div>
-            
-            <div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='wallet.html'">
-                <svg viewBox="0 0 24 24"><path d="M20 12V8H4v4M20 12v4H4v-4M20 12H4M12 4v16"></path></svg>
-                <span style="font-size: 13px;">Wallet</span>
-            </div>
-            
-            <div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='network.html'">
-                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span style="font-size: 13px;">Network</span>
-            </div>
-            
-            <div class="menu-divider" style="margin: 4px 0;"></div>
-            
-        
-<div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='mining.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m13 10 3.5-3.5a2 2 0 0 1 2.8 2.8L15.8 12.8a4.9 4.9 0 0 1-5.3 1.3L4 20l-2-2 5.9-6.5a4.9 4.9 0 0 1 1.3-5.3L12.7 2.7a2 2 0 0 1 2.8 2.8L12 9"></path>
-    </svg>
-    <span style="font-size: 13px;">Mining</span>
-</div>
-
-<div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='profile.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-    </svg>
-    <span style="font-size: 13px;">Profile</span>
-</div>
+            <div id="google-nav" class="google-popup" style="width: 165px; padding: 6px;">
+                <div class="menu-item" onclick="location.href='dashboard.html'"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span>Dashboard</span></div>
+                <div class="menu-item" onclick="location.href='wallet.html'"><svg viewBox="0 0 24 24"><path d="M20 12V8H4v4M20 12v4H4v-4M20 12H4M12 4v16"></path></svg><span>Wallet</span></div>
+                <div class="menu-item" onclick="location.href='network.html'"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span>Network</span></div>
+                <div class="menu-divider"></div>
+                <div class="menu-item" onclick="location.href='mining.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 10 3.5-3.5a2 2 0 0 1 2.8 2.8L15.8 12.8a4.9 4.9 0 0 1-5.3 1.3L4 20l-2-2 5.9-6.5a4.9 4.9 0 0 1 1.3-5.3L12.7 2.7a2 2 0 0 1 2.8 2.8L12 9"></path></svg><span>Mining</span></div>
+                <div class="menu-item" onclick="location.href='profile.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Profile</span></div>
             </div>
         </div>
     </nav>
 
     <main class="p-6 max-w-md mx-auto space-y-6 mt-4">
-        
-        <!-- 1. MAIN EQUITY CARD -->
         <section class="master-card rounded-[32px] p-8 text-center fade-in">
             <p class="orbitron text-[8px] text-gray-500 mb-3">Available Equity</p>
-            <h1 class="digits-terminal text-[42px] text-white leading-none mb-4">
-                <span class="text-gray-500 text-2xl">₦</span>2,850<span class="text-gray-500 text-2xl">.00</span>
+            <h1 id="main-equity-display" class="digits-terminal text-[42px] text-white leading-none mb-4">
+                <span class="text-gray-500 text-2xl">₦</span>0<span class="text-gray-500 text-2xl">.00</span>
             </h1>
             <div class="flex justify-center items-center gap-2 mb-8">
                 <div class="w-1 h-1 rounded-full bg-cyan-400 animate-pulse"></div>
@@ -127,185 +61,117 @@
             </div>
             <div class="space-y-4">
                 <input type="number" id="withdraw-amount" placeholder="Enter Amount" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl input-normal text-white outline-none focus:border-cyan-500/50 transition-all">
-                <button class="w-full py-5 rounded-2xl bg-white text-black orbitron font-bold text-[11px] tracking-[2px] hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.05)]">
+                <button id="withdraw-btn" class="w-full py-5 rounded-2xl bg-white text-black orbitron font-bold text-[11px] tracking-[2px] hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.05)]">
                   Process Transaction
                 </button>
             </div>
         </section>
 
-        <!-- 2. METRICS GRID -->
         <section class="grid grid-cols-2 gap-4 fade-in" style="animation-delay: 0.2s;">
             <div class="master-card rounded-[24px] p-5">
                 <p class="orbitron text-[7px] text-gray-500 mb-2">Total Earned</p>
-                <h4 class="digits-terminal text-xl text-white">₦15,400</h4>
+                <h4 id="total-earned-display" class="digits-terminal text-xl text-white">₦0</h4>
             </div>
             <div class="master-card rounded-[24px] p-5">
                 <p class="orbitron text-[7px] text-gray-500 mb-2">Withdrawn</p>
-                <h4 class="digits-terminal text-xl text-white">₦12,550</h4>
+                <h4 id="withdrawn-display" class="digits-terminal text-xl text-white">₦0</h4>
             </div>
         </section>
 
-        <!-- 3. TRANSACTION LIST (WITH BOTH TRANSACTIONS) -->
         <section class="master-card rounded-[30px] p-7 fade-in" style="animation-delay: 0.4s;">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="orbitron text-[9px] text-cyan-500">History</h3>
                 <span class="text-[8px] text-gray-600 orbitron">Secure Ledger</span>
             </div>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center py-3 border-b border-white/[0.03]">
-                    <div>
-                        <p class="text-[12px] font-medium text-gray-200">Asset Transfer</p>
-                        <p class="text-[9px] text-gray-500 uppercase">15 Mar 2026</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="digits-terminal text-[13px] text-red-400">-₦5,000</p>
-                        <p class="orbitron text-[6px] text-green-500">Confirmed</p>
-                    </div>
-                </div>
-
-                <div class="flex justify-between items-center py-3">
-                    <div>
-                        <p class="text-[12px] font-medium text-gray-200">Protocol Yield</p>
-                        <p class="text-[9px] text-gray-500 uppercase">14 Mar 2026</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="digits-terminal text-[13px] text-green-400">+₦150</p>
-                        <p class="orbitron text-[6px] text-gray-600">Settled</p>
-                    </div>
-                </div>
+            <div id="history-list" class="space-y-4">
+                <p class="text-center text-[10px] text-gray-600 uppercase py-4">Synchronizing Ledger...</p>
             </div>
         </section>
     </main>
 
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script>
-// 1. INITIALIZATION (Tabbatar wannan yana sama)
-const firebaseConfig = { 
-    apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
-    authDomain: "synergy-protocol.firebaseapp.com", 
-    projectId: "synergy-protocol", 
-    storageBucket: "synergy-protocol.firebasestorage.app", 
-    messagingSenderId: "179647543031", 
-    appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
-};
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+    const firebaseConfig = { 
+        apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+        authDomain: "synergy-protocol.firebaseapp.com", 
+        projectId: "synergy-protocol", 
+        storageBucket: "synergy-protocol.firebasestorage.app", 
+        messagingSenderId: "179647543031", 
+        appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
+    };
 
-if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-const db = firebase.firestore();
-const currentActiveUser = localStorage.getItem('synergy_user');
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
+    const currentActiveUser = localStorage.getItem('synergy_user');
 
-// 2. MAIN SYNC ENGINE
-async function syncWalletData() {
-    if (!currentActiveUser) {
-        window.location.replace("signin.html");
-        return;
-    }
+    async function syncWalletData() {
+        if (!currentActiveUser) { window.location.replace("signin.html"); return; }
 
-    db.collection("users").doc(currentActiveUser).onSnapshot((doc) => {
-        if (doc.exists) {
-            const data = doc.data();
-            
-            const vBal = data.videoBalance || 0;
-            const sBal = data.shareBalance || 0;
-            const totalEarned = vBal + sBal;
-            const withdrawn = data.totalWithdrawn || 0;
-            const availableEquity = totalEarned - withdrawn;
+        db.collection("users").doc(currentActiveUser).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                const vBal = data.videoBalance || 0;
+                const sBal = data.shareBalance || 0;
+                const totalEarned = vBal + sBal;
+                const withdrawn = data.totalWithdrawn || 0;
+                const availableEquity = totalEarned - withdrawn;
 
-            // Update Main Display
-            const equityDisplay = document.querySelector('h1.digits-terminal');
-            if (equityDisplay) {
-                equityDisplay.innerHTML = `<span class="text-gray-500 text-2xl">₦</span>${availableEquity.toLocaleString()}<span class="text-gray-500 text-2xl">.00</span>`;
+                document.getElementById('main-equity-display').innerHTML = `<span class="text-gray-500 text-2xl">₦</span>${availableEquity.toLocaleString()}<span class="text-gray-500 text-2xl">.00</span>`;
+                document.getElementById('total-earned-display').innerText = `₦${totalEarned.toLocaleString()}`;
+                document.getElementById('withdrawn-display').innerText = `₦${withdrawn.toLocaleString()}`;
+
+                updateTransactionHistory(data);
+                controlWithdrawButton(data.isVerified, availableEquity);
             }
+        });
+    }
 
-            // Update Metrics Grid
-            const metrics = document.querySelectorAll('h4.digits-terminal');
-            if (metrics.length >= 2) {
-                metrics[0].innerText = `₦${totalEarned.toLocaleString()}`;
-                metrics[1].innerText = `₦${withdrawn.toLocaleString()}`;
+    function updateTransactionHistory(data) {
+        const historyContainer = document.getElementById('history-list');
+        if (historyContainer) {
+            let historyHTML = '';
+            if (data.videoBalance > 0 || data.shareBalance > 0) {
+                historyHTML += `
+                    <div class="flex justify-between items-center py-3 border-b border-white/[0.03]">
+                        <div><p class="text-[12px] font-medium text-gray-200">Protocol Yield</p><p class="text-[9px] text-gray-500 uppercase">Live Earnings</p></div>
+                        <div class="text-right"><p class="digits-terminal text-[13px] text-green-400">+₦${(data.videoBalance + data.shareBalance).toLocaleString()}</p><p class="orbitron text-[6px] text-gray-600">Settled</p></div>
+                    </div>`;
             }
-
-            updateTransactionHistory(data);
-            controlWithdrawButton(data.isVerified, availableEquity);
+            if (data.totalWithdrawn > 0) {
+                historyHTML += `
+                    <div class="flex justify-between items-center py-3">
+                        <div><p class="text-[12px] font-medium text-gray-200">Asset Withdrawal</p><p class="text-[9px] text-gray-500 uppercase">Transfer Log</p></div>
+                        <div class="text-right"><p class="digits-terminal text-[13px] text-red-400">-₦${data.totalWithdrawn.toLocaleString()}</p><p class="orbitron text-[6px] text-green-500">Confirmed</p></div>
+                    </div>`;
+            }
+            historyContainer.innerHTML = historyHTML || '<p class="text-center text-[10px] text-gray-600 uppercase py-4">No recent activity</p>';
         }
-    });
-}
-
-function updateTransactionHistory(data) {
-    const historyContainer = document.querySelector('.space-y-4');
-    if (historyContainer) {
-        let historyHTML = '';
-        
-        if (data.videoBalance > 0) {
-            historyHTML += `
-                <div class="flex justify-between items-center py-3 border-b border-white/[0.03]">
-                    <div>
-                        <p class="text-[12px] font-medium text-gray-200">Protocol Yield</p>
-                        <p class="text-[9px] text-gray-500 uppercase">Latest Session</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="digits-terminal text-[13px] text-green-400">+₦150</p>
-                        <p class="orbitron text-[6px] text-gray-600">Settled</p>
-                    </div>
-                </div>`;
-        }
-        
-        if (data.totalWithdrawn > 0) {
-            historyHTML += `
-                <div class="flex justify-between items-center py-3">
-                    <div>
-                        <p class="text-[12px] font-medium text-gray-200">Asset Withdrawal</p>
-                        <p class="text-[9px] text-gray-500 uppercase">Transfer Log</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="digits-terminal text-[13px] text-red-400">-₦${data.totalWithdrawn.toLocaleString()}</p>
-                        <p class="orbitron text-[6px] text-green-500">Confirmed</p>
-                    </div>
-                </div>`;
-        }
-        historyContainer.innerHTML = historyHTML || '<p class="text-center text-[10px] text-gray-600 uppercase py-4">No recent activity</p>';
     }
-}
 
-function controlWithdrawButton(isVerified, balance) {
-    const btn = document.querySelector('button');
-    if (!btn) return;
-
-    if (isVerified === true) {
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.innerText = "Process Transaction";
-        btn.onclick = () => {
-            const amount = document.getElementById('withdraw-amount').value;
-            if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); }
-            else if (amount > balance) { alert("INSUFFICIENT EQUITY"); }
-            else if (amount < 2000) { alert("MINIMUM WITHDRAWAL: ₦2,000"); }
-            else { alert("TRANSACTION INITIALIZED: PROCESSING..."); }
-        };
-    } else {
-        btn.disabled = true;
-        btn.style.opacity = "0.3";
-        btn.innerText = "LOCKED: ACTIVATE NODES";
+    function controlWithdrawButton(isVerified, balance) {
+        const btn = document.getElementById('withdraw-btn');
+        if (!btn) return;
+        if (isVerified === true) {
+            btn.disabled = false; btn.style.opacity = "1"; btn.innerText = "Process Transaction";
+            btn.onclick = () => {
+                const amount = document.getElementById('withdraw-amount').value;
+                if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); }
+                else if (amount > balance) { alert("INSUFFICIENT EQUITY"); }
+                else if (amount < 2000) { alert("MINIMUM WITHDRAWAL: ₦2,000"); }
+                else { alert("TRANSACTION INITIALIZED: PROCESSING..."); }
+            };
+        } else {
+            btn.disabled = true; btn.style.opacity = "0.3"; btn.innerText = "LOCKED: ACTIVATE NODES";
+        }
     }
-}
 
-// 3. UTILITY FUNCTIONS
-function toggleGoogleMenu(event) {
-    event.stopPropagation();
-    document.getElementById('google-nav').classList.toggle('active');
-}
-window.onclick = () => {
-    const nav = document.getElementById('google-nav');
-    if(nav) nav.classList.remove('active');
-};
+    function toggleGoogleMenu(event) { event.stopPropagation(); document.getElementById('google-nav').classList.toggle('active'); }
+    window.onclick = () => { const nav = document.getElementById('google-nav'); if(nav) nav.classList.remove('active'); };
 
-// INITIALIZE
-syncWalletData();
-                                                                                
-
+    syncWalletData();
     </script>
-    
     <script src="app.js"></script>
 </body>
-    </html>
-                                                                                                                                                                                              
+                    </html>
+    
