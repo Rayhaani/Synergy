@@ -165,8 +165,12 @@
     text-transform: uppercase;
     letter-spacing: 1px;
       }
-      
-    </style>
+
+      <style>
+    /* Wannan zai boye dukkan shafin a farko */
+    body { display: none; }
+</style>
+    
 </head>
 <body>
 
@@ -384,48 +388,9 @@
     </div>
     </main>
     
-
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-
-    // Wannan code din zai fatattaki duk wanda ba verified ba
-async function checkAccess() {
-    const user = localStorage.getItem('synergy_user');
-    const localStatus = localStorage.getItem('synergy_verified_status');
-
-    if (!user) {
-        window.location.href = "signin.html";
-        return;
-    }
-
-    // 1. Idan mamba ya riga ya wuce activation a wannan browser din, bar shi ya gani
-    if (localStatus === 'true') {
-        document.body.style.display = 'block'; // Ko nuna main content
-    }
-
-    // 2. A background kuma sai Firebase ta duba ainihin gaskiyar magana
-    try {
-        const doc = await db.collection("users").doc(user).get();
-        if (doc.exists) {
-            const data = doc.data();
-            if (data.isVerified === true) {
-                localStorage.setItem('synergy_verified_status', 'true');
-            } else {
-                // Idan har yanzu a database 'false' ne, to tura shi ya gama activation
-                localStorage.removeItem('synergy_verified_status');
-                window.location.href = "activation.html";
-            }
-        }
-    } catch (err) {
-        console.log("Offline mode active.");
-    }
-}
-
-// Kira wannan a farkon script
-checkAccess();
-    
-    
-    // 1. INITIALIZATION
+    // 1. INITIALIZATION (Dole ya fara zama a sama)
     const firebaseConfig = { 
         apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
         authDomain: "synergy-protocol.firebaseapp.com", 
@@ -434,11 +399,58 @@ checkAccess();
         messagingSenderId: "179647543031", 
         appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
     };
-    firebase.initializeApp(firebaseConfig);
+    
+    // Tabbatar bamu kira Firebase sau biyu ba
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
     const currentUser = localStorage.getItem('synergy_user');
 
+    // 2. SECURITY GATE (Wannan zai fatattaki 'rayhaan' da sauran unverified users)
+    async function checkAccess() {
+        if (!currentUser) {
+            window.location.replace("signin.html");
+            return;
+        }
+
+        try {
+            // Mu duba Firebase kai tsaye don gaskiyar magana
+            const doc = await db.collection("users").doc(currentUser).get();
+            
+            if (doc.exists) {
+                const data = doc.data();
+                
+                if (data.isVerified === true) {
+                    // IDAN VERIFIED NE:
+                    localStorage.setItem('synergy_verified_status', 'true');
+                    document.body.style.display = 'block'; // BUDE SHAFIN YANZU TUNDA SHI VERIFIED NE
+                } else {
+                    // IDAN BA VERIFIED BA NE:
+                    localStorage.removeItem('synergy_verified_status');
+                    window.location.replace("activation.html"); // KORA SHI KAI TSAYE
+                }
+            } else {
+                window.location.replace("signin.html");
+            }
+        } catch (err) {
+            console.error("Database Error:", err);
+            // Idan an samu matsalar network, mu duba local status a matsayin backup
+            if (localStorage.getItem('synergy_verified_status') === 'true') {
+                document.body.style.display = 'block';
+            } else {
+                window.location.replace("activation.html");
+            }
+        }
+    }
+
+    // Kira tsaron nan take kafin sauran code su yi loading
+    checkAccess();
+
+    // 3. SAURAN VARIABLES (Ci gaban sauran code dinka na dashboard)
     let player, currentCode = "", lastTime = 0;
+    // ... sauran functions na dashboard su biyo baya a nan ...
+    
 
     // 2. YOUTUBE API & PLAYER LOGIC
     function onYouTubeIframeAPIReady() { 
