@@ -108,9 +108,10 @@
     </div>
         </div>
         
+
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    // 1. FIREBASE CONFIG (No changes made)
+    // 1. FIREBASE CONFIG
     const firebaseConfig = { 
         apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
         authDomain: "synergy-protocol.firebaseapp.com", 
@@ -124,21 +125,53 @@
     const db = firebase.firestore();
     const currentUser = localStorage.getItem('synergy_user');
 
-    // 2. PERMANENT SYNC (Daga Database yake duba koda an goge browser data)
+    // Variables for Player and Logic
+    let player, activeNode = 0, currentCode = "", timerInterval;
+    const nodeData = {
+        1: { videoId: 'DIGSUvDZDmA', handle: '@aiwealthacademy_global' }, 
+        2: { videoId: '97lr8_QJaVU', handle: '@globalwealthsecrethq' }
+    };
+
+    // 2. YOUTUBE PLAYER INITIALIZATION (Wanda babu a can baya)
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('activation-player', {
+            height: '100%', 
+            width: '100%',
+            playerVars: { 
+                'autoplay': 0, 
+                'controls': 0, 
+                'disablekb': 1, 
+                'modestbranding': 1, 
+                'rel': 0,
+                'origin': window.location.origin 
+            },
+            events: { 
+                'onStateChange': onPlayerStateChange,
+                'onError': (e) => { console.error("YT Error:", e); location.reload(); }
+            }
+        });
+    }
+
+    // 3. SYNC PROGRESS (Guda daya hadau)
     async function syncProgress() {
         if (!currentUser) { location.href = "signin.html"; return; }
         
-        const userDoc = await db.collection("users").doc(currentUser).get();
-        if (userDoc.exists && userDoc.data().isVerified === true) {
-            location.href = "dashboard.html"; return;
-        }
+        try {
+            const userDoc = await db.collection("users").doc(currentUser).get();
+            if (userDoc.exists && userDoc.data().isVerified === true) {
+                window.location.replace("dashboard.html");
+                return;
+            }
 
-        // Tambayi Database adadin nodes din da aka riga aka yi nasara akai
-        const snapshot = await db.collection("subscription_logs").where("user", "==", currentUser).get();
-        let completedNodes = [];
-        snapshot.forEach(doc => { completedNodes.push(doc.data().node_id); });
-        
-        updateUI(completedNodes);
+            const snapshot = await db.collection("subscription_logs").where("user", "==", currentUser).get();
+            let completedNodes = [];
+            snapshot.forEach(doc => { completedNodes.push(doc.data().node_id); });
+            
+            updateUI(completedNodes);
+        } catch (e) {
+            console.log("Sync error, retrying...");
+            setTimeout(syncProgress, 2000);
+        }
     }
 
     function updateUI(completed) {
@@ -152,60 +185,32 @@
                 btn.innerText = "SYNCHRONIZED";
                 btn.disabled = true;
                 btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.previousElementSibling.innerText = "Status: Protocol Active";
-                btn.previousElementSibling.classList.replace('text-gray-500', 'text-green-400');
+                btn.parentElement.querySelector('p').innerText = "Status: Protocol Active";
+                btn.parentElement.querySelector('p').classList.replace('text-gray-500', 'text-green-400');
             }
         });
     }
 
-    syncProgress();
-
-    async function syncProgress() {
-    if (!currentUser) { location.href = "signin.html"; return; }
-    
-    // 1. Duba idan riga an gama duka
-    const userDoc = await db.collection("users").doc(currentUser).get();
-    if (userDoc.exists && userDoc.data().isVerified === true) {
-        window.location.replace("dashboard.html");
-        return;
-    }
-
-    // 2. Nemo logs din mutum - Muna amfani da get() mai karfi
-    try {
-        const snapshot = await db.collection("subscription_logs")
-                               .where("user", "==", currentUser)
-                               .get();
-        
-        let completedNodes = [];
-        snapshot.forEach(doc => {
-            completedNodes.push(doc.data().node_id);
-        });
-
-        // Tabbatar an nuna lissafi daidai
-        updateUI(completedNodes);
-    } catch (e) {
-        console.log("Sync error, retrying...");
-        setTimeout(syncProgress, 2000); // Idan network ya fadi, ya sake gwada bayan sakan 2
-    }
-    }
-    
     function launchActivation(num) {
         activeNode = num;
         document.getElementById('nodes-list').classList.add('hidden');
         document.getElementById('player-area').classList.remove('hidden');
         player.loadVideoById(nodeData[num].videoId);
-        player.playVideo();
+        // Player zai tashi idan an danna
     }
 
     function onPlayerStateChange(event) {
         if(event.data === YT.PlayerState.PLAYING) {
-            let timeLeft = 120;
+            let timeLeft = 120; // 2 minutes
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
                 let m = Math.floor(timeLeft/60), s = timeLeft%60;
                 document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
-                if(timeLeft <= 0) { clearInterval(timerInterval); showSubscribeStep(); }
+                if(timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    showSubscribeStep(); 
+                }
             }, 1000);
         }
     }
@@ -237,14 +242,11 @@
         }, 4000);
     }
 
-    // 3. SMART BOX SIZE (An rage girman sa yadda zai bayyana duka a screen)
     function revealFinalCode() {
         const username = document.getElementById('yt-username').value;
         if(username.length < 2) { return; }
-        
         currentCode = "SYN-" + Math.floor(1000 + Math.random() * 9999);
         const verifyUI = document.getElementById('verify-ui');
-        
         verifyUI.innerHTML = `
             <div class="p-4 border border-green-500/30 rounded-2xl bg-black/90 space-y-3">
                 <div class="text-center">
@@ -257,59 +259,52 @@
         `;
     }
 
-       
-    
-       async function confirmNodeActivation(ytName) {
-    const val = document.getElementById('hash-input').value.toUpperCase();
-    if (val === currentCode) {
-        const secureBtn = document.getElementById('secure-btn');
-        secureBtn.disabled = true;
-        secureBtn.innerText = "SYNCHRONIZING...";
+    async function confirmNodeActivation(ytName) {
+        const val = document.getElementById('hash-input').value.toUpperCase();
+        if (val === currentCode) {
+            const secureBtn = document.getElementById('secure-btn');
+            secureBtn.disabled = true;
+            secureBtn.innerText = "SYNCHRONIZING...";
+            localStorage.setItem('temp_verified', 'true');
 
-        // Mun kara try-catch mai karfi
-        try {
-            // Sanya lokacin jira (Timeout) na sakan 10
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error("Timeout")), 10000)
-            );
+            try {
+                // Timeout promise na sakan 10 don gujewa Network Lag
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
+                
+                const uploadPromise = db.collection("subscription_logs").add({
+                    youtube_handle: ytName || "USER",
+                    node_id: activeNode,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    user: currentUser
+                });
 
-            const uploadPromise = db.collection("subscription_logs").add({
-                youtube_handle: ytName || "USER",
-                node_id: activeNode,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                user: currentUser
-            });
+                await Promise.race([uploadPromise, timeoutPromise]);
 
-            // Jira daya daga cikinsu ya riga wani
-            await Promise.race([uploadPromise, timeoutPromise]);
-
-            if (activeNode == 2) {
-                await db.collection("users").doc(currentUser).update({ isVerified: true });
-                alert("PROTOCOL UNLOCKED!");
-                window.location.replace("dashboard.html");
-            } else {
-                alert("Node 1 Secured Successfully.");
-                setTimeout(() => location.reload(), 1000);
-            }
-        } catch (e) {
-            // Idan ma an samu Network Lag, tura shi gaba tunda ya riga ya kalla
-            console.log("Network Lag Bypass active");
-            if (activeNode == 2) {
-                window.location.replace("dashboard.html");
-            } else {
-                alert("Node registered locally. Refreshing...");
-                location.reload();
-            }
-        }
-    } else {
-        alert("INVALID CODE");
-    }
+                if (activeNode == 2) {
+                    await db.collection("users").doc(currentUser).update({ isVerified: true });
+                    alert("PROTOCOL UNLOCKED!");
+                    window.location.replace("dashboard.html");
+                } else {
+                    alert("Node 1 Secured Successfully.");
+                    setTimeout(() => location.reload(), 1200);
                 }
-    
-    
-    
-    
-    
+            } catch (e) {
+                console.log("Network Lag Bypass active");
+                if (activeNode == 2) {
+                    window.location.replace("dashboard.html");
+                } else {
+                    alert("Node registered. Refreshing...");
+                    location.reload();
+                }
+            }
+        } else {
+            alert("INVALID CODE");
+        }
+    }
+
+    // Gudanar da sync lokacin da aka bude shafi
+    syncProgress();
+
 
             
         </script>
