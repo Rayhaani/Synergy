@@ -389,28 +389,41 @@
 <script>
 
     // Wannan code din zai fatattaki duk wanda ba verified ba
-const checkAccess = () => {
+async function checkAccess() {
     const user = localStorage.getItem('synergy_user');
+    const localStatus = localStorage.getItem('synergy_verified_status');
+
     if (!user) {
-        window.location.href = "login.html";
+        window.location.href = "signin.html";
         return;
     }
 
-    db.collection("users").doc(user).get().then((doc) => {
+    // 1. Idan mamba ya riga ya wuce activation a wannan browser din, bar shi ya gani
+    if (localStatus === 'true') {
+        document.body.style.display = 'block'; // Ko nuna main content
+    }
+
+    // 2. A background kuma sai Firebase ta duba ainihin gaskiyar magana
+    try {
+        const doc = await db.collection("users").doc(user).get();
         if (doc.exists) {
-            const userData = doc.data();
-            if (userData.isVerified !== true) {
-                // Idan 'false' ne ko babu shi ma kwata-kwata
+            const data = doc.data();
+            if (data.isVerified === true) {
+                localStorage.setItem('synergy_verified_status', 'true');
+            } else {
+                // Idan har yanzu a database 'false' ne, to tura shi ya gama activation
+                localStorage.removeItem('synergy_verified_status');
                 window.location.href = "activation.html";
             }
-        } else {
-            window.location.href = "login.html";
         }
-    });
-};
+    } catch (err) {
+        console.log("Offline mode active.");
+    }
+}
 
-// Kira function din nan take
+// Kira wannan a farkon script
 checkAccess();
+    
     
     // 1. INITIALIZATION
     const firebaseConfig = { 
