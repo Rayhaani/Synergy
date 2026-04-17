@@ -161,32 +161,40 @@
                     btn.disabled = false;
                     return;
                 }
-            }
 
-            // 2. Tabbatar da Authentication (Firebase Auth)
-            const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
-            const user = userCredential.user;
+// 2. Tabbatar da Authentication (Firebase Auth)
+const userCredential = await firebase.auth().signInWithEmailAndPassword(email, pass);
+const user = userCredential.user;
 
-            // 3. Duba idan an yi verify na email
-            if (!user.emailVerified) {
-                showTopNotif("Please verify your email first.", "error");
-                btn.innerText = "ACCESS PROTOCOL";
-                btn.disabled = false;
-                return;
-            }
+// 3. Duba idan an yi verify na email (Optional - ya danganta da tsarinka)
+if (!user.emailVerified) {
+    showTopNotif("Please verify your email first.", "error");
+    btn.innerText = "ACCESS PROTOCOL";
+    btn.disabled = false;
+    return;
+}
 
-            // 4. Duba matsayin Activation (isVerified a Firestore)
-            
-localStorage.setItem('synergy_user', loginInput.toLowerCase());
+// --- SABON GYARA A NAN ---
+// 4. Nemo Username din mutum daga Firestore ko da ya shiga da Email
+let finalUsername = "";
+const usersSnapshot = await db.collection("users").where("email", "==", email.toLowerCase()).get();
 
-// 5. Tura shi Dashboard kai tsaye ba tare da jiran Database ba
+if (!usersSnapshot.empty) {
+    // Dauko Username (Document ID)
+    finalUsername = usersSnapshot.docs[0].id; 
+    localStorage.setItem('synergy_user', finalUsername);
+    console.log("Success: Stored username is", finalUsername);
+} else {
+    // Idan bamu ga username ba, mu yi amfani da abinda ya rubuta (as backup)
+    localStorage.setItem('synergy_user', loginInput.toLowerCase());
+}
+
+// 5. Tura shi Dashboard
 showTopNotif("Access Granted! Connecting...", "success");
 setTimeout(() => { 
     window.location.href = "dashboard.html"; 
 }, 1200);
-            
 
-        
         
         } catch (error) {
             // Wannan zai nuna maka ainihin error din a Inspect Element -> Console
