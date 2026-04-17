@@ -503,8 +503,10 @@ checkAccess();
 
     
 // 4. DATA SYNC (FIREBASE) - SABON GYARA
+
+   // 4. DATA SYNC (FIREBASE) - SABON GYARA MAI TSARO
 if (!currentUser) {
-    location.href = "signin.html";
+    window.location.href = "signin.html";
 } else {
     db.collection("users").doc(currentUser).onSnapshot(doc => {
         if (doc.exists) {
@@ -514,11 +516,12 @@ if (!currentUser) {
 
             // TSARO: Idan bashi da kowane izini, kora shi activation maza!
             if (!isVerifiedInDB && !hasTempPass) {
+                console.log("Access Denied: No activation found.");
                 window.location.replace("activation.html");
                 return; 
             }
 
-            // Idan kuma yana da izini, nuna masa kudinsa
+            // UPDATE UI: Nuna kudi da bayanan mamba
             const vBal = data.videoBalance || 0;
             const sBal = data.shareBalance || 0;
             const watched = data.videosWatchedToday || 0;
@@ -527,8 +530,13 @@ if (!currentUser) {
             document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
             document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
             document.getElementById('display-name').innerText = data.username || "MEMBER";
-            document.getElementById('verified-badge').style.display = 'flex';
             
+            // Nuna Verified Badge kawai idan ya tabbata a Database
+            if (isVerifiedInDB) {
+                document.getElementById('verified-badge').style.display = 'flex';
+            }
+            
+            // PROGRESS UPDATES
             const percent = Math.min((watched / 10) * 100, 100);
             document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
             document.getElementById('daily-progress-bar').style.width = percent + "%";
@@ -539,10 +547,16 @@ if (!currentUser) {
                 taskRing.style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
             }
 
-            if(window.checkAndResetDailyStats) checkAndResetDailyStats(data);
+            // Duba idan rana ta canza don reset stats
+            if(window.checkAndResetDailyStats) window.checkAndResetDailyStats(data);
+        } else {
+            // Idan ma babu account din a DB
+            window.location.href = "signin.html";
         }
+    }, error => {
+        console.error("Snapshot error:", error);
     });
-        }
+                                    }
                 
     
 
