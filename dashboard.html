@@ -501,49 +501,49 @@ checkAccess();
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    // 4. DATA SYNC (FIREBASE)
-const currentUser = localStorage.getItem('synergy_user');
-const isTempVerified = localStorage.getItem('temp_verified'); // VIP Pass dinmu
-
+    
+// 4. DATA SYNC (FIREBASE) - SABON GYARA
 if (!currentUser) {
     location.href = "signin.html";
 } else {
-    // MUHIMMI: 'onSnapshot' guda daya kawai muke bukata
     db.collection("users").doc(currentUser).onSnapshot(doc => {
         if (doc.exists) {
             const data = doc.data();
-            
-            // 1. DUBA MATSAYIN ACTIVATION
-            // Idan Database ya ce kai Verified ne, KO kuma kana da Temp-Pass
-            if (data.isVerified === true || isTempVerified === 'true') {
-                
-                // 2. UPDATE KUDI DA SAURAN BAYANAI (Daga Dashboard UI dinka)
-                const vBal = data.videoBalance || 0;
-                const sBal = data.shareBalance || 0;
-                const watched = data.videosWatchedToday || 0;
-                
-                document.getElementById('total-balance-main').innerText = (vBal + sBal).toLocaleString();
-                document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
-                document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
-                document.getElementById('display-name').innerText = data.username || "MEMBER";
-                
-                // Verified Badge (Idan isVerified true ne a DB ko kuma temp ne)
-                document.getElementById('verified-badge').style.display = 'flex';
-                
-                // HUD Update (Progress Bar da Sauransu)
-                const percent = Math.min((watched / 10) * 100, 100);
-                document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
-                document.getElementById('daily-progress-bar').style.width = percent + "%";
-                document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
-                document.getElementById('task-ring-outer').style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
+            const isVerifiedInDB = data.isVerified === true;
+            const hasTempPass = localStorage.getItem('temp_verified') === 'true';
 
-            } else {
-                // Idan duka babu, maida shi activation
-                location.href = "activation.html";
+            // TSARO: Idan bashi da kowane izini, kora shi activation maza!
+            if (!isVerifiedInDB && !hasTempPass) {
+                window.location.replace("activation.html");
+                return; 
             }
+
+            // Idan kuma yana da izini, nuna masa kudinsa
+            const vBal = data.videoBalance || 0;
+            const sBal = data.shareBalance || 0;
+            const watched = data.videosWatchedToday || 0;
+            
+            document.getElementById('total-balance-main').innerText = (vBal + sBal).toLocaleString();
+            document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
+            document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
+            document.getElementById('display-name').innerText = data.username || "MEMBER";
+            document.getElementById('verified-badge').style.display = 'flex';
+            
+            const percent = Math.min((watched / 10) * 100, 100);
+            document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
+            document.getElementById('daily-progress-bar').style.width = percent + "%";
+            document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
+            
+            const taskRing = document.getElementById('task-ring-outer');
+            if(taskRing) {
+                taskRing.style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
+            }
+
+            if(window.checkAndResetDailyStats) checkAndResetDailyStats(data);
         }
     });
-}
+        }
+                
     
 
     async function executeVerification() {
