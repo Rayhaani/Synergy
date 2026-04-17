@@ -384,6 +384,7 @@
     </div>
     </main>
     
+
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
     // 1. INITIALIZATION
@@ -397,69 +398,11 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    // Mun bar currentUser a matsayin variable kawai tukunna
-    let player, currentCode = "", lastTime = 0;
     const currentUser = localStorage.getItem('synergy_user');
 
-    // 2. AUTHENTICATION & DATA SYNC (MAFI MUHIMMANCI)
-    function startApp() {
-        if (!currentUser) {
-            window.location.href = "signin.html";
-            return;
-        }
+    let player, currentCode = "", lastTime = 0;
 
-        // Muna amfani da onSnapshot don ya ci gaba da lura da canje-canje
-        db.collection("users").doc(currentUser).onSnapshot(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                const isVerifiedInDB = data.isVerified === true;
-                const hasTempPass = localStorage.getItem('temp_verified') === 'true';
-
-                // TSARO: Idan bashi da kowane izini, kora shi activation maza!
-                if (!isVerifiedInDB && !hasTempPass) {
-                    window.location.replace("activation.html");
-                    return; 
-                }
-
-                // UPDATE UI
-                const vBal = data.videoBalance || 0;
-                const sBal = data.shareBalance || 0;
-                const watched = data.videosWatchedToday || 0;
-                
-                document.getElementById('total-balance-main').innerText = (vBal + sBal).toLocaleString();
-                document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
-                document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
-                document.getElementById('display-name').innerText = data.username || "MEMBER";
-                
-                if (isVerifiedInDB) {
-                    document.getElementById('verified-badge').style.display = 'flex';
-                }
-                
-                const percent = Math.min((watched / 10) * 100, 100);
-                document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
-                document.getElementById('daily-progress-bar').style.width = percent + "%";
-                document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
-                
-                const taskRing = document.getElementById('task-ring-outer');
-                if(taskRing) {
-                    taskRing.style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
-                }
-
-                if(window.checkAndResetDailyStats) window.checkAndResetDailyStats(data);
-            } else {
-                // Idan babu wannan user din a DB, kora shi login
-                window.location.href = "signin.html";
-            }
-        }, error => {
-            console.error("Firebase connection error:", error);
-        });
-    }
-
-    // Kira aikin yanzu
-    startApp();
-
-    // 3. YOUTUBE API & PLAYER LOGIC
+    // 2. YOUTUBE API & PLAYER LOGIC
     function onYouTubeIframeAPIReady() { 
         player = new YT.Player('yt-player', { 
             height: '100%', width: '100%', videoId: 'dQw4w9WgXcQ', 
@@ -474,30 +417,45 @@
         player.playVideo(); 
     }
 
-    function onPlayerStateChange(event) {
-        if (event.data === YT.PlayerState.PLAYING) {
-            if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
-            const tracker = setInterval(() => {
-                if (player.getPlayerState() !== YT.PlayerState.PLAYING) { clearInterval(tracker); return; }
-                let currentTime = player.getCurrentTime();
-                let duration = player.getDuration();
-                let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
-                document.getElementById("ring").innerText = progress + "%";
-                document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
+   function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        // 1. Kira sabon garkuwar tsaro (Strikes)
+        if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
 
-                if (progress >= 5) { 
-                    const p = document.getElementById('verifier-panel'); 
-                    if(p) {
-                        p.classList.add('is-visible-now'); 
-                        setTimeout(() => { p.style.opacity = "1"; p.style.transform = "translateY(0)"; p.style.pointerEvents = "all"; }, 50);
-                    }
-                    if(currentCode === "") generateCode();
+        // 2. Fara lissafin progress da nuna verifier panel
+        const tracker = setInterval(() => {
+            if (player.getPlayerState() !== YT.PlayerState.PLAYING) { 
+                clearInterval(tracker); 
+                return; 
+            }
+
+            let currentTime = player.getCurrentTime();
+            let duration = player.getDuration();
+            let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
+
+            // Mun cire tsohon Anti-skip din a nan domin kar ya yi fada da sabon Module din
+            
+            document.getElementById("ring").innerText = progress + "%";
+            document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
+
+            if (progress >= 5) { 
+                const p = document.getElementById('verifier-panel'); 
+                if(p) {
+                    p.classList.add('is-visible-now'); 
+                    setTimeout(() => { 
+                        p.style.opacity = "1"; 
+                        p.style.transform = "translateY(0)"; 
+                        p.style.pointerEvents = "all"; 
+                    }, 50);
                 }
-            }, 1000);
-        }
+                if(currentCode === "") generateCode();
+            }
+        }, 1000);
     }
+                        }
+    
 
-    // 4. UI & INTERACTION FUNCTIONS
+    // 3. UI & INTERACTION FUNCTIONS
     function generateCode() { 
         currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); 
         document.getElementById("generated-code-display").innerText = currentCode; 
@@ -521,26 +479,62 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    async function executeVerification() {
-        const inputVal = document.getElementById('node-code').value.toUpperCase();
-        if(inputVal === currentCode && currentCode !== "") {
-            try {
-                if(!currentUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
-                await db.collection("users").doc(currentUser).update({
-                    videoBalance: firebase.firestore.FieldValue.increment(150),
-                    videosWatchedToday: firebase.firestore.FieldValue.increment(1),
-                    lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
-                });
-                showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
-                setTimeout(() => { location.reload(); }, 1500);
-            } catch (error) {
-                showSynergyAlert("DATABASE ERROR", "error");
+    // 4. DATA SYNC (FIREBASE)
+    if (currentUser) {
+        db.collection("users").doc(currentUser).onSnapshot(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                const vBal = data.videoBalance || 0;
+                const sBal = data.shareBalance || 0;
+                const watched = data.videosWatchedToday || 0;
+                
+                document.getElementById('total-balance-main').innerText = (vBal + sBal).toLocaleString();
+                document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
+                document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
+                document.getElementById('display-name').innerText = data.username || "MEMBER";
+                document.getElementById('verified-badge').style.display = data.isVerified ? 'flex' : 'none';
+                
+                // HUD Update
+                const percent = Math.min((watched / 10) * 100, 100);
+                document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
+                document.getElementById('daily-progress-bar').style.width = percent + "%";
+                document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
+                document.getElementById('task-ring-outer').style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
             }
-        } else {
-            showSynergyAlert("INVALID CODE", "error");
+        });
+    }
+
+    async function executeVerification() {
+    const inputVal = document.getElementById('node-code').value.toUpperCase();
+    // Tabbatar inputVal da currentCode sun yi daidai
+    if(inputVal === currentCode && currentCode !== "") {
+        try {
+            // Tabbatar currentUser yana nan
+            if(!currentUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
+
+            await db.collection("users").doc(currentUser).update({
+                videoBalance: firebase.firestore.FieldValue.increment(150),
+                videosWatchedToday: firebase.firestore.FieldValue.increment(1),
+                lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
+            });
+            
+            showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
+            
+            // Kar a yi reload nan take, bari alert din ya nuna
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+            
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            showSynergyAlert("DATABASE ERROR", "error");
         }
+    } else {
+        showSynergyAlert("INVALID CODE", "error");
+    }
     }
         
+
     async function secureShareAndEarn(videoId) {
         try {
             await navigator.share({ title: 'Synergy Protocol', url: 'https://youtu.be/' + videoId });
@@ -549,55 +543,121 @@
         } catch(e) {}
     }
 
-    // 5. PROTECTION ENGINE
-    document.addEventListener("visibilitychange", function() {
-        if (document.hidden) {
-            if (player && typeof player.pauseVideo === 'function') {
-                player.pauseVideo(); 
-                showSynergyAlert("SECURITY: SESSION PAUSED", "info");
-            }
+    // SYNERGY TAB PROTECTION ENGINE
+document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+        // Idan mamba ya fita daga shafin
+        if (player && typeof player.pauseVideo === 'function') {
+            player.pauseVideo(); 
+            showSynergyAlert("SECURITY: SESSION PAUSED (DON'T LEAVE THE PAGE)", "info");
         }
+    } else {
+        // Idan ya dawo shafin
+        showSynergyAlert("SESSION RESUMED", "success");
+    }
+});
+
+
+    // MULTI-LOGIN & CONSOLE PROTECTION
+const currentSessionId = Math.random().toString(36).substring(7);
+
+async function checkMultiLogin() {
+    if(!currentUser) return;
+    const sessionRef = db.collection("active_sessions").doc(currentUser);
+    
+    // Saita zaman yanzu
+    await sessionRef.set({
+        sessionId: currentSessionId,
+        lastActive: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    const currentSessionId = Math.random().toString(36).substring(7);
-    async function checkMultiLogin() {
-        if(!currentUser) return;
-        const sessionRef = db.collection("active_sessions").doc(currentUser);
-        await sessionRef.set({ sessionId: currentSessionId, lastActive: firebase.firestore.FieldValue.serverTimestamp() });
-        sessionRef.onSnapshot((doc) => {
-            if (doc.exists && doc.data().sessionId !== currentSessionId) {
-                document.body.innerHTML = `<div style="background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:30px;"><h1>PROTOCOL TERMINATED</h1><p>Multiple logins detected.</p></div>`;
-            }
+    // Lura da wasu login daban
+    sessionRef.onSnapshot((doc) => {
+        if (doc.exists && doc.data().sessionId !== currentSessionId) {
+            document.body.innerHTML = `
+                <div style="background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:30px;">
+                    <h1 style="letter-spacing:5px;">PROTOCOL TERMINATED</h1>
+                    <p style="color:white; margin-top:20px;">Multiple logins detected on this account.</p>
+                    <button onclick="location.reload()" style="margin-top:30px; padding:15px 40px; background:#f87171; color:black; font-weight:bold; border-radius:10px;">RE-AUTHENTICATE</button>
+                </div>`;
+            if(player) player.pauseVideo();
+        }
+    });
+}
+
+// Kari: Kare shafin daga 'Right Click' da 'Inspect Element'
+document.addEventListener('contextmenu', event => event.preventDefault());
+document.onkeydown = function(e) {
+    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0))) {
+        return false;
+    }
+};
+
+checkMultiLogin();
+
+
+    // DAILY RESET ENGINE
+function checkAndResetDailyStats(userData) {
+    // Saita lokacin Nigeria (Lagos)
+    const today = new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' });
+    const lastActivityDate = userData.lastActivityDate || "";
+
+    if (today !== lastActivityDate && lastActivityDate !== "") {
+        db.collection("users").doc(currentUser).update({
+            videosWatchedToday: 0,
+            lastActivityDate: today
+        }).then(() => {
+            console.log("New day detected: Stats reset to 0");
         });
     }
+}
 
-    checkMultiLogin();
 
-    function checkAndResetDailyStats(userData) {
-        const today = new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' });
-        if (today !== userData.lastActivityDate && userData.lastActivityDate !== "") {
-            db.collection("users").doc(currentUser).update({ videosWatchedToday: 0, lastActivityDate: today });
-        }
-    }
+    // SYNERGY SECURITY MODULE - ANTI-SKIP
+(function() {
+    // Wadannan variables din suna cikin wannan box din ne kawai
+    let internalStrikes = 0;
+    let internalLastTime = 0;
+    window.synergyTicker = null; 
 
-    (function() {
-        let internalStrikes = 0, internalLastTime = 0;
-        window.setupSecurityTracker = function(playerInstance) {
-            setInterval(() => {
-                if (!playerInstance || playerInstance.getPlayerState() !== YT.PlayerState.PLAYING) return;
+    window.setupSecurityTracker = function(playerInstance) {
+        if (window.synergyTicker) clearInterval(window.synergyTicker);
+
+        window.synergyTicker = setInterval(() => {
+            try {
+                if (!playerInstance || typeof playerInstance.getPlayerState !== 'function') return;
+                if (playerInstance.getPlayerState() !== YT.PlayerState.PLAYING) return;
+
                 let currentTime = playerInstance.getCurrentTime();
+
+                // ANTI-SKIP LOGIC
                 if (currentTime > internalLastTime + 2.5) { 
                     internalStrikes++;
                     playerInstance.seekTo(internalLastTime); 
-                    if (internalStrikes >= 3) document.body.innerHTML = `<div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center;'><h1>PROTOCOL BREACH</h1></div>`;
-                    else window.showSynergyAlert("NO SKIPPING!", "error");
-                } else { internalLastTime = currentTime; }
-            }, 1000);
-        };
-    })();
-            
+                    
+                    if (internalStrikes >= 3) {
+                        clearInterval(window.synergyTicker);
+                        document.body.innerHTML = `
+                            <div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:20px;'>
+                                <h1 style="font-size: 25px; letter-spacing:5px;">PROTOCOL BREACH</h1>
+                                <p style='color:white; margin-top:20px;'>Access suspended: Multiple skip attempts.</p>
+                            </div>`;
+                    } else {
+                        if (window.showSynergyAlert) {
+                            window.showSynergyAlert("STRIKE " + internalStrikes + "/3: NO SKIPPING!", "error");
+                        }
+                    }
+                } else {
+                    internalLastTime = currentTime;
+                }
+            } catch (err) {
+                // Kar mu bar kuskure ya kashe shafin
+            }
+        }, 1000);
+    };
+})();
+    
     
 </script>
 </body>
 </html>
-
