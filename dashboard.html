@@ -533,30 +533,61 @@ checkAccess();
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    // 4. DATA SYNC (FIREBASE)
-    if (currentUser) {
-        db.collection("users").doc(currentUser).onSnapshot(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                const vBal = data.videoBalance || 0;
-                const sBal = data.shareBalance || 0;
-                const watched = data.videosWatchedToday || 0;
-                
-                document.getElementById('total-balance-main').innerText = (vBal + sBal).toLocaleString();
-                document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
-                document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
-                document.getElementById('display-name').innerText = data.username || "MEMBER";
-                document.getElementById('verified-badge').style.display = data.isVerified ? 'flex' : 'none';
-                
-                // HUD Update
-                const percent = Math.min((watched / 10) * 100, 100);
-                document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
-                document.getElementById('daily-progress-bar').style.width = percent + "%";
-                document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
-                document.getElementById('task-ring-outer').style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
+    
+    // 4. DATA SYNC (FIREBASE) - Sabon Gyara
+const currentActiveUser = localStorage.getItem('synergy_user'); // Tabbatar muna da sunan mutum
+
+if (currentActiveUser) {
+    db.collection("users").doc(currentActiveUser).onSnapshot(doc => {
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // 1. Lissafin kudi
+            const vBal = data.videoBalance || 0;
+            const sBal = data.shareBalance || 0;
+            const total = vBal + sBal;
+            const watched = data.videosWatchedToday || 0;
+            
+            // 2. Nuna kudin a babban Balance (da commas)
+            document.getElementById('total-balance-main').innerText = total.toLocaleString();
+            
+            // 3. Nuna kudin a kananan Vaults
+            document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
+            document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
+            
+            // 4. Bayanan Profile
+            document.getElementById('display-name').innerText = data.username || "MEMBER";
+            
+            // Tabbatar an nuna Verified badge idan isVerified = true
+            const badge = document.getElementById('verified-badge');
+            if(badge) badge.style.display = data.isVerified ? 'flex' : 'none';
+            
+            // 5. Daily Progress HUD
+            const percent = Math.min((watched / 10) * 100, 100);
+            document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
+            
+            const progressBar = document.getElementById('daily-progress-bar');
+            if(progressBar) progressBar.style.width = percent + "%";
+            
+            // 6. Est. Monthly Yield
+            document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
+            
+            // 7. Outer Ring Animation
+            const outerRing = document.getElementById('task-ring-outer');
+            if(outerRing) {
+                outerRing.style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
             }
-        });
-    }
+
+            // Check if stats need resetting (Idan sabon rana ne)
+            checkAndResetDailyStats(data);
+        }
+    }, (error) => {
+        console.error("Snapshot Listener Error:", error);
+    });
+} else {
+    console.error("No active user found in storage.");
+}
+    
 
     async function executeVerification() {
     const inputVal = document.getElementById('node-code').value.toUpperCase();
