@@ -242,58 +242,50 @@
         `;
     }
 
-       async function confirmNodeActivation(ytName) {
+       
+    async function confirmNodeActivation(ytName) {
     const val = document.getElementById('hash-input').value.toUpperCase();
     if (val === currentCode) {
         const secureBtn = document.getElementById('secure-btn');
         secureBtn.disabled = true;
-        secureBtn.innerText = "SYNCHRONIZING...";
+        secureBtn.innerText = "BYPASSING LAG...";
+
+        // Ajiye matsayin a LocalStorage don Dashboard ya bari ka shiga nan take
+        localStorage.setItem('temp_verified', 'true');
 
         try {
-            // 1. Shirya ayyukan da za a tura Firebase lokaci guda
-            const logRef = db.collection("subscription_logs").doc();
-            const userRef = db.collection("users").doc(currentUser);
+            // Tura bayanan a background, kar mu tsaya jira
+            db.collection("subscription_logs").add({
+                youtube_handle: ytName,
+                node_id: activeNode,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                user: currentUser
+            });
 
-            // 2. Idan Node 2 ne, muna so mu yi Log sannan mu yi Update a lokaci guda
             if (activeNode == 2) {
-                await Promise.all([
-                    logRef.set({
-                        youtube_handle: ytName,
-                        node_id: activeNode,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        user: currentUser
-                    }),
-                    userRef.update({ isVerified: true })
-                ]);
-
-                // 3. Wannan shi ne babban sirrin: Jira sakan 1 don Firebase ya daidaita
-                secureBtn.innerText = "PROTOCOL UNLOCKED!";
-                setTimeout(() => {
-                    window.location.replace("dashboard.html");
-                }, 1500);
-
+                // Sanar da Firebase cewa an gama
+                await db.collection("users").doc(currentUser).update({ isVerified: true });
+                
+                alert("PROTOCOL UNLOCKED!");
+                window.location.replace("dashboard.html");
             } else {
-                // Idan Node 1 ne kawai
-                await logRef.set({
-                    youtube_handle: ytName,
-                    node_id: activeNode,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    user: currentUser
-                });
-                alert("Node 1 Secured. Ready for Node 2.");
+                alert("Node 1 Secured.");
                 location.reload();
             }
-
         } catch (e) {
-            console.error("Critical Error:", e);
-            secureBtn.disabled = false;
-            secureBtn.innerText = "RETRY SECURE";
-            alert("Network lag detected. Please tap again.");
+            // Ko da an samu lag, tunda Node 2 ne, tilasta shi ya tafi dashboard
+            if (activeNode == 2) {
+                window.location.replace("dashboard.html");
+            } else {
+                secureBtn.disabled = false;
+                secureBtn.innerText = "SECURE NODE";
+                alert("Network Slow. Try Again.");
+            }
         }
     } else {
-        alert("INVALID AUTH CODE");
+        alert("INVALID CODE");
     }
-       }
+                }
     
     
     
