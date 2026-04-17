@@ -389,7 +389,7 @@
     
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    // 1. INITIALIZATION
+    // 1. INITIALIZATION (Tabbatar da wannan block din yana sama)
 const firebaseConfig = { 
     apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
     authDomain: "synergy-protocol.firebaseapp.com", 
@@ -401,51 +401,54 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.firestore();
-const currentUser = localStorage.getItem('synergy_user');
+const auth = firebase.auth(); // Mun kara auth a nan
 
-// 2. SECURITY GATE
-async function checkAccess() {
-    // A. Idan babu user, tura shi Sign-in nan take
-    if (!currentUser) {
-        window.location.replace("signin.html");
-        return;
-    }
-
-    try {
-        // B. Duba matsayin sa daga Database
-        const doc = await db.collection("users").doc(currentUser).get();
-        
-        if (doc.exists) {
-            const data = doc.data();
-            
-            // C. Duba isVerified (boolean)
-            if (data.isVerified === true) {
-                console.log("Access Granted: Verified User.");
-                localStorage.setItem('synergy_verified_status', 'true');
-                // Wannan layin ne kawai zai bude shafin
-                document.body.style.setProperty('display', 'block', 'important');
-            } else {
-                console.log("Access Denied: Redirecting to Activation...");
-                localStorage.removeItem('synergy_verified_status');
-                window.location.replace("activation.html");
+// 2. THE ULTIMATE SECURITY GATE
+function checkAccess() {
+    // Wannan zai jira har sai Firebase ta gama "loading" asusun mutum
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            try {
+                // Nemo bayanai daga Firestore
+                const doc = await db.collection("users").doc(user.uid).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Duba idan mutum verified ne (true) ko a'a (false)
+                    if (data.isVerified === true) {
+                        console.log("Verified User Detected.");
+                        localStorage.setItem('synergy_verified_status', 'true');
+                        // Bude shafin dashboard
+                        document.body.style.setProperty('display', 'block', 'important');
+                    } else {
+                        console.log("Unverified User: Sending to Activation.");
+                        localStorage.removeItem('synergy_verified_status');
+                        window.location.replace("activation.html"); // Wannan zai tura su nan take
+                    }
+                } else {
+                    // Idan babu bayanansu a Firestore
+                    window.location.replace("signin.html");
+                }
+            } catch (err) {
+                console.error("Database Error:", err);
+                // Idan an samu matsalar network, duba local storage
+                if (localStorage.getItem('synergy_verified_status') === 'true') {
+                    document.body.style.setProperty('display', 'block', 'important');
+                } else {
+                    window.location.replace("activation.html");
+                }
             }
         } else {
-            // Idan bamu ga user din ba a DB
+            // Idan ma ba a yi Login ba kwata-kwata
             window.location.replace("signin.html");
         }
-    } catch (err) {
-        console.error("Network Error, checking local status...", err);
-        // Idan babu network, mu bar shi ya gani idan ya taba shiga a baya
-        if (localStorage.getItem('synergy_verified_status') === 'true') {
-            document.body.style.setProperty('display', 'block', 'important');
-        } else {
-            window.location.replace("activation.html");
-        }
-    }
+    });
 }
 
-// 3. KIRA TSARON
+// Kira function din
 checkAccess();
+                    
     
 
     // 3. SAURAN VARIABLES (Ci gaban sauran code dinka na dashboard)
