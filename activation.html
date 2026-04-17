@@ -153,26 +153,35 @@
     }
 
     // 3. SYNC PROGRESS (Guda daya hadau)
-    async function syncProgress() {
-        if (!currentUser) { location.href = "signin.html"; return; }
-        
-        try {
-            const userDoc = await db.collection("users").doc(currentUser).get();
-            if (userDoc.exists && userDoc.data().isVerified === true) {
-                window.location.replace("dashboard.html");
-                return;
-            }
 
-            const snapshot = await db.collection("subscription_logs").where("user", "==", currentUser).get();
-            let completedNodes = [];
-            snapshot.forEach(doc => { completedNodes.push(doc.data().node_id); });
-            
-            updateUI(completedNodes);
-        } catch (e) {
-            console.log("Sync error, retrying...");
-            setTimeout(syncProgress, 2000);
+    async function syncProgress() {
+    if (!currentUser) { location.href = "signin.html"; return; }
+    
+    try {
+        // 1. Fara duba matsayin Verification nan take
+        const userDoc = await db.collection("users").doc(currentUser).get();
+        
+        if (userDoc.exists && userDoc.data().isVerified === true) {
+            // Idan verified ne, maza tura shi dashboard, kar a nuna komai
+            window.location.replace("dashboard.html");
+            return;
+        } else {
+            // Idan ba verified ba ne, to yanzu ne za mu nuna shafin activation din
+            document.getElementById('main-content').style.display = 'block';
         }
+
+        // 2. Sauran aikin lissafin nodes
+        const snapshot = await db.collection("subscription_logs").where("user", "==", currentUser).get();
+        let completedNodes = [];
+        snapshot.forEach(doc => { completedNodes.push(doc.data().node_id); });
+        
+        updateUI(completedNodes);
+    } catch (e) {
+        console.log("Sync error, retrying...");
+        setTimeout(syncProgress, 2000);
     }
+    }
+    
 
     function updateUI(completed) {
         const count = Math.min(completed.length, 2);
