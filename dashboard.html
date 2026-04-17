@@ -386,17 +386,6 @@
     
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-
-    // GYARA: Mun cire tsohon checkAccess() domin kar ya yi kora ba gaira ba dalili
-    function validateSession() {
-        const user = localStorage.getItem('synergy_user');
-        if (!user) { 
-            window.location.href = "signin.html"; 
-            return false;
-        }
-        return user;
-    }
-    
     // 1. INITIALIZATION
     const firebaseConfig = { 
         apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
@@ -408,98 +397,32 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const currentUser = validateSession(); // Muna duba idan akwai user a localStorage kawai tukunna
 
+    // Mun bar currentUser a matsayin variable kawai tukunna
     let player, currentCode = "", lastTime = 0;
+    const currentUser = localStorage.getItem('synergy_user');
 
-    // 2. YOUTUBE API & PLAYER LOGIC
-    function onYouTubeIframeAPIReady() { 
-        player = new YT.Player('yt-player', { 
-            height: '100%', width: '100%', videoId: 'dQw4w9WgXcQ', 
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 }, 
-            events: { 'onStateChange': onPlayerStateChange } 
-        }); 
-    }
-    
-    function startQuantumSession() { 
-        document.getElementById('shutter').style.opacity = "0"; 
-        setTimeout(() => document.getElementById('shutter').style.display = "none", 1000); 
-        player.playVideo(); 
-    }
+    // 2. AUTHENTICATION & DATA SYNC (MAFI MUHIMMANCI)
+    function startApp() {
+        if (!currentUser) {
+            window.location.href = "signin.html";
+            return;
+        }
 
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-        if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
-
-        const tracker = setInterval(() => {
-            if (player.getPlayerState() !== YT.PlayerState.PLAYING) { 
-                clearInterval(tracker); 
-                return; 
-            }
-
-            let currentTime = player.getCurrentTime();
-            let duration = player.getDuration();
-            let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
-            
-            document.getElementById("ring").innerText = progress + "%";
-            document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
-
-            if (progress >= 5) { 
-                const p = document.getElementById('verifier-panel'); 
-                if(p) {
-                    p.classList.add('is-visible-now'); 
-                    setTimeout(() => { 
-                        p.style.opacity = "1"; 
-                        p.style.transform = "translateY(0)"; 
-                        p.style.pointerEvents = "all"; 
-                    }, 50);
-                }
-                if(currentCode === "") generateCode();
-            }
-        }, 1000);
-    }
-}
-    
-
-    // 3. UI & INTERACTION FUNCTIONS
-    function generateCode() { 
-        currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); 
-        document.getElementById("generated-code-display").innerText = currentCode; 
-    }
-
-    function toggleGoogleMenu(event) {
-        event.stopPropagation();
-        document.getElementById('google-nav').classList.toggle('active');
-    }
-
-    window.onclick = () => {
-        const menu = document.getElementById('google-nav');
-        if(menu) menu.classList.remove('active');
-    };
-
-    function showSynergyAlert(msg, type = 'info') {
-        let toast = document.getElementById('custom-toast') || document.createElement('div');
-        toast.id = 'custom-toast'; toast.className = 'synergy-toast show';
-        toast.innerHTML = `<span>${msg}</span>`;
-        if(!document.getElementById('custom-toast')) document.body.appendChild(toast);
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    // 4. DATA SYNC (FIREBASE) - WANNAN SHINE ZAI DINGA CIGABA DA DUBA TSARO A HANKALI
-    if (currentUser) {
+        // Muna amfani da onSnapshot don ya ci gaba da lura da canje-canje
         db.collection("users").doc(currentUser).onSnapshot(doc => {
             if (doc.exists) {
                 const data = doc.data();
                 const isVerifiedInDB = data.isVerified === true;
                 const hasTempPass = localStorage.getItem('temp_verified') === 'true';
 
-                // TSARO: Anan muke duba idan ya cancanci zama a shafin
+                // TSARO: Idan bashi da kowane izini, kora shi activation maza!
                 if (!isVerifiedInDB && !hasTempPass) {
                     window.location.replace("activation.html");
                     return; 
                 }
 
-                // UPDATE UI: Bayan mun tabbatar yana da izini, sai mu nuna bayanan
+                // UPDATE UI
                 const vBal = data.videoBalance || 0;
                 const sBal = data.shareBalance || 0;
                 const watched = data.videosWatchedToday || 0;
@@ -525,11 +448,77 @@ function onPlayerStateChange(event) {
 
                 if(window.checkAndResetDailyStats) window.checkAndResetDailyStats(data);
             } else {
+                // Idan babu wannan user din a DB, kora shi login
                 window.location.href = "signin.html";
             }
         }, error => {
-            console.error("Database connection error:", error);
+            console.error("Firebase connection error:", error);
         });
+    }
+
+    // Kira aikin yanzu
+    startApp();
+
+    // 3. YOUTUBE API & PLAYER LOGIC
+    function onYouTubeIframeAPIReady() { 
+        player = new YT.Player('yt-player', { 
+            height: '100%', width: '100%', videoId: 'dQw4w9WgXcQ', 
+            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 }, 
+            events: { 'onStateChange': onPlayerStateChange } 
+        }); 
+    }
+    
+    function startQuantumSession() { 
+        document.getElementById('shutter').style.opacity = "0"; 
+        setTimeout(() => document.getElementById('shutter').style.display = "none", 1000); 
+        player.playVideo(); 
+    }
+
+    function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.PLAYING) {
+            if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
+            const tracker = setInterval(() => {
+                if (player.getPlayerState() !== YT.PlayerState.PLAYING) { clearInterval(tracker); return; }
+                let currentTime = player.getCurrentTime();
+                let duration = player.getDuration();
+                let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
+                document.getElementById("ring").innerText = progress + "%";
+                document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
+
+                if (progress >= 5) { 
+                    const p = document.getElementById('verifier-panel'); 
+                    if(p) {
+                        p.classList.add('is-visible-now'); 
+                        setTimeout(() => { p.style.opacity = "1"; p.style.transform = "translateY(0)"; p.style.pointerEvents = "all"; }, 50);
+                    }
+                    if(currentCode === "") generateCode();
+                }
+            }, 1000);
+        }
+    }
+
+    // 4. UI & INTERACTION FUNCTIONS
+    function generateCode() { 
+        currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); 
+        document.getElementById("generated-code-display").innerText = currentCode; 
+    }
+
+    function toggleGoogleMenu(event) {
+        event.stopPropagation();
+        document.getElementById('google-nav').classList.toggle('active');
+    }
+
+    window.onclick = () => {
+        const menu = document.getElementById('google-nav');
+        if(menu) menu.classList.remove('active');
+    };
+
+    function showSynergyAlert(msg, type = 'info') {
+        let toast = document.getElementById('custom-toast') || document.createElement('div');
+        toast.id = 'custom-toast'; toast.className = 'synergy-toast show';
+        toast.innerHTML = `<span>${msg}</span>`;
+        if(!document.getElementById('custom-toast')) document.body.appendChild(toast);
+        setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
     async function executeVerification() {
@@ -537,13 +526,11 @@ function onPlayerStateChange(event) {
         if(inputVal === currentCode && currentCode !== "") {
             try {
                 if(!currentUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
-
                 await db.collection("users").doc(currentUser).update({
                     videoBalance: firebase.firestore.FieldValue.increment(150),
                     videosWatchedToday: firebase.firestore.FieldValue.increment(1),
                     lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
                 });
-                
                 showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
                 setTimeout(() => { location.reload(); }, 1500);
             } catch (error) {
@@ -562,99 +549,53 @@ function onPlayerStateChange(event) {
         } catch(e) {}
     }
 
+    // 5. PROTECTION ENGINE
     document.addEventListener("visibilitychange", function() {
         if (document.hidden) {
             if (player && typeof player.pauseVideo === 'function') {
                 player.pauseVideo(); 
-                showSynergyAlert("SECURITY: SESSION PAUSED (DON'T LEAVE THE PAGE)", "info");
+                showSynergyAlert("SECURITY: SESSION PAUSED", "info");
             }
-        } else {
-            showSynergyAlert("SESSION RESUMED", "success");
         }
     });
 
     const currentSessionId = Math.random().toString(36).substring(7);
-
     async function checkMultiLogin() {
         if(!currentUser) return;
         const sessionRef = db.collection("active_sessions").doc(currentUser);
-        await sessionRef.set({
-            sessionId: currentSessionId,
-            lastActive: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
+        await sessionRef.set({ sessionId: currentSessionId, lastActive: firebase.firestore.FieldValue.serverTimestamp() });
         sessionRef.onSnapshot((doc) => {
             if (doc.exists && doc.data().sessionId !== currentSessionId) {
-                document.body.innerHTML = `
-                    <div style="background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:30px;">
-                        <h1 style="letter-spacing:5px;">PROTOCOL TERMINATED</h1>
-                        <p style="color:white; margin-top:20px;">Multiple logins detected on this account.</p>
-                        <button onclick="location.reload()" style="margin-top:30px; padding:15px 40px; background:#f87171; color:black; font-weight:bold; border-radius:10px;">RE-AUTHENTICATE</button>
-                    </div>`;
-                if(player) player.pauseVideo();
+                document.body.innerHTML = `<div style="background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:30px;"><h1>PROTOCOL TERMINATED</h1><p>Multiple logins detected.</p></div>`;
             }
         });
     }
-
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.onkeydown = function(e) {
-        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0))) {
-            return false;
-        }
-    };
 
     checkMultiLogin();
 
     function checkAndResetDailyStats(userData) {
         const today = new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' });
-        const lastActivityDate = userData.lastActivityDate || "";
-
-        if (today !== lastActivityDate && lastActivityDate !== "") {
-            db.collection("users").doc(currentUser).update({
-                videosWatchedToday: 0,
-                lastActivityDate: today
-            });
+        if (today !== userData.lastActivityDate && userData.lastActivityDate !== "") {
+            db.collection("users").doc(currentUser).update({ videosWatchedToday: 0, lastActivityDate: today });
         }
     }
 
     (function() {
-        let internalStrikes = 0;
-        let internalLastTime = 0;
-        window.synergyTicker = null; 
-
+        let internalStrikes = 0, internalLastTime = 0;
         window.setupSecurityTracker = function(playerInstance) {
-            if (window.synergyTicker) clearInterval(window.synergyTicker);
-
-            window.synergyTicker = setInterval(() => {
-                try {
-                    if (!playerInstance || typeof playerInstance.getPlayerState !== 'function') return;
-                    if (playerInstance.getPlayerState() !== YT.PlayerState.PLAYING) return;
-
-                    let currentTime = playerInstance.getCurrentTime();
-
-                    if (currentTime > internalLastTime + 2.5) { 
-                        internalStrikes++;
-                        playerInstance.seekTo(internalLastTime); 
-                        
-                        if (internalStrikes >= 3) {
-                            clearInterval(window.synergyTicker);
-                            document.body.innerHTML = `
-                                <div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center; padding:20px;'>
-                                    <h1 style="font-size: 25px; letter-spacing:5px;">PROTOCOL BREACH</h1>
-                                    <p style='color:white; margin-top:20px;'>Access suspended: Multiple skip attempts.</p>
-                                </div>`;
-                        } else {
-                            if (window.showSynergyAlert) {
-                                window.showSynergyAlert("STRIKE " + internalStrikes + "/3: NO SKIPPING!", "error");
-                            }
-                        }
-                    } else {
-                        internalLastTime = currentTime;
-                    }
-                } catch (err) {}
+            setInterval(() => {
+                if (!playerInstance || playerInstance.getPlayerState() !== YT.PlayerState.PLAYING) return;
+                let currentTime = playerInstance.getCurrentTime();
+                if (currentTime > internalLastTime + 2.5) { 
+                    internalStrikes++;
+                    playerInstance.seekTo(internalLastTime); 
+                    if (internalStrikes >= 3) document.body.innerHTML = `<div style='background:#020617; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f87171; font-family:Syncopate; text-align:center;'><h1>PROTOCOL BREACH</h1></div>`;
+                    else window.showSynergyAlert("NO SKIPPING!", "error");
+                } else { internalLastTime = currentTime; }
             }, 1000);
         };
     })();
+            
     
 </script>
 </body>
