@@ -197,6 +197,20 @@
             }).join('');
         }
         render();
+
+
+        // Code na Admin Panel (Withdrawal Monitor Section)
+db.collection("withdrawals")
+  .where("status", "==", "pending")
+  .orderBy("timestamp", "desc")
+  .onSnapshot((querySnapshot) => {
+      // Nan ne zaka nuna dukkan pending withdrawals a table
+      querySnapshot.forEach((doc) => {
+          const request = doc.data();
+          console.log(`User ${request.userId} wants to withdraw ₦${request.amount}`);
+      });
+  });
+        
     </script>
 </body>
 </html>
