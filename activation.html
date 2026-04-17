@@ -111,66 +111,63 @@
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    // 1. FIREBASE CONFIG
-    const firebaseConfig = { 
-        apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
-        authDomain: "synergy-protocol.firebaseapp.com", 
-        projectId: "synergy-protocol", 
-        storageBucket: "synergy-protocol.firebasestorage.app", 
-        messagingSenderId: "179647543031", 
-        appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
-    };
+    
+// 1. FIREBASE CONFIG - Ba mu taba komai ba
+const firebaseConfig = { 
+    apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+    authDomain: "synergy-protocol.firebaseapp.com", 
+    projectId: "synergy-protocol", 
+    storageBucket: "synergy-protocol.firebasestorage.app", 
+    messagingSenderId: "179647543031", 
+    appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
+};
 
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-    const db = firebase.firestore();
-    const currentUser = localStorage.getItem('synergy_user');
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+const db = firebase.firestore();
+const currentUser = localStorage.getItem('synergy_user');
 
-    // Variables for Player and Logic
-    let player, activeNode = 0, currentCode = "", timerInterval;
-    const nodeData = {
-        1: { videoId: 'DIGSUvDZDmA', handle: '@aiwealthacademy_global' }, 
-        2: { videoId: '97lr8_QJaVU', handle: '@globalwealthsecrethq' }
-    };
+// Variables for Player and Logic - Suna nan daram
+let player, activeNode = 0, currentCode = "", timerInterval;
+const nodeData = {
+    1: { videoId: 'DIGSUvDZDmA', handle: '@aiwealthacademy_global' }, 
+    2: { videoId: '97lr8_QJaVU', handle: '@globalwealthsecrethq' }
+};
 
-    // 2. YOUTUBE PLAYER INITIALIZATION (Wanda babu a can baya)
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('activation-player', {
-            height: '100%', 
-            width: '100%',
-            playerVars: { 
-                'autoplay': 0, 
-                'controls': 0, 
-                'disablekb': 1, 
-                'modestbranding': 1, 
-                'rel': 0,
-                'origin': window.location.origin 
-            },
-            events: { 
-                'onStateChange': onPlayerStateChange,
-                'onError': (e) => { console.error("YT Error:", e); location.reload(); }
-            }
-        });
-    }
+// 2. YOUTUBE PLAYER INITIALIZATION
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('activation-player', {
+        height: '100%', 
+        width: '100%',
+        playerVars: { 
+            'autoplay': 0, 
+            'controls': 0, 
+            'disablekb': 1, 
+            'modestbranding': 1, 
+            'rel': 0,
+            'origin': window.location.origin 
+        },
+        events: { 
+            'onStateChange': onPlayerStateChange,
+            'onError': (e) => { console.error("YT Error:", e); location.reload(); }
+        }
+    });
+}
 
-    // 3. SYNC PROGRESS (Guda daya hadau)
-
-    async function syncProgress() {
-    if (!currentUser) { location.href = "signin.html"; return; }
+// 3. SYNC PROGRESS - Gyaran da zai sa shafin ya bayyana
+async function syncProgress() {
+    if (!currentUser) { window.location.replace("signin.html"); return; }
     
     try {
-        // 1. Fara duba matsayin Verification nan take
         const userDoc = await db.collection("users").doc(currentUser).get();
         
         if (userDoc.exists && userDoc.data().isVerified === true) {
-            // Idan verified ne, maza tura shi dashboard, kar a nuna komai
             window.location.replace("dashboard.html");
             return;
         } else {
-            // Idan ba verified ba ne, to yanzu ne za mu nuna shafin activation din
+            // WANNAN LAYIN NE ZAI KAWAR DA DUHUN SHAFIN
             document.getElementById('main-content').style.display = 'block';
         }
 
-        // 2. Sauran aikin lissafin nodes
         const snapshot = await db.collection("subscription_logs").where("user", "==", currentUser).get();
         let completedNodes = [];
         snapshot.forEach(doc => { completedNodes.push(doc.data().node_id); });
@@ -180,95 +177,97 @@
         console.log("Sync error, retrying...");
         setTimeout(syncProgress, 2000);
     }
-    }
-    
+}
 
-    function updateUI(completed) {
-        const count = Math.min(completed.length, 2);
-        document.getElementById('nodes-count').innerText = `${count} / 2`;
-        document.getElementById('progress-bar').style.width = (count * 50) + "%";
+// 4. UI AND ACTIVATION LOGIC - Duk suna nan yadda ka saba
+function updateUI(completed) {
+    const count = Math.min(completed.length, 2);
+    document.getElementById('nodes-count').innerText = `${count} / 2`;
+    document.getElementById('progress-bar').style.width = (count * 50) + "%";
 
-        completed.forEach(nodeId => {
-            const btn = document.querySelector(`[onclick="launchActivation(${nodeId})"]`);
-            if(btn) {
-                btn.innerText = "SYNCHRONIZED";
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.parentElement.querySelector('p').innerText = "Status: Protocol Active";
-                btn.parentElement.querySelector('p').classList.replace('text-gray-500', 'text-green-400');
+    completed.forEach(nodeId => {
+        const btn = document.querySelector(`[onclick="launchActivation(${nodeId})"]`);
+        if(btn) {
+            btn.innerText = "SYNCHRONIZED";
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            const p = btn.parentElement.querySelector('p');
+            if(p) {
+                p.innerText = "Status: Protocol Active";
+                p.classList.replace('text-gray-500', 'text-green-400');
             }
-        });
-    }
-
-    function launchActivation(num) {
-        activeNode = num;
-        document.getElementById('nodes-list').classList.add('hidden');
-        document.getElementById('player-area').classList.remove('hidden');
-        player.loadVideoById(nodeData[num].videoId);
-        // Player zai tashi idan an danna
-    }
-
-    function onPlayerStateChange(event) {
-        if(event.data === YT.PlayerState.PLAYING) {
-            let timeLeft = 120; // 2 minutes
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                let m = Math.floor(timeLeft/60), s = timeLeft%60;
-                document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
-                if(timeLeft <= 0) { 
-                    clearInterval(timerInterval); 
-                    showSubscribeStep(); 
-                }
-            }, 1000);
         }
-    }
+    });
+}
 
-    function showSubscribeStep() {
-        const verifyUI = document.getElementById('verify-ui');
-        const data = nodeData[activeNode];
+function launchActivation(num) {
+    activeNode = num;
+    document.getElementById('nodes-list').classList.add('hidden');
+    document.getElementById('player-area').classList.remove('hidden');
+    player.loadVideoById(nodeData[num].videoId);
+}
+
+function onPlayerStateChange(event) {
+    if(event.data === YT.PlayerState.PLAYING) {
+        let timeLeft = 120; 
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(timeLeft <= 0) { 
+                clearInterval(timerInterval); 
+                showSubscribeStep(); 
+            }
+        }, 1000);
+    }
+}
+
+function showSubscribeStep() {
+    const verifyUI = document.getElementById('verify-ui');
+    const data = nodeData[activeNode];
+    verifyUI.innerHTML = `
+        <div class="p-4 border-t border-cyan-500/50 rounded-t-[25px] bg-black/90 backdrop-blur-xl">
+            <button onclick="window.open('https://youtube.com/${data.handle}?sub_confirmation=1', '_blank'); startVerificationProcess();" 
+                    class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black orbitron text-[10px] font-black">
+                INITIALIZE SUBSCRIPTION
+            </button>
+        </div>
+    `;
+    verifyUI.classList.remove('hidden');
+}
+
+function startVerificationProcess() {
+    const verifyUI = document.getElementById('verify-ui');
+    verifyUI.innerHTML = `<div class="p-4 text-center animate-pulse orbitron text-[8px] text-cyan-400">CONNECTING...</div>`;
+    setTimeout(() => {
         verifyUI.innerHTML = `
-            <div class="p-4 border-t border-cyan-500/50 rounded-t-[25px] bg-black/90 backdrop-blur-xl">
-                <button onclick="window.open('https://youtube.com/${data.handle}?sub_confirmation=1', '_blank'); startVerificationProcess();" 
-                        class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black orbitron text-[10px] font-black">
-                    INITIALIZE SUBSCRIPTION
-                </button>
+            <div class="p-4 border border-white/10 rounded-2xl bg-white/5 space-y-3">
+                <input type="text" id="yt-username" class="w-full bg-black/40 border border-cyan-500/30 rounded-lg p-3 text-center text-white text-xs outline-none" placeholder="YOUTUBE NAME">
+                <button id="gen-btn" onclick="revealFinalCode()" class="w-full py-3 glass-premium rounded-lg orbitron text-[9px] text-cyan-400 border border-cyan-500/30">GENERATE HASH</button>
             </div>
         `;
-        verifyUI.classList.remove('hidden');
-    }
+    }, 4000);
+}
 
-    function startVerificationProcess() {
-        const verifyUI = document.getElementById('verify-ui');
-        verifyUI.innerHTML = `<div class="p-4 text-center animate-pulse orbitron text-[8px] text-cyan-400">CONNECTING...</div>`;
-        setTimeout(() => {
-            verifyUI.innerHTML = `
-                <div class="p-4 border border-white/10 rounded-2xl bg-white/5 space-y-3">
-                    <input type="text" id="yt-username" class="w-full bg-black/40 border border-cyan-500/30 rounded-lg p-3 text-center text-white text-xs outline-none" placeholder="YOUTUBE NAME">
-                    <button id="gen-btn" onclick="revealFinalCode()" class="w-full py-3 glass-premium rounded-lg orbitron text-[9px] text-cyan-400 border border-cyan-500/30">GENERATE HASH</button>
-                </div>
-            `;
-        }, 4000);
-    }
-
-    function revealFinalCode() {
-        const username = document.getElementById('yt-username').value;
-        if(username.length < 2) { return; }
-        currentCode = "SYN-" + Math.floor(1000 + Math.random() * 9999);
-        const verifyUI = document.getElementById('verify-ui');
-        verifyUI.innerHTML = `
-            <div class="p-4 border border-green-500/30 rounded-2xl bg-black/90 space-y-3">
-                <div class="text-center">
-                    <p class="text-[8px] text-green-400 orbitron">AUTH CODE</p>
-                    <h2 class="text-2xl text-white font-bold tracking-widest">${currentCode}</h2>
-                </div>
-                <input type="text" id="hash-input" class="w-full bg-white/5 border border-green-500/20 rounded-lg p-2 text-center text-white text-sm" placeholder="PASTE CODE">
-                <button id="secure-btn" onclick="confirmNodeActivation('${username}')" class="w-full py-3 btn-neon rounded-lg orbitron text-[9px] font-black">SECURE NODE</button>
+function revealFinalCode() {
+    const username = document.getElementById('yt-username').value;
+    if(username.length < 2) { return; }
+    currentCode = "SYN-" + Math.floor(1000 + Math.random() * 9999);
+    const verifyUI = document.getElementById('verify-ui');
+    verifyUI.innerHTML = `
+        <div class="p-4 border border-green-500/30 rounded-2xl bg-black/90 space-y-3">
+            <div class="text-center">
+                <p class="text-[8px] text-green-400 orbitron">AUTH CODE</p>
+                <h2 class="text-2xl text-white font-bold tracking-widest">${currentCode}</h2>
             </div>
-        `;
-    }
+            <input type="text" id="hash-input" class="w-full bg-white/5 border border-green-500/20 rounded-lg p-2 text-center text-white text-sm" placeholder="PASTE CODE">
+            <button id="secure-btn" onclick="confirmNodeActivation('${username}')" class="w-full py-3 btn-neon rounded-lg orbitron text-[9px] font-black">SECURE NODE</button>
+        </div>
+    `;
+}
 
-    async function confirmNodeActivation(ytName) {
+async function confirmNodeActivation(ytName) {
     const val = document.getElementById('hash-input').value.toUpperCase();
     if (val === currentCode) {
         const secureBtn = document.getElementById('secure-btn');
@@ -276,7 +275,6 @@
         secureBtn.innerText = "SYNCHRONIZING...";
 
         try {
-            // A. Adana log na subscription
             await db.collection("subscription_logs").add({
                 youtube_handle: ytName || "USER",
                 node_id: activeNode,
@@ -284,14 +282,9 @@
                 user: currentUser
             });
 
-            // B. Idan wannan shi ne Node na karshe (Node 2)
             if (activeNode == 2) {
-                // Muna tura update din isVerified
                 await db.collection("users").doc(currentUser).update({ isVerified: true });
-                
-                // Muna saka alamar "Verified" a browser kafin mu tafi
                 localStorage.setItem('synergy_verified_status', 'true'); 
-                
                 alert("PROTOCOL UNLOCKED!");
                 window.location.replace("dashboard.html");
             } else {
@@ -301,7 +294,6 @@
         } catch (e) {
             console.error("Lag detected, but proceeding...");
             if (activeNode == 2) {
-                // Koda an samu error na network, tunda ya gama kallo, mu bar shi ya shiga
                 localStorage.setItem('synergy_verified_status', 'true');
                 window.location.replace("dashboard.html");
             } else {
@@ -311,10 +303,11 @@
     } else {
         alert("INVALID CODE");
     }
-        }
+}
+
+// KIRA FUNCTION DIN NAN TAKE
+syncProgress();
     
-
-
             
         </script>
     
