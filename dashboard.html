@@ -166,9 +166,8 @@
     letter-spacing: 1px;
       }
 
-      <style>
-    /* Wannan zai boye dukkan shafin a farko */
-    body { display: none; }
+     body { display: none !important; }
+      
 </style>
     
 </head>
@@ -390,60 +389,63 @@
     
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    // 1. INITIALIZATION (Dole ya fara zama a sama)
-    const firebaseConfig = { 
-        apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
-        authDomain: "synergy-protocol.firebaseapp.com", 
-        projectId: "synergy-protocol", 
-        storageBucket: "synergy-protocol.firebasestorage.app", 
-        messagingSenderId: "179647543031", 
-        appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
-    };
-    
-    // Tabbatar bamu kira Firebase sau biyu ba
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+    // 1. INITIALIZATION
+const firebaseConfig = { 
+    apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+    authDomain: "synergy-protocol.firebaseapp.com", 
+    projectId: "synergy-protocol", 
+    storageBucket: "synergy-protocol.firebasestorage.app", 
+    messagingSenderId: "179647543031", 
+    appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
+};
+
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+const db = firebase.firestore();
+const currentUser = localStorage.getItem('synergy_user');
+
+// 2. SECURITY GATE
+async function checkAccess() {
+    // A. Idan babu user, tura shi Sign-in nan take
+    if (!currentUser) {
+        window.location.replace("signin.html");
+        return;
     }
-    const db = firebase.firestore();
-    const currentUser = localStorage.getItem('synergy_user');
 
-    // 2. SECURITY GATE (Wannan zai fatattaki 'rayhaan' da sauran unverified users)
-        async function checkAccess() {
-        // 1. Idan babu user a localStorage, tura shi Sign-in
-        if (!currentUser) {
-            window.location.replace("signin.html");
-            return;
-        }
-
-        try {
-            const doc = await db.collection("users").doc(currentUser).get();
+    try {
+        // B. Duba matsayin sa daga Database
+        const doc = await db.collection("users").doc(currentUser).get();
+        
+        if (doc.exists) {
+            const data = doc.data();
             
-            if (doc.exists) {
-                const data = doc.data();
-                
-                if (data.isVerified === true) {
-                    // IDAN VERIFIED NE:
-                    localStorage.setItem('synergy_verified_status', 'true');
-                    document.body.style.display = 'block'; 
-                } else {
-                    // IDAN 'FALSE' NE KO BA A YI BA:
-                    localStorage.removeItem('synergy_verified_status');
-                    // MU TABBATAR YANA TAFIA ACTIVATION BA SIGNIN BA
-                    window.location.replace("activation.html"); 
-                }
+            // C. Duba isVerified (boolean)
+            if (data.isVerified === true) {
+                console.log("Access Granted: Verified User.");
+                localStorage.setItem('synergy_verified_status', 'true');
+                // Wannan layin ne kawai zai bude shafin
+                document.body.style.setProperty('display', 'block', 'important');
             } else {
-                // Idan babu user din a Database kwata-kwata
-                window.location.replace("signin.html");
-            }
-        } catch (err) {
-            console.error("Database Error:", err);
-            if (localStorage.getItem('synergy_verified_status') === 'true') {
-                document.body.style.display = 'block';
-            } else {
+                console.log("Access Denied: Redirecting to Activation...");
+                localStorage.removeItem('synergy_verified_status');
                 window.location.replace("activation.html");
             }
+        } else {
+            // Idan bamu ga user din ba a DB
+            window.location.replace("signin.html");
         }
+    } catch (err) {
+        console.error("Network Error, checking local status...", err);
+        // Idan babu network, mu bar shi ya gani idan ya taba shiga a baya
+        if (localStorage.getItem('synergy_verified_status') === 'true') {
+            document.body.style.setProperty('display', 'block', 'important');
+        } else {
+            window.location.replace("activation.html");
         }
+    }
+}
+
+// 3. KIRA TSARON
+checkAccess();
     
 
     // 3. SAURAN VARIABLES (Ci gaban sauran code dinka na dashboard)
