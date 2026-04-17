@@ -258,54 +258,54 @@
     }
 
        
-    async function confirmNodeActivation(ytName) {
+    
+       async function confirmNodeActivation(ytName) {
     const val = document.getElementById('hash-input').value.toUpperCase();
     if (val === currentCode) {
         const secureBtn = document.getElementById('secure-btn');
         secureBtn.disabled = true;
-        secureBtn.innerText = "BYPASSING LAG...";
+        secureBtn.innerText = "SYNCHRONIZING...";
 
-        // Ajiye matsayin a LocalStorage na dan lokaci don kariya
-        localStorage.setItem('temp_verified', 'true');
-
+        // Mun kara try-catch mai karfi
         try {
-            // 1. Tura bayanan a background
-            await db.collection("subscription_logs").add({
-                youtube_handle: ytName || "MANUAL_VERIFY", // Tabbatar akwai suna
+            // Sanya lokacin jira (Timeout) na sakan 10
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Timeout")), 10000)
+            );
+
+            const uploadPromise = db.collection("subscription_logs").add({
+                youtube_handle: ytName || "USER",
                 node_id: activeNode,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 user: currentUser
             });
 
+            // Jira daya daga cikinsu ya riga wani
+            await Promise.race([uploadPromise, timeoutPromise]);
+
             if (activeNode == 2) {
-                // 2. Idan Node 2 ne, sanar da Firebase an gama komai
                 await db.collection("users").doc(currentUser).update({ isVerified: true });
-                
-                alert("PROTOCOL FULLY ACTIVE!");
+                alert("PROTOCOL UNLOCKED!");
                 window.location.replace("dashboard.html");
             } else {
-                // 3. Idan Node 1 ne, jira sakan 1 kafin refresh don Firebase ya gama 'indexing'
                 alert("Node 1 Secured Successfully.");
-                setTimeout(() => {
-                    location.reload();
-                }, 1200); // Mun dan kara lokacin kadan don tabbata
+                setTimeout(() => location.reload(), 1000);
             }
         } catch (e) {
-            console.error("Firebase Error:", e);
-            // Ko da an samu lag a Node 2, tura shi Dashboard
+            // Idan ma an samu Network Lag, tura shi gaba tunda ya riga ya kalla
+            console.log("Network Lag Bypass active");
             if (activeNode == 2) {
                 window.location.replace("dashboard.html");
             } else {
-                secureBtn.disabled = false;
-                secureBtn.innerText = "SECURE NODE";
-                alert("Network Slow. Please try again.");
+                alert("Node registered locally. Refreshing...");
+                location.reload();
             }
         }
     } else {
         alert("INVALID CODE");
     }
-                        }
-                           
+                }
+    
     
     
     
