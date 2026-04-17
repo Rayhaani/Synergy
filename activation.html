@@ -160,20 +160,35 @@
 
     syncProgress();
 
-    let player, activeNode = 0, currentCode = "", timerInterval;
-    const nodeData = {
-        1: { videoId: 'DIGSUvDZDmA', handle: '@aiwealthacademy_global' }, 
-        2: { videoId: '97lr8_QJaVU', handle: '@globalwealthsecrethq' }
-    };
-
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('activation-player', {
-            height: '100%', width: '100%',
-            playerVars: { 'controls': 0, 'disablekb': 1, 'modestbranding': 1, 'rel': 0 },
-            events: { 'onStateChange': onPlayerStateChange }
-        });
+    async function syncProgress() {
+    if (!currentUser) { location.href = "signin.html"; return; }
+    
+    // 1. Duba idan riga an gama duka
+    const userDoc = await db.collection("users").doc(currentUser).get();
+    if (userDoc.exists && userDoc.data().isVerified === true) {
+        window.location.replace("dashboard.html");
+        return;
     }
 
+    // 2. Nemo logs din mutum - Muna amfani da get() mai karfi
+    try {
+        const snapshot = await db.collection("subscription_logs")
+                               .where("user", "==", currentUser)
+                               .get();
+        
+        let completedNodes = [];
+        snapshot.forEach(doc => {
+            completedNodes.push(doc.data().node_id);
+        });
+
+        // Tabbatar an nuna lissafi daidai
+        updateUI(completedNodes);
+    } catch (e) {
+        console.log("Sync error, retrying...");
+        setTimeout(syncProgress, 2000); // Idan network ya fadi, ya sake gwada bayan sakan 2
+    }
+    }
+    
     function launchActivation(num) {
         activeNode = num;
         document.getElementById('nodes-list').classList.add('hidden');
@@ -250,42 +265,47 @@
         secureBtn.disabled = true;
         secureBtn.innerText = "BYPASSING LAG...";
 
-        // Ajiye matsayin a LocalStorage don Dashboard ya bari ka shiga nan take
+        // Ajiye matsayin a LocalStorage na dan lokaci don kariya
         localStorage.setItem('temp_verified', 'true');
 
         try {
-            // Tura bayanan a background, kar mu tsaya jira
-            db.collection("subscription_logs").add({
-                youtube_handle: ytName,
+            // 1. Tura bayanan a background
+            await db.collection("subscription_logs").add({
+                youtube_handle: ytName || "MANUAL_VERIFY", // Tabbatar akwai suna
                 node_id: activeNode,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 user: currentUser
             });
 
             if (activeNode == 2) {
-                // Sanar da Firebase cewa an gama
+                // 2. Idan Node 2 ne, sanar da Firebase an gama komai
                 await db.collection("users").doc(currentUser).update({ isVerified: true });
                 
-                alert("PROTOCOL UNLOCKED!");
+                alert("PROTOCOL FULLY ACTIVE!");
                 window.location.replace("dashboard.html");
             } else {
-                alert("Node 1 Secured.");
-                location.reload();
+                // 3. Idan Node 1 ne, jira sakan 1 kafin refresh don Firebase ya gama 'indexing'
+                alert("Node 1 Secured Successfully.");
+                setTimeout(() => {
+                    location.reload();
+                }, 1200); // Mun dan kara lokacin kadan don tabbata
             }
         } catch (e) {
-            // Ko da an samu lag, tunda Node 2 ne, tilasta shi ya tafi dashboard
+            console.error("Firebase Error:", e);
+            // Ko da an samu lag a Node 2, tura shi Dashboard
             if (activeNode == 2) {
                 window.location.replace("dashboard.html");
             } else {
                 secureBtn.disabled = false;
                 secureBtn.innerText = "SECURE NODE";
-                alert("Network Slow. Try Again.");
+                alert("Network Slow. Please try again.");
             }
         }
     } else {
         alert("INVALID CODE");
     }
-                }
+                        }
+                           
     
     
     
