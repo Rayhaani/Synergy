@@ -588,19 +588,31 @@ if (currentActiveUser) {
     console.error("No active user found in storage.");
 }
     
-
-    async function executeVerification() {
+async function executeVerification() {
     const inputVal = document.getElementById('node-code').value.toUpperCase();
-    // Tabbatar inputVal da currentCode sun yi daidai
+    const currentActiveUser = localStorage.getItem('synergy_user');
+    
+    if(!currentActiveUser) { 
+        showSynergyAlert("SESSION EXPIRED", "error"); 
+        return; 
+    }
+
     if(inputVal === currentCode && currentCode !== "") {
         try {
+            // 1. Duba adadin da ya kalla a yau daga Database
+            const userDoc = await db.collection("users").doc(currentActiveUser).get();
+            const userData = userDoc.data();
+            const currentWatched = userData.videosWatchedToday || 0;
 
-            // Maimakon dogara ga variable na waje, mu fada masa ya duba sunan yanzu
-const currentActiveUser = localStorage.getItem('synergy_user');
-if(!currentActiveUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
+            // 2. Idan ya kai 10 ko fiye, tsayar da shi
+            if (currentWatched >= 10) {
+                showSynergyAlert("LIMIT REACHED: 10/10 UNITS COMPLETED", "error");
+                if(player) player.pauseVideo();
+                return; 
+            }
 
+            // 3. Idan bai kai 10 ba, a kara masa kudi da lissafi
             await db.collection("users").doc(currentActiveUser).update({
-            
                 videoBalance: firebase.firestore.FieldValue.increment(150),
                 videosWatchedToday: firebase.firestore.FieldValue.increment(1),
                 lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
@@ -608,7 +620,6 @@ if(!currentActiveUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
             
             showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
             
-            // Kar a yi reload nan take, bari alert din ya nuna
             setTimeout(() => {
                 location.reload();
             }, 1500);
@@ -620,7 +631,9 @@ if(!currentActiveUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
     } else {
         showSynergyAlert("INVALID CODE", "error");
     }
-    }
+}
+    
+    
         
 
     async function secureShareAndEarn(videoId) {
