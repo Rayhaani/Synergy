@@ -166,7 +166,7 @@
         });
     }
 
-    function controlWithdrawButton(isVerified, balance) {
+        function controlWithdrawButton(isVerified, balance) {
         const btn = document.getElementById('withdraw-btn');
         if (!btn) return;
 
@@ -175,7 +175,7 @@
             btn.style.opacity = "1"; 
             btn.innerText = "Process Transaction";
             
-                        btn.onclick = async () => {
+            btn.onclick = async () => {
                 if (!userBankData || !userBankData.accountNumber) {
                     alert("SETTLEMENT REQUIRED: Please update your bank details.");
                     openWithdrawalModal();
@@ -193,7 +193,6 @@
                     btn.disabled = true;
                     btn.innerText = "Processing...";
 
-                    // A. Tura Withdrawal Request zuwa Firebase
                     await db.collection("withdrawals").add({
                         userId: currentActiveUser,
                         amount: amount,
@@ -202,19 +201,15 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // B. Rage kudin daga dashboard din mamba nan take
                     await db.collection("users").doc(currentActiveUser).update({
                         totalWithdrawn: firebase.firestore.FieldValue.increment(amount)
                     });
                     
-                    alert(`SUCCESS: ₦${amount} has been deducted and sent for approval.`);
-                    
+                    alert(`SUCCESS: ₦${amount} has been deducted.`);
                     amountInput.value = ""; 
                     btn.innerText = "Process Transaction";
                     btn.disabled = false;
-
                 } catch (error) {
-                    console.error("Firebase Error:", error);
                     alert("SYSTEM ERROR: Transaction failed.");
                     btn.innerText = "Process Transaction";
                     btn.disabled = false;
@@ -224,8 +219,8 @@
             btn.disabled = true; 
             btn.style.opacity = "0.3"; 
             btn.innerText = "LOCKED: ACTIVATE NODES";
-                                        }
-        
+        }
+        }
 
     function updateTransactionHistory(data) {
         const historyContainer = document.getElementById('history-list');
