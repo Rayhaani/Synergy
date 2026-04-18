@@ -235,50 +235,65 @@
     // 3. Global Stats (Approved Today & Total Approved & Logs)
     
     function loadGlobalStats() {
-    // ... (Sauran code dinka na Approved Today da Total Approved suna nan)
+        // 1. Approved Stats (Today & Total)
+        db.collection("withdrawals").where("status", "==", "approved")
+          .onSnapshot(snap => {
+              let totalAllTime = 0;
+              let totalToday = 0;
+              const today = new Date().toDateString();
 
-    // 4. Recent Activity Logs (Dauko ainihin bayanan withdrawals na kwanan nan)
-    db.collection("withdrawals")
-      .orderBy("timestamp", "desc") // Domin na karshe ya fito a sama
-      .limit(5) // Iya guda 5 muke so mu gani
-      .onSnapshot(snap => {
-          const logContainer = document.querySelector('.space-y-4');
-          if(!logContainer) return;
-          
-          let logHtml = "";
-          
-          snap.forEach(doc => {
-              const d = doc.data();
-              const status = d.status || "pending";
-              const user = d.userId || "Unknown";
-              
-              // Saita kala da rubutu dangane da status din mutum
-              let config = {
-                  color: "orange",
-                  text: "submitted a new withdrawal request.",
-                  label: "Pending"
-              };
+              snap.forEach(doc => {
+                  const d = doc.data();
+                  totalAllTime += Number(d.amount || 0);
+                  if (d.timestamp && new Date(d.timestamp.seconds * 1000).toDateString() === today) {
+                      totalToday += Number(d.amount || 0);
+                  }
+              });
 
-              if (status === "approved") {
-                  config = { color: "green", text: "withdrawal request approved.", label: "Verified" };
-              } else if (status === "rejected") {
-                  config = { color: "red", text: "withdrawal request declined.", label: "Rejected" };
-              }
-
-              logHtml += `
-                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border-l-2 border-${config.color}-500 transition-all hover:bg-white/10">
-                    <div class="flex items-center">
-                        <span class="activity-dot bg-${config.color}-500"></span>
-                        <p class="text-xs text-gray-300">
-                            <span class="username-style font-bold text-white">${user}</span> ${config.text}
-                        </p>
-                    </div>
-                    <span class="text-[9px] text-gray-600 font-bold uppercase tracking-tighter">${config.label}</span>
-                </div>`;
+              const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
+              if(stats[1]) stats[1].innerText = "₦" + totalToday.toLocaleString(); 
+              if(stats[2]) stats[2].innerText = "₦" + (totalAllTime >= 1000000 ? (totalAllTime/1000000).toFixed(1) + "M" : totalAllTime.toLocaleString());
           });
 
-          logContainer.innerHTML = logHtml || '<p class="text-center text-gray-600 text-xs py-4">No recent activity found.</p>';
-      });
+        // 2. Auto Suspended Stats (Daga Users Collection)
+        db.collection("users").where("accountStatus", "==", "suspended")
+          .onSnapshot(snap => {
+              const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
+              if(stats[3]) stats[3].innerText = snap.size; // Wannan zai nuna yawan mutanen da aka dakatar
+          });
+
+        // 3. Daily Video Done (Daga dukkan mambobi)
+        db.collection("users")
+          .onSnapshot(snap => {
+              let totalVideos = 0;
+              snap.forEach(doc => {
+                  const d = doc.data();
+                  totalVideos += Number(d.dailyVideosCount || 0); // Tabbatar sunan field din daya ne a Firebase dinka
+              });
+              const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
+              if(stats[5]) stats[5].innerText = totalVideos; // Wannan zai nuna jimillar bidiyon da aka kalla a yau
+          });
+
+        // 4. Recent Activity Logs (Approved only)
+        db.collection("withdrawals").where("status", "==", "approved")
+          .orderBy("timestamp", "desc").limit(3)
+          .onSnapshot(snap => {
+              const logContainer = document.querySelector('.space-y-4');
+              if(!logContainer) return;
+              let logHtml = "";
+              snap.forEach(doc => {
+                  const d = doc.data();
+                  logHtml += `
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border-l-2 border-green-500">
+                        <div class="flex items-center">
+                            <span class="activity-dot bg-green-500"></span>
+                            <p class="text-xs text-gray-300"><span class="username-style font-bold text-white">${d.userId}</span> withdrawal request approved.</p>
+                        </div>
+                        <span class="text-[10px] text-gray-600">Verified</span>
+                    </div>`;
+              });
+              logContainer.innerHTML = logHtml || '<p class="text-center text-gray-600 text-xs">No recent approvals</p>';
+          });
     }
         
                       
