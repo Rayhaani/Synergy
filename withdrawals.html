@@ -218,8 +218,9 @@
     }
 
     // 3. Global Stats (Approved Today & Total Approved & Logs)
+    
     function loadGlobalStats() {
-        // Approved Stats
+        // 1. Approved Stats (Today & Total)
         db.collection("withdrawals").where("status", "==", "approved")
           .onSnapshot(snap => {
               let totalAllTime = 0;
@@ -235,11 +236,30 @@
               });
 
               const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
-              if(stats[1]) stats[1].innerText = "₦" + totalToday.toLocaleString(); // Approved Today
-              if(stats[2]) stats[2].innerText = "₦" + (totalAllTime >= 1000000 ? (totalAllTime/1000000).toFixed(1) + "M" : totalAllTime.toLocaleString()); // Total Approved
+              if(stats[1]) stats[1].innerText = "₦" + totalToday.toLocaleString(); 
+              if(stats[2]) stats[2].innerText = "₦" + (totalAllTime >= 1000000 ? (totalAllTime/1000000).toFixed(1) + "M" : totalAllTime.toLocaleString());
           });
 
-        // Recent Activity Logs (Approved only)
+        // 2. Auto Suspended Stats (Daga Users Collection)
+        db.collection("users").where("accountStatus", "==", "suspended")
+          .onSnapshot(snap => {
+              const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
+              if(stats[3]) stats[3].innerText = snap.size; // Wannan zai nuna yawan mutanen da aka dakatar
+          });
+
+        // 3. Daily Video Done (Daga dukkan mambobi)
+        db.collection("users")
+          .onSnapshot(snap => {
+              let totalVideos = 0;
+              snap.forEach(doc => {
+                  const d = doc.data();
+                  totalVideos += Number(d.dailyVideosCount || 0); // Tabbatar sunan field din daya ne a Firebase dinka
+              });
+              const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
+              if(stats[5]) stats[5].innerText = totalVideos; // Wannan zai nuna jimillar bidiyon da aka kalla a yau
+          });
+
+        // 4. Recent Activity Logs (Approved only)
         db.collection("withdrawals").where("status", "==", "approved")
           .orderBy("timestamp", "desc").limit(3)
           .onSnapshot(snap => {
@@ -259,8 +279,8 @@
               });
               logContainer.innerHTML = logHtml || '<p class="text-center text-gray-600 text-xs">No recent approvals</p>';
           });
-    }
-
+                  }
+                      
     // 4. Actions
     async function approvePayout(docId, userId, amount) {
         if(!confirm("Amince da biyan wannan kudin?")) return;
