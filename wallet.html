@@ -189,61 +189,62 @@
                 }
                     
 
-        function controlWithdrawButton(isVerified, balance) {
-        const btn = document.getElementById('withdraw-btn');
-        if (!btn) return;
+      function controlWithdrawButton(isVerified, balance) {
+    const btn = document.getElementById('withdraw-btn');
+    if (!btn) return;
 
-        if (isVerified === true) {
-            btn.disabled = false; 
-            btn.style.opacity = "1"; 
-            btn.innerText = "Process Transaction";
+    if (isVerified === true) {
+        btn.disabled = false; 
+        btn.style.opacity = "1"; 
+        btn.innerText = "Process Transaction";
+        
+        btn.onclick = async () => {
+            if (!userBankData || !userBankData.accountNumber) {
+                alert("SETTLEMENT REQUIRED: Please update your bank details.");
+                openWithdrawalModal();
+                return;
+            }
+
+            const amountInput = document.getElementById('withdraw-amount');
+            const amount = parseFloat(amountInput.value);
+
+            if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); return; }
+            if (amount > balance) { alert("INSUFFICIENT EQUITY"); return; }
+            if (amount < 100) { alert("MINIMUM WITHDRAWAL: ₦100"); return; }
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "Processing...";
+
+                // A. Tura Withdrawal Request kawai zuwa Firebase (Wannan shi ne kadai ya kamata ya zama a nan)
+                await db.collection("withdrawals").add({
+                    userId: currentActiveUser,
+                    amount: amount,
+                    bankDetails: userBankData,
+                    status: "pending",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // MUN CIRE 'totalWithdrawn update' DIN DA KE NAN DOMIN GUDEWA DOUBLE DEDUCTION
+                
+                alert(`SUCCESS: ₦${amount} request sent. It will reflect as pending.`);
+                amountInput.value = ""; 
+                btn.innerText = "Process Transaction";
+                btn.disabled = false;
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                alert("SYSTEM ERROR: Transaction failed.");
+                btn.innerText = "Process Transaction";
+                btn.disabled = false;
+            }
+        };
+    } else {
+        btn.disabled = true; 
+        btn.style.opacity = "0.3"; 
+        btn.innerText = "LOCKED: ACTIVATE NODES";
+    }
+                }
             
-            btn.onclick = async () => {
-                if (!userBankData || !userBankData.accountNumber) {
-                    alert("SETTLEMENT REQUIRED: Please update your bank details.");
-                    openWithdrawalModal();
-                    return;
-                }
-
-                const amountInput = document.getElementById('withdraw-amount');
-                const amount = parseFloat(amountInput.value);
-
-                if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); return; }
-                if (amount > balance) { alert("INSUFFICIENT EQUITY"); return; }
-                if (amount < 100) { alert("MINIMUM WITHDRAWAL: ₦100"); return; }
-
-                try {
-                    btn.disabled = true;
-                    btn.innerText = "Processing...";
-
-                    await db.collection("withdrawals").add({
-                        userId: currentActiveUser,
-                        amount: amount,
-                        bankDetails: userBankData,
-                        status: "pending",
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    await db.collection("users").doc(currentActiveUser).update({
-                        totalWithdrawn: firebase.firestore.FieldValue.increment(amount)
-                    });
-                    
-                    alert(`SUCCESS: ₦${amount} has been deducted.`);
-                    amountInput.value = ""; 
-                    btn.innerText = "Process Transaction";
-                    btn.disabled = false;
-                } catch (error) {
-                    alert("SYSTEM ERROR: Transaction failed.");
-                    btn.innerText = "Process Transaction";
-                    btn.disabled = false;
-                }
-            };
-        } else {
-            btn.disabled = true; 
-            btn.style.opacity = "0.3"; 
-            btn.innerText = "LOCKED: ACTIVATE NODES";
-        }
-        }
 
     async function updateTransactionHistory(userData) {
         const historyContainer = document.getElementById('history-list');
