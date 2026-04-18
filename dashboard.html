@@ -457,26 +457,73 @@ checkAccess();
     
 
     // 2. YOUTUBE API & PLAYER LOGIC
-    function onYouTubeIframeAPIReady() { 
-        player = new YT.Player('yt-player', { 
-            height: '100%', width: '100%', videoId: 'dQw4w9WgXcQ', 
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 }, 
-            events: { 'onStateChange': onPlayerStateChange } 
-        }); 
-    }
     
-    function startQuantumSession() { 
-        document.getElementById('shutter').style.opacity = "0"; 
-        setTimeout(() => document.getElementById('shutter').style.display = "none", 1000); 
-        player.playVideo(); 
-    }
+   // ==========================================
+// 1. SABON YOUTUBE CORE (REPLACEMENT)
+// ==========================================
+const YOUTUBE_API_KEY = 'AIzaSyDqgyMq1NF4s0Q_-raMVdAOxBvCmeTxKYQ';
+const channelPlaylists = [
+    'UUj7jOBQq0cpwBp0j7XVikQQ', 
+    'UU_54whp80N3Lyl8tgLQf4Cw', 
+    'UU_SAKA_CHANNEL_ID_3_ANAN', 
+    'UU_SAKA_CHANNEL_ID_4_ANAN', 
+    'UU_SAKA_CHANNEL_ID_5_ANAN'
+];
 
-   function onPlayerStateChange(event) {
+let videoQueue = [];
+
+async function fetchLatestVideos() {
+    let fetchedVideos = [];
+    for (const playlistId of channelPlaylists) {
+        if(playlistId.includes('SAKA_CHANNEL_ID')) continue;
+        try {
+            const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=1&playlistId=${playlistId}&key=${YOUTUBE_API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.items && data.items.length > 0) fetchedVideos.push(data.items[0].snippet.resourceId.videoId);
+        } catch (e) { console.error("Error fetching: " + playlistId); }
+    }
+    videoQueue = fetchedVideos;
+}
+
+async function onYouTubeIframeAPIReady() {
+    await fetchLatestVideos();
+    let initialVideo = videoQueue.length > 0 ? videoQueue[0] : 'dQw4w9WgXcQ';
+
+    player = new YT.Player('yt-player', {
+        height: '100%', width: '100%', videoId: initialVideo,
+        playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 },
+        events: { 
+            'onStateChange': onPlayerStateChange, // Mun bar wannan don lissafin kudi
+            'onReady': rotateVideoBasedOnProgress 
+        }
+    });
+}
+
+function startQuantumSession() {
+    document.getElementById('shutter').style.opacity = "0";
+    setTimeout(() => document.getElementById('shutter').style.display = "none", 1000);
+    player.playVideo();
+}
+
+async function rotateVideoBasedOnProgress() {
+    const username = localStorage.getItem('synergy_user');
+    if(!username || videoQueue.length === 0) return;
+    const doc = await db.collection("users").doc(username).get();
+    if(doc.exists) {
+        const watchedCount = doc.data().videosWatchedToday || 0;
+        const nextVideoId = videoQueue[watchedCount % videoQueue.length];
+        if(player && player.cueVideoById) player.cueVideoById(nextVideoId);
+    }
+}
+
+// ==========================================
+// 2. WANNAN SHINE MAI LISSAFIN KUDI (KEEP THIS)
+// ==========================================
+function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
-        // 1. Kira sabon garkuwar tsaro (Strikes)
         if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
 
-        // 2. Fara lissafin progress da nuna verifier panel
         const tracker = setInterval(() => {
             if (player.getPlayerState() !== YT.PlayerState.PLAYING) { 
                 clearInterval(tracker); 
@@ -486,12 +533,11 @@ checkAccess();
             let currentTime = player.getCurrentTime();
             let duration = player.getDuration();
             let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
-
-            // Mun cire tsohon Anti-skip din a nan domin kar ya yi fada da sabon Module din
             
             document.getElementById("ring").innerText = progress + "%";
             document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
 
+            // Nuna Verifier panel idan an kalli 5%
             if (progress >= 5) { 
                 const p = document.getElementById('verifier-panel'); 
                 if(p) {
@@ -506,8 +552,8 @@ checkAccess();
             }
         }, 1000);
     }
-                        }
-    
+    }
+                                                                                                                    
 
     // 3. UI & INTERACTION FUNCTIONS
     function generateCode() { 
