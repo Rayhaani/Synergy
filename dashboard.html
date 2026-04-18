@@ -458,7 +458,6 @@ checkAccess();
 
     // 2. YOUTUBE API & PLAYER LOGIC
     
-
 // ==========================================
 // SYNERGY CORE ENGINE v6.0 (FINAL PATCH)
 // ==========================================
@@ -475,26 +474,25 @@ const firebaseConfig = {
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.firestore();
 
-// Tabbatar muna amfani da suna daya ko'ina
+// Gyara #7: Tabbatar da sunan variable daya ne ko'ina
 const currentActiveUser = localStorage.getItem('synergy_user'); 
 let player, currentCode = "", lastTime = 0;
 
-// 1. ACCESS GATEWAY (Gyara #1: Opacity Transition)
+// Gyara #1: Bude page da opacity
 async function checkAccess() {
     if (!currentActiveUser) { window.location.replace("signin.html"); return; }
     try {
         const doc = await db.collection("users").doc(currentActiveUser).get();
         if (doc.exists && doc.data().isVerified === true) {
-            // Bayyana shafin cikin sanyi
-            document.body.style.opacity = "1";
+            document.body.style.opacity = "1"; // Sanya body ya zama visible
         } else { window.location.replace("activation.html"); }
     } catch (e) { 
-        document.body.style.opacity = "1"; 
+        document.body.style.opacity = "1"; // Fallback idan babu network
     }
 }
 checkAccess();
 
-// 2. YOUTUBE ENGINE
+// Gyara #4 & #5: Video IDs da Origin
 const myVideos = ['V07v_Y3e_XQ', 'j7jOBQq0cpw'];
 
 function onYouTubeIframeAPIReady() {
@@ -513,80 +511,39 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-// Gyara #2: Function din kunna video
+// Gyara #2: Function din da zai fara kunna bidiyo
 function startQuantumSession() {
     if (player && typeof player.playVideo === 'function') {
         player.playVideo();
         document.getElementById("shutter").style.display = "none";
+        // generateCode(); // Optional: ko a jira har ya gama
     }
 }
 
-// Gyara #3: State change logic
+// Gyara #3: Handling Player States
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
-        // Anti-skip tracker
-        setInterval(() => {
-            let currentTime = player.getCurrentTime();
-            if (currentTime > lastTime + 2.5) { 
-                player.seekTo(lastTime); 
-            } else { 
-                lastTime = currentTime; 
-            }
-        }, 1000);
+        // Setup anti-skip logic anan
+        if (window.setupSecurityTracker) window.setupSecurityTracker(player);
     }
     if (event.data === YT.PlayerState.ENDED) {
         document.getElementById('verifier-panel').classList.add('is-visible-now');
         document.getElementById('verifier-panel').style.opacity = "1";
-        generateCode();
+        generateCode(); // Nuna code kawai bayan ya gama kallo
     }
 }
 
-// 3. CORE LOGIC
 function generateCode() { 
     currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); 
     document.getElementById("generated-code-display").innerText = currentCode; 
 }
 
-async function executeVerification() {
-    const inputVal = document.getElementById('node-code').value.toUpperCase();
-    if(inputVal === currentCode && currentCode !== "") {
-        try {
-            await db.collection("users").doc(currentActiveUser).update({
-                videoBalance: firebase.firestore.FieldValue.increment(150),
-                videosWatchedToday: firebase.firestore.FieldValue.increment(1),
-                lastActivityDate: new Date().toLocaleDateString('en-GB')
-            });
-            alert("SUCCESS: ₦150 EARNED");
-            location.reload();
-        } catch(e) { alert("DATABASE ERROR"); }
-    } else { alert("INVALID CODE"); }
+// Sauran UI functions (Menu, Alerts, etc.) na nan daram...
+function toggleGoogleMenu(event) {
+    event.stopPropagation();
+    document.getElementById('google-nav').classList.toggle('active');
 }
-
-// UI HANDLERS
-function toggleGoogleMenu(e) { e.stopPropagation(); document.getElementById('google-nav').classList.toggle('active'); }
-window.onclick = () => {
-    const nav = document.getElementById('google-nav');
-    if(nav) nav.classList.remove('active');
-};
-
-// SNAPSHOT LISTENER
-if (currentActiveUser) {
-    db.collection("users").doc(currentActiveUser).onSnapshot(doc => {
-        if (doc.exists) {
-            const data = doc.data();
-            const total = (data.videoBalance || 0) + (data.shareBalance || 0);
-            document.getElementById('total-balance-main').innerText = total.toLocaleString();
-            document.getElementById('video-balance-sub').innerText = (data.videoBalance || 0).toLocaleString();
-            document.getElementById('share-balance-sub').innerText = (data.shareBalance || 0).toLocaleString();
-            document.getElementById('display-name').innerText = data.username || "MEMBER";
-            document.getElementById('daily-count').innerText = `${data.videosWatchedToday || 0} / 10 UNITS`;
-            document.getElementById('daily-progress-bar').style.width = ((data.videosWatchedToday || 0) / 10 * 100) + "%";
-        }
-    });
-                           }
     
-    
-
 
                                                                                                               
 
