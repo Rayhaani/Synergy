@@ -164,58 +164,65 @@
 
     // 2. Monitoring Pending Withdrawals & Stats
     function loadWithdrawals() {
-        db.collection("withdrawals")
-          .where("status", "==", "pending")
-          .onSnapshot((querySnapshot) => {
-              const table = document.getElementById('request-table');
-              const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
-              
-              let html = "";
-              let totalPendingAmount = 0;
-              let count = 0;
+    db.collection("withdrawals")
+      .where("status", "==", "pending")
+      .onSnapshot((querySnapshot) => {
+          const table = document.getElementById('request-table');
+          const stats = document.querySelectorAll('.stat-card-slim p.text-lg');
+          
+          let html = "";
+          let totalPendingAmount = 0;
+          let count = 0;
 
-              querySnapshot.forEach((doc) => {
-                  const data = doc.data();
-                  const id = doc.id;
-                  totalPendingAmount += Number(data.amount || 0);
-                  count++;
+          querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const id = doc.id;
+              totalPendingAmount += Number(data.amount || 0);
+              count++;
 
-                  html += `
-                    <tr onclick="toggleRow('${id}')">
-                        <td class="pl-6"><span class="text-cyan-400 font-bold username-style tracking-wider">${data.userId}</span></td>
-                        <td class="text-center font-bold">₦${(data.amount || 0).toLocaleString()}</td>
-                        <td class="text-center">
-                            <span class="text-[9px] px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 font-bold uppercase">ACTIVE</span>
-                        </td>
-                        <td class="pr-6 text-right text-gray-500 text-[11px]">Just Now</td>
-                    </tr>
-                    <tr id="details-${id}" class="details-row bg-white/[0.03]">
-                        <td colspan="4" class="p-8 border-l-4 border-cyan-400">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div class="space-y-4">
-                                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Payment Destination</p>
-                                    <p class="text-[11px] text-gray-400">BANK: <span class="text-white font-bold">${data.bankDetails?.bankName || 'N/A'}</span></p>
-                                    <p class="text-[11px] text-gray-400">ACC: <span class="text-white font-bold">${data.bankDetails?.accountNumber || 'N/A'}</span></p>
-                                    <p class="text-[11px] text-gray-400">NAME: <span class="text-white font-bold">${data.bankDetails?.accountName || 'N/A'}</span></p>
-                                </div>
-                                <div class="flex flex-col justify-center items-end gap-3">
-                                    <div class="flex gap-3">
-                                        <button onclick="rejectPayout('${id}')" class="btn-reject">Decline</button>
-                                        <button onclick="approvePayout('${id}', '${data.userId}', ${data.amount})" class="btn-approve">Approve Payout</button>
-                                    </div>
-                                </div>
+              // LOGIC NA LOKACI: Maida Firebase Timestamp zuwa 10:11 PM, 18-04-2026
+              let formattedTime = "Waiting...";
+              if (data.timestamp) {
+                  const date = data.timestamp.toDate();
+                  const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                  const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+                  formattedTime = `${timeStr}, ${dateStr}`;
+              }
+
+              html += `
+                <tr onclick="toggleRow('${id}')">
+                    <td class="pl-6"><span class="text-cyan-400 font-bold username-style tracking-wider">${data.userId}</span></td>
+                    <td class="text-center font-bold text-white">₦${(data.amount || 0).toLocaleString()}</td>
+                    <td class="text-center">
+                        <span class="text-[9px] px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 font-bold uppercase">ACTIVE</span>
+                    </td>
+                    <td class="pr-6 text-right text-gray-500 text-[10px] font-medium">${formattedTime}</td>
+                </tr>
+                <tr id="details-${id}" class="details-row bg-white/[0.03]">
+                    <td colspan="4" class="p-8 border-l-4 border-cyan-400">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Payment Destination</p>
+                                <p class="text-[11px] text-gray-400">BANK: <span class="text-white font-bold">${data.bankDetails?.bankName || 'N/A'}</span></p>
+                                <p class="text-[11px] text-gray-400">ACC: <span class="text-white font-bold">${data.bankDetails?.accountNumber || 'N/A'}</span></p>
+                                <p class="text-[11px] text-gray-400">NAME: <span class="text-white font-bold">${data.bankDetails?.accountName || 'N/A'}</span></p>
                             </div>
-                        </td>
-                    </tr>`;
-              });
-
-              table.innerHTML = html || '<tr><td colspan="4" class="p-10 text-center text-gray-600">NO PENDING REQUESTS</td></tr>';
-              
-              // Update Stats Cards
-              if(stats[0]) stats[0].innerText = count; // Pending Requests
-              if(stats[4]) stats[4].innerText = "₦" + totalPendingAmount.toLocaleString(); // Pending Payout
+                            <div class="flex gap-3 justify-end items-center">
+                                <button onclick="rejectPayout('${id}')" class="btn-reject">Decline</button>
+                                <button onclick="approvePayout('${id}', '${data.userId}', ${data.amount})" class="btn-approve">Approve Payout</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
           });
-    }
+
+          table.innerHTML = html || '<tr><td colspan="4" class="p-10 text-center text-gray-600 tracking-widest uppercase">No Pending Requests</td></tr>';
+          
+          if(stats[0]) stats[0].innerText = count; 
+          if(stats[4]) stats[4].innerText = "₦" + totalPendingAmount.toLocaleString(); 
+      });
+}
+           
 
     // 3. Global Stats (Approved Today & Total Approved & Logs)
     
