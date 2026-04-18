@@ -425,7 +425,7 @@ async function checkAccess() {
                 console.log("Access Granted!");
                 localStorage.setItem('synergy_verified_status', 'true');
                 // Bude shafi
-                document.body.style.setProperty('display', 'block', 'important');
+                document.body.style.opacity = "1";
             } else {
                 console.log("Not Verified. Sending to Activation...");
                 localStorage.removeItem('synergy_verified_status');
