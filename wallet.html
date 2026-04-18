@@ -175,28 +175,57 @@
             btn.style.opacity = "1"; 
             btn.innerText = "Process Transaction";
             
-            btn.onclick = () => {
-                // Duba idan akwai bayanan banki
+                        btn.onclick = async () => {
                 if (!userBankData || !userBankData.accountNumber) {
-                    alert("SETTLEMENT REQUIRED: Please update your bank account details to proceed with the withdrawal.");
+                    alert("SETTLEMENT REQUIRED: Please update your bank details.");
                     openWithdrawalModal();
                     return;
                 }
 
-                const amount = document.getElementById('withdraw-amount').value;
-                if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); }
-                else if (amount > balance) { alert("INSUFFICIENT EQUITY"); }
-                else if (amount < 100) { alert("MINIMUM WITHDRAWAL: ₦100"); }
-                else { 
-                    alert(`TRANSACTION INITIALIZED: ₦${amount} to ${userBankData.bankName}`); 
+                const amountInput = document.getElementById('withdraw-amount');
+                const amount = parseFloat(amountInput.value);
+
+                if (!amount || amount <= 0) { alert("PLEASE ENTER VALID AMOUNT"); return; }
+                if (amount > balance) { alert("INSUFFICIENT EQUITY"); return; }
+                if (amount < 100) { alert("MINIMUM WITHDRAWAL: ₦100"); return; }
+
+                try {
+                    btn.disabled = true;
+                    btn.innerText = "Processing...";
+
+                    // A. Tura Withdrawal Request zuwa Firebase
+                    await db.collection("withdrawals").add({
+                        userId: currentActiveUser,
+                        amount: amount,
+                        bankDetails: userBankData,
+                        status: "pending",
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // B. Rage kudin daga dashboard din mamba nan take
+                    await db.collection("users").doc(currentActiveUser).update({
+                        totalWithdrawn: firebase.firestore.FieldValue.increment(amount)
+                    });
+                    
+                    alert(`SUCCESS: ₦${amount} has been deducted and sent for approval.`);
+                    
+                    amountInput.value = ""; 
+                    btn.innerText = "Process Transaction";
+                    btn.disabled = false;
+
+                } catch (error) {
+                    console.error("Firebase Error:", error);
+                    alert("SYSTEM ERROR: Transaction failed.");
+                    btn.innerText = "Process Transaction";
+                    btn.disabled = false;
                 }
             };
         } else {
             btn.disabled = true; 
             btn.style.opacity = "0.3"; 
             btn.innerText = "LOCKED: ACTIVATE NODES";
-        }
-    }
+                                        }
+        
 
     function updateTransactionHistory(data) {
         const historyContainer = document.getElementById('history-list');
