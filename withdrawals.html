@@ -6,6 +6,9 @@
     <title>SYNERGY | TRANSACTION MONITOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
 
     <style>
         :root { --aqua: #00f2fe; --neon-red: #ff0055; --neon-gold: #ffac00; --bg: #030712; }
@@ -137,6 +140,18 @@
     </div>
 
     <script>
+        const firebaseConfig = { 
+    apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+    authDomain: "synergy-protocol.firebaseapp.com", 
+    projectId: "synergy-protocol", 
+    storageBucket: "synergy-protocol.firebasestorage.app", 
+    messagingSenderId: "179647543031", 
+    appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
+};
+
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+const db = firebase.firestore();
+        
         const requests = [
             { id: "sadiq", amount: 15000, lastActive: "2026-04-08", videos: 45, bank: "OPay - 8012345678", time: "2h ago" },
             { id: "abdool", amount: 8000, lastActive: "2026-04-05", videos: 12, bank: "Palmpay - 7012345678", time: "5h ago" },
@@ -210,6 +225,60 @@ db.collection("withdrawals")
           console.log(`User ${request.userId} wants to withdraw ₦${request.amount}`);
       });
   });
+
+
+        function loadWithdrawals() {
+    db.collection("withdrawals")
+      .where("status", "==", "pending")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((querySnapshot) => {
+          const table = document.getElementById('request-table');
+          let html = "";
+          querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const id = doc.id;
+              html += `
+                <tr onclick="toggleRow('${id}')">
+                    <td class="p-6"><span class="text-cyan-400 font-bold username-style">${data.userId}</span></td>
+                    <td class="text-center font-bold text-white">₦${data.amount.toLocaleString()}</td>
+                    <td class="text-center text-gray-400 text-xs">${data.bankDetails ? data.bankDetails.bankName : 'No Bank'}</td>
+                    <td class="pr-6 text-right">
+                        <button onclick="approvePayout('${id}', '${data.userId}', ${data.amount})" class="btn-approve">Approve</button>
+                    </td>
+                </tr>
+                <tr id="details-${id}" class="details-row bg-white/[0.03]">
+                    <td colspan="4" class="p-6 border-l-4 border-cyan-400">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] text-gray-500 uppercase font-bold">Account: ${data.bankDetails ? data.bankDetails.accountNumber : 'N/A'}</p>
+                                <p class="text-white text-sm">Name: ${data.bankDetails ? data.bankDetails.accountName : 'N/A'}</p>
+                            </div>
+                            <button onclick="rejectPayout('${id}')" class="btn-reject">Reject</button>
+                        </div>
+                    </td>
+                </tr>`;
+          });
+          table.innerHTML = html || '<tr><td colspan="4" class="p-10 text-center">No Pending Requests</td></tr>';
+      });
+        }
+
+
+        async function approvePayout(docId, userId, amount) {
+    if(!confirm("Amince da biyan wannan?")) return;
+    try {
+        await db.collection("withdrawals").doc(docId).update({ status: "approved" });
+        await db.collection("users").doc(userId).update({
+            totalWithdrawn: firebase.firestore.FieldValue.increment(amount)
+        });
+        alert("Approved!");
+    } catch (e) { alert("Error: " + e.message); }
+}
+
+async function rejectPayout(docId) {
+    if(!confirm("Reject wannan request din?")) return;
+    await db.collection("withdrawals").doc(docId).update({ status: "rejected" });
+}
+        
         
     </script>
 </body>
