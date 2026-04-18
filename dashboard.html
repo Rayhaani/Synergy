@@ -762,7 +762,15 @@ function checkAndResetDailyStats(userData) {
         }, 1000);
     };
 })();
-    
+
+
+    function startQuantumSession() {
+    if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+        document.getElementById("shutter").style.display = "none";
+        generateCode();
+    }
+    }
     
 </script>
 </body>
