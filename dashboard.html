@@ -458,10 +458,10 @@ checkAccess();
 
     // 2. YOUTUBE API & PLAYER LOGIC
     
-// ==========================================
-// SYNERGY CORE ENGINE v6.0 (FINAL PATCH)
-// ==========================================
 
+// ==========================================
+// SYNERGY CORE ENGINE v5.2 - FINAL REPAIR
+// ==========================================
 const firebaseConfig = { 
     apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
     authDomain: "synergy-protocol.firebaseapp.com", 
@@ -473,63 +473,62 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.firestore();
-
-// Gyara #7: Tabbatar da sunan variable daya ne ko'ina
-const currentActiveUser = localStorage.getItem('synergy_user'); 
+const currentActiveUser = localStorage.getItem('synergy_user');
 let player, currentCode = "", lastTime = 0;
 
-// Gyara #1: Bude page da opacity
+// 1. ACCESS GATEWAY
 async function checkAccess() {
     if (!currentActiveUser) { window.location.replace("signin.html"); return; }
     try {
         const doc = await db.collection("users").doc(currentActiveUser).get();
-        if (doc.exists && doc.data().isVerified === true) {
-            document.body.style.opacity = "1"; // Sanya body ya zama visible
+        if (doc.exists && doc.data().isVerified) {
+            document.body.style.setProperty('display', 'block', 'important');
         } else { window.location.replace("activation.html"); }
-    } catch (e) { 
-        document.body.style.opacity = "1"; // Fallback idan babu network
-    }
+    } catch (e) { document.body.style.setProperty('display', 'block', 'important'); }
 }
 checkAccess();
 
-// Gyara #4 & #5: Video IDs da Origin
+// 2. YOUTUBE ENGINE
 const myVideos = ['V07v_Y3e_XQ', 'j7jOBQq0cpw'];
 
-function onYouTubeIframeAPIReady() {
+async function onYouTubeIframeAPIReady() {
     let startVid = myVideos[0];
-    
-    player = new YT.Player('yt-player', {
-        height: '100%', width: '100%', 
-        videoId: startVid,
-        playerVars: { 
-            'controls': 0, 'modestbranding': 1, 'rel': 0, 
-            'origin': 'https://rayhaani.github.io' // Gyara #5
-        },
-        events: { 
-            'onStateChange': onPlayerStateChange // Gyara #3
+    try {
+        const doc = await db.collection("users").doc(currentActiveUser).get();
+        if (doc.exists) {
+            const watched = doc.data().videosWatchedToday || 0;
+            startVid = myVideos[watched % myVideos.length];
         }
+    } catch(e) {}
+
+    player = new YT.Player('yt-player', {
+        height: '100%', width: '100%', videoId: startVid,
+        playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'origin': window.location.origin },
+        events: { 'onStateChange': onPlayerStateChange }
     });
 }
 
-// Gyara #2: Function din da zai fara kunna bidiyo
-function startQuantumSession() {
-    if (player && typeof player.playVideo === 'function') {
-        player.playVideo();
-        document.getElementById("shutter").style.display = "none";
-        // generateCode(); // Optional: ko a jira har ya gama
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        // Fara duba idan yana tsallake bidiyo
+        setInterval(() => {
+            let currentTime = player.getCurrentTime();
+            if (currentTime > lastTime + 2) { player.seekTo(lastTime); }
+            else { lastTime = currentTime; }
+        }, 1000);
+    }
+    if (event.data == YT.PlayerState.ENDED) {
+        document.getElementById('verifier-panel').classList.add('is-visible-now');
+        document.getElementById('verifier-panel').style.opacity = "1";
+        generateCode();
     }
 }
 
-// Gyara #3: Handling Player States
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-        // Setup anti-skip logic anan
-        if (window.setupSecurityTracker) window.setupSecurityTracker(player);
-    }
-    if (event.data === YT.PlayerState.ENDED) {
-        document.getElementById('verifier-panel').classList.add('is-visible-now');
-        document.getElementById('verifier-panel').style.opacity = "1";
-        generateCode(); // Nuna code kawai bayan ya gama kallo
+// 3. CORE FUNCTIONS
+function startQuantumSession() {
+    if(player) {
+        player.playVideo();
+        document.getElementById('shutter').style.display = "none";
     }
 }
 
@@ -538,12 +537,40 @@ function generateCode() {
     document.getElementById("generated-code-display").innerText = currentCode; 
 }
 
-// Sauran UI functions (Menu, Alerts, etc.) na nan daram...
-function toggleGoogleMenu(event) {
-    event.stopPropagation();
-    document.getElementById('google-nav').classList.toggle('active');
+async function executeVerification() {
+    const inputVal = document.getElementById('node-code').value.toUpperCase();
+    if(inputVal === currentCode && currentCode !== "") {
+        await db.collection("users").doc(currentActiveUser).update({
+            videoBalance: firebase.firestore.FieldValue.increment(150),
+            videosWatchedToday: firebase.firestore.FieldValue.increment(1),
+            lastActivityDate: new Date().toLocaleDateString('en-GB')
+        });
+        alert("SUCCESS: ₦150 EARNED");
+        location.reload();
+    } else { alert("INVALID CODE"); }
 }
-    
+
+// UI HANDLERS
+function toggleGoogleMenu(e) { e.stopPropagation(); document.getElementById('google-nav').classList.toggle('active'); }
+window.onclick = () => document.getElementById('google-nav').classList.remove('active');
+
+// SNAPSHOT LISTENER (REALTIME STATS)
+if (currentActiveUser) {
+    db.collection("users").doc(currentActiveUser).onSnapshot(doc => {
+        if (doc.exists) {
+            const data = doc.data();
+            const total = (data.videoBalance || 0) + (data.shareBalance || 0);
+            document.getElementById('total-balance-main').innerText = total.toLocaleString();
+            document.getElementById('video-balance-sub').innerText = (data.videoBalance || 0).toLocaleString();
+            document.getElementById('display-name').innerText = data.username || "MEMBER";
+            document.getElementById('daily-count').innerText = `${data.videosWatchedToday || 0} / 10 UNITS`;
+            document.getElementById('daily-progress-bar').style.width = ((data.videosWatchedToday || 0) / 10 * 100) + "%";
+        }
+    });
+                                                  }
+        
+
+
 
                                                                                                               
 
