@@ -459,12 +459,11 @@ checkAccess();
     // 2. YOUTUBE API & PLAYER LOGIC
     
 
+
 // ==========================================
-// SYNERGY DYNAMIC API ENGINE - REPAIRED
+// SYNERGY FINAL STABLE ENGINE (PUBLIC)
 // ==========================================
 const YOUTUBE_API_KEY = 'AIzaSyDqgyMq1NF4s0Q_-raMVdAOxBvCmeTxKYQ';
-
-// Na bar guda biyu kacal wadanda ka bani IDs dinsu
 const channelPlaylists = [
     'UUj7jOBQq0cpwBp0j7XVikQQ', 
     'UU_54whp80N3Lyl8tgLQf4Cw'
@@ -473,39 +472,34 @@ const channelPlaylists = [
 let videoQueue = [];
 
 async function fetchLatestVideos() {
-    let fetchedVideos = [];
-    for (const playlistId of channelPlaylists) {
-        try {
-            const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=${playlistId}&key=${YOUTUBE_API_KEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            if (data.items) {
-                data.items.forEach(item => {
-                    fetchedVideos.push(item.snippet.resourceId.videoId);
-                });
+    let fetched = [];
+    try {
+        for (const pid of channelPlaylists) {
+            const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=${pid}&key=${YOUTUBE_API_KEY}`;
+            const r = await fetch(url);
+            const d = await r.json();
+            if(d.items) {
+                d.items.forEach(i => fetched.push(i.snippet.resourceId.videoId));
             }
-        } catch (e) { 
-            console.error("API Error for " + playlistId, e); 
         }
-    }
-    // Idan duk sun gaza, mu saka bidiyo guda daya na tasha domin kar ya nuna baki
-    if (fetchedVideos.length === 0) fetchedVideos.push('dQw4w9WgXcQ'); 
+    } catch(e) { console.error("YouTube API error"); }
     
-    videoQueue = fetchedVideos;
-    return fetchedVideos;
+    // Default idan API bai gama kwasowa ba
+    videoQueue = fetched.length > 0 ? fetched : ['j7jOBQq0cpw']; 
+    return videoQueue;
 }
 
 async function onYouTubeIframeAPIReady() {
-    const freshVideos = await fetchLatestVideos();
+    const vids = await fetchLatestVideos();
+    const user = localStorage.getItem('synergy_user');
     
+    // Mu fara da bidiyo na farko tukunna
+    let startVid = vids[0];
+
     player = new YT.Player('yt-player', {
-        height: '100%', width: '100%', 
-        videoId: freshVideos[0],
+        height: '100%', width: '100%', videoId: startVid,
         playerVars: { 
-            'controls': 0, 
-            'modestbranding': 1, 
-            'rel': 0, 
+            'controls': 0, 'modestbranding': 1, 'rel': 0, 
             'origin': window.location.origin 
         },
         events: { 
@@ -516,20 +510,18 @@ async function onYouTubeIframeAPIReady() {
 }
 
 async function onPlayerReady(event) {
-    const username = localStorage.getItem('synergy_user');
-    if(!username || videoQueue.length === 0) return;
-
-    try {
-        const doc = await db.collection("users").doc(username).get();
-        if(doc.exists) {
-            const watchedToday = doc.data().videosWatchedToday || 0;
-            // Zabar bidiyo na gaba
-            const targetVideoId = videoQueue[watchedToday % videoQueue.length];
-            event.target.loadVideoById(targetVideoId);
-        }
-    } catch(e) { console.log("Database Error:", e); }
-}
+    const user = localStorage.getItem('synergy_user');
+    if(!user || videoQueue.length === 0) return;
     
+    const doc = await db.collection("users").doc(user).get();
+    if(doc.exists) {
+        const watched = doc.data().videosWatchedToday || 0;
+        const targetVid = videoQueue[watched % videoQueue.length];
+        // Wannan zai tilasta wa player ya nuna bidiyonka na gaba
+        event.target.cueVideoById(targetVid);
+    }
+    }
+            
 
                                                                                                               
 
