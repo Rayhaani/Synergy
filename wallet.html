@@ -222,27 +222,37 @@
         }
         }
 
-        async function updateTransactionHistory(userData) {
+    async function updateTransactionHistory(userData) {
         const historyContainer = document.getElementById('history-list');
         if (!historyContainer) return;
 
         try {
-            // 1. Nemo dukkan withdrawals na wannan mamban daga collection na 'withdrawals'
+            // Muna jawo dukkan withdrawals na wannan user ba tare da orderBy ba
             const snapshot = await db.collection("withdrawals")
                 .where("userId", "==", currentActiveUser)
-                .orderBy("timestamp", "desc")
-                .limit(10)
                 .get();
+
+            let withdrawals = [];
+            snapshot.forEach(doc => {
+                withdrawals.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Mu da kanmu za mu jera su daga na kwanan nan (Manual Sorting)
+            withdrawals.sort((a, b) => {
+                const timeA = a.timestamp?.seconds || 0;
+                const timeB = b.timestamp?.seconds || 0;
+                return timeB - timeA;
+            });
 
             let historyHTML = '';
 
-            // A. Saka Protocol Yield (Earnings) a matsayin head
+            // A. Protocol Yield
             if (userData.videoBalance > 0 || userData.shareBalance > 0) {
                 historyHTML += `
                     <div class="flex justify-between items-center py-3 border-b border-white/[0.03]">
                         <div>
                             <p class="text-[11px] font-medium text-gray-200">Protocol Yield</p>
-                            <p class="text-[8px] text-gray-500 uppercase">Total Accumulated Assets</p>
+                            <p class="text-[8px] text-gray-500 uppercase">Live Assets</p>
                         </div>
                         <div class="text-right">
                             <p class="digits-terminal text-[12px] text-green-400">+₦${(userData.videoBalance + userData.shareBalance).toLocaleString()}</p>
@@ -251,21 +261,18 @@
                     </div>`;
             }
 
-            // B. Saka kowane Withdrawal daya bayan daya
-            if (!snapshot.empty) {
-                snapshot.forEach(doc => {
-                    const tx = doc.data();
-                    let statusColor = "text-yellow-500"; // Default: Pending
-                    let statusBg = "border-yellow-900/20";
-                    
+            // B. Withdrawal Logs
+            if (withdrawals.length > 0) {
+                withdrawals.forEach(tx => {
+                    let statusColor = "text-yellow-500";
                     if (tx.status === "approved") { statusColor = "text-green-500"; }
                     if (tx.status === "rejected") { statusColor = "text-red-500"; }
 
                     historyHTML += `
                         <div class="flex justify-between items-center py-4 border-b border-white/[0.02]">
                             <div>
-                                <p class="text-[11px] font-medium text-white">Withdrawal: ₦${tx.amount.toLocaleString()}</p>
-                                <p class="text-[8px] text-gray-500 uppercase">${tx.bankDetails?.bankName || 'Bank Transfer'}</p>
+                                <p class="text-[11px] font-medium text-white">Withdrawal Request</p>
+                                <p class="text-[8px] text-gray-500 uppercase">${tx.bankDetails?.bankName || 'Asset Transfer'}</p>
                             </div>
                             <div class="text-right">
                                 <p class="digits-terminal text-[11px] ${statusColor}">-₦${tx.amount.toLocaleString()}</p>
@@ -275,7 +282,7 @@
                 });
             } else {
                 if (historyHTML === '') {
-                    historyHTML = '<p class="text-center text-[10px] text-gray-600 uppercase py-8">No transaction logs found</p>';
+                    historyHTML = '<p class="text-center text-[10px] text-gray-600 uppercase py-8">No transaction logs</p>';
                 }
             }
 
@@ -283,9 +290,10 @@
 
         } catch (error) {
             console.error("History Error:", error);
-            historyContainer.innerHTML = '<p class="text-center text-[9px] text-red-800 uppercase py-4">Sync Error: Check Indexing</p>';
+            historyContainer.innerHTML = '<p class="text-center text-[9px] text-gray-700 uppercase py-4">Synchronizing Ledger...</p>';
         }
-                    }
+    }
+        
         
 
     function openWithdrawalModal() { document.getElementById('withdrawal-modal').classList.remove('hidden'); }
