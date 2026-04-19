@@ -516,31 +516,64 @@ async function fetchLatestVideos() {
     }
 }
 
+// 1. Wannan zai kwaso bidiyoyin daga YouTube Channels dinka
+async function fetchLatestVideos() {
+    try {
+        let allVideos = [];
+        for (const channelId of CHANNELS) {
+            const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=5&type=video`);
+            const data = await response.json();
+            if (data.items) {
+                const ids = data.items.map(item => item.id.videoId);
+                allVideos = [...allVideos, ...ids];
+            }
+        }
+
+        if (allVideos.length > 0) {
+            dynamicVideos = allVideos.sort(() => Math.random() - 0.5);
+            console.log("Synergy Node: System Online.");
+            
+            // MUHIMMI: Anan ne kawai za'a kira Player din tunda bidiyo ya riga ya shigo
+            initializeSynergyPlayer();
+        } else {
+            // Idan babu bidiyo ko API ya bamu error
+            document.getElementById("shutter").innerHTML = `<p class='orbitron text-red-500 text-[10px]'>FETCH_ERROR: NO_ACTIVE_SESSIONS</p>`;
+        }
+    } catch (error) {
+        console.error("Critical Sync Error:", error);
+        // Mun cire ID na cake gaba daya, shafin zai nuna error ne kawai idan babu internet/API
+        document.getElementById("shutter").innerHTML = `<p class='orbitron text-red-500 text-[10px]'>SYSTEM_OFFLINE</p>`;
+    }
+}
+
+// 2. Wannan zai tabbatar YouTube API ya shirya
+function initializeSynergyPlayer() {
+    if (typeof YT !== 'undefined' && YT.loaded) {
+        onYouTubeIframeAPIReady();
+    } else {
+        setTimeout(initializeSynergyPlayer, 500);
+    }
+}
+
+// 3. Wannan shi ne asalin code dinka da ka turo, mun gyara shi ya dace da sabon tsarin
 async function onYouTubeIframeAPIReady() {
     const user = localStorage.getItem('synergy_user');
     
-    let startVid = dynamicVideos[0]; 
+    // Tunda mun riga mun kira wannan a cikin fetch, lallai dynamicVideos yana da data
+    let watched = 0;
+    try {
+        const doc = await db.collection("users").doc(user).get();
+        if (doc.exists) {
+            watched = doc.data().videosWatchedToday || 0;
+        }
+    } catch(e) { console.log("Database Sync Offline"); }
 
-if (!startVid) {
-    document.getElementById("shutter").innerHTML = `<p class='orbitron text-red-500'>NO ACTIVE SESSIONS FOUND</p>`;
-    return;
-}
-    
-    if (user && dynamicVideos.length > 0) {
-        try {
-            const doc = await db.collection("users").doc(user).get();
-            if (doc.exists) {
-                const watched = doc.data().videosWatchedToday || 0;
-                startVid = dynamicVideos[watched % dynamicVideos.length];
-            }
-        } catch(e) { console.log("Database Sync Offline"); }
-    }
+    let startVid = dynamicVideos[watched % dynamicVideos.length];
 
-    // Wannan shi ne yake saka bidiyon a cikin "yt-player"
     player = new YT.Player('yt-player', {
         height: '100%', width: '100%',
         videoId: startVid,
-        playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'showinfo': 0, 'iv_load_policy': 3 },
+        playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'showinfo': 0, 'iv_load_policy': 3, 'disablekb': 1 },
         events: { 
             'onStateChange': onPlayerStateChange,
             'onReady': (event) => { 
@@ -551,10 +584,9 @@ if (!startVid) {
     });
 }
 
-// DOLE ka kira wannan function din a karshe
+// Kira babban aikin a karshe
 fetchLatestVideos();
-    
-    
+        
                                                                                                               
 
     // 3. UI & INTERACTION FUNCTIONS
