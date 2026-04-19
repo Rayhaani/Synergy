@@ -404,8 +404,9 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const db = firebase.firestore();
 const currentActiveUser = localStorage.getItem('synergy_user');
 let player, currentCode = "", dynamicVideos = [], watchedCount = 0;
+const currentSessionId = Math.random().toString(36).substring(7); // Don Multi-login logic
 
-// 2. ACCESS CHECK
+// 2. ACCESS CHECK (STRICTLY PRESERVED)
 async function checkAccess() {
     if (!currentActiveUser) { window.location.replace("signin.html"); return; }
     try {
@@ -413,12 +414,13 @@ async function checkAccess() {
         if (doc.exists && doc.data().isVerified === true) {
             document.body.style.opacity = "1";
             watchedCount = doc.data().videosWatchedToday || 0;
+            syncSession(); // Kunna kariya daga multi-login
         } else { window.location.replace("activation.html"); }
     } catch (err) { console.error("Access Error", err); }
 }
 checkAccess();
 
-// 3. YOUTUBE LOGIC
+// 3. YOUTUBE LOGIC (STRICTLY PRESERVED)
 const API_KEY = 'AIzaSyAv5i78UAOzJjNUp3EiUmRyUFz-9IQfFbU';
 const CHANNELS = ['UCj7jOBQq0cpwBp0j7XVikQQ', 'UC_54whp80N3Lyl8tgLQf4Cw'];
 
@@ -446,39 +448,52 @@ function initPlayer() {
     } else { setTimeout(initPlayer, 500); }
 }
 
-// 4. THE FIX: ME ZAI FARU IDAN BIDIYO YA KARE?
-// 4. GYARARREN LOGIC: TSAIDA BIDIYO IDAN YA KARE
+// 4. IMPROVED STATE CHANGE (WITH THRESHOLD LOGIC)
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         setupSecurityTracker(player);
+        
+        // LOGIC: Check for 95% threshold to show verification
+        const progressInterval = setInterval(() => {
+            if (player.getPlayerState() !== YT.PlayerState.PLAYING) {
+                clearInterval(progressInterval);
+                return;
+            }
+            let currentTime = player.getCurrentTime();
+            let duration = player.getDuration();
+            let percent = (currentTime / duration) * 100;
+
+            const ring = document.getElementById('ring');
+            if(ring) ring.innerText = Math.floor(percent) + "%";
+
+            if (percent >= 95) {
+                const verifier = document.getElementById('verifier-panel');
+                if (verifier) {
+                    verifier.classList.add('is-visible-now');
+                    verifier.style.opacity = "1";
+                    verifier.style.pointerEvents = "auto";
+                }
+                clearInterval(progressInterval);
+            }
+        }, 1000);
     }
 
-    // Idan bidiyo ya kare (ENDED)
     if (event.data === YT.PlayerState.ENDED) {
         watchedCount++;
-        
-        // 1. Nemo bidiyo na gaba amma KAR A KIRA SHI TUKUNA
         let nextVid = dynamicVideos[watchedCount % dynamicVideos.length];
-        player.cueVideoById(nextVid); // 'cue' yana nufin loda shi amma kar a yi playing
-
-        // 2. Rufe shafin da Shutter (Cover) domin mutum ya danna da kansa
+        player.cueVideoById(nextVid);
         const shutter = document.getElementById('shutter');
         if (shutter) {
             shutter.style.display = "flex";
-            // Zaka iya canza rubutun shutter din don mamba ya gane
             const shutterText = shutter.querySelector('.orbitron');
             if(shutterText) shutterText.innerText = "NEXT UNIT READY";
         }
-
-        // 3. Sabunta code don sabon bidiyo
         generateCode();
-        
         showSynergyAlert("UNIT COMPLETED. START NEXT SESSION.", "success");
     }
 }
-    
 
-// 5. CORE FUNCTIONS
+// 5. CORE FUNCTIONS (PRESERVED)
 function startQuantumSession() {
     if (player && player.playVideo) {
         player.playVideo();
@@ -493,7 +508,27 @@ function generateCode() {
     if(display) display.innerText = currentCode; 
 }
 
-// 6. SECURITY MODULE
+// 6. SECURITY & MULTI-LOGIN LOGIC
+async function syncSession() {
+    if(!currentActiveUser) return;
+    const ref = db.collection("active_sessions").doc(currentActiveUser);
+    await ref.set({ sessionId: currentSessionId, lastActive: firebase.firestore.FieldValue.serverTimestamp() });
+    
+    ref.onSnapshot(doc => {
+        if(doc.exists && doc.data().sessionId !== currentSessionId) {
+            document.body.innerHTML = "<div class='orbitron' style='color:red; text-align:center; padding:100px;'>SESSION TERMINATED: LOGIN DETECTED ON ANOTHER DEVICE</div>";
+            if(player) player.pauseVideo();
+        }
+    });
+}
+
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden && player && player.pauseVideo) {
+        player.pauseVideo();
+        showSynergyAlert("SECURITY: DON'T LEAVE THE PAGE", "info");
+    }
+});
+
 (function() {
     let strikes = 0, lastTime = 0;
     window.setupSecurityTracker = function(p) {
@@ -509,32 +544,47 @@ function generateCode() {
     };
 })();
 
-// 7. UI & SYNC
-function showSynergyAlert(m) {
-    let t = document.getElementById('custom-toast') || document.createElement('div');
-    t.id = 'custom-toast'; t.className = 'synergy-toast show'; t.innerHTML = `<span>${m}</span>`;
-    document.body.appendChild(t); setTimeout(() => t.classList.remove('show'), 3000);
-}
-
+// 7. UI SYNC & DAILY RESET ENGINE
 if (currentActiveUser) {
     db.collection("users").doc(currentActiveUser).onSnapshot(doc => {
         if (!doc.exists) return;
         const d = doc.data();
+        
+        // Sync Balances
         const total = (d.videoBalance || 0) + (d.shareBalance || 0);
         document.getElementById('total-balance-main').innerText = total.toLocaleString();
         document.getElementById('video-balance-sub').innerText = (d.videoBalance || 0).toLocaleString();
         document.getElementById('share-balance-sub').innerText = (d.shareBalance || 0).toLocaleString();
+        
+        // Sync Profile & Verified Badge
         document.getElementById('display-name').innerText = d.username || "MEMBER";
+        const badge = document.getElementById('verified-badge');
+        if(badge) badge.style.display = d.isVerified ? 'flex' : 'none';
+        
+        // Daily Reset Logic
+        const today = new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' });
+        if (d.lastActivityDate && d.lastActivityDate !== today) {
+            db.collection("users").doc(currentActiveUser).update({
+                videosWatchedToday: 0,
+                lastActivityDate: today
+            });
+        }
+
         const w = d.videosWatchedToday || 0;
         document.getElementById('daily-count').innerText = `${w} / 10 UNITS`;
         if(document.getElementById('daily-progress-bar')) document.getElementById('daily-progress-bar').style.width = (w*10) + "%";
     });
 }
 
-fetchLatestVideos();
-    
+function showSynergyAlert(m) {
+    let t = document.getElementById('custom-toast') || document.createElement('div');
+    t.id = 'custom-toast'; t.className = 'synergy-toast show'; t.innerHTML = `<span>${m}</span>`;
+    if(!document.getElementById('custom-toast')) document.body.appendChild(t);
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-    
+fetchLatestVideos();
+                                                             
 </script>
 </body>
 </html>
