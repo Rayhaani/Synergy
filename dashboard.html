@@ -430,18 +430,22 @@ async function fetchLatestVideos() {
     try {
         let allVideos = [];
         for (const channelId of CHANNELS) {
-            // HANYA TA 1: Dauko ta hanyar "Uploads" (Mafi kyau ga Shorts)
+            // Mataki na 1: Nemo ainihin ID na babban folder din uploads
             const channelUrl = `https://www.googleapis.com/youtube/v3/channels?id=${channelId}&part=contentDetails&key=${API_KEY}`;
             const cRes = await fetch(channelUrl);
             const cData = await cRes.json();
             
             if (cData.items && cData.items.length > 0) {
                 const listId = cData.items[0].contentDetails.relatedPlaylists.uploads;
-                const vRes = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${listId}&part=contentDetails&maxResults=20&key=${API_KEY}`);
+
+                // Mataki na 2: Kwaso duk abinda ke ciki (koda Shorts guda daya ne)
+                const vRes = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${listId}&part=contentDetails&maxResults=5&key=${API_KEY}`);
                 const vData = await vRes.json();
 
-                if (vData.items) {
-                    vData.items.forEach(v => allVideos.push(v.contentDetails.videoId));
+                if (vData.items && vData.items.length > 0) {
+                    vData.items.forEach(v => {
+                        allVideos.push(v.contentDetails.videoId);
+                    });
                 }
             }
         }
@@ -449,15 +453,16 @@ async function fetchLatestVideos() {
         dynamicVideos = [...new Set(allVideos)];
 
         if (dynamicVideos.length > 0) {
-            dynamicVideos.sort(() => Math.random() - 0.5);
+            console.log("Synergy Found: " + dynamicVideos.length + " items.");
             initPlayer();
         } else {
-            showSynergyAlert("STILL NO DATA: CHECK CHANNEL PRIVACY", "error");
+            // Idan har yanzu babu komai, to ka tabbatar bidiyon yana "Public"
+            showSynergyAlert("STILL EMPTY: ENSURE SHORTS ARE PUBLIC", "error");
         }
     } catch (e) {
         showSynergyAlert("CONNECTION ERROR", "error");
     }
-                    }
+}
     
 function onYouTubeIframeAPIReady() {
     // YouTube API ya loda, muna jiran fetchLatestVideos ya gama
