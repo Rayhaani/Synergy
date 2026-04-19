@@ -390,7 +390,8 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
     
-  // 1. INITIALIZATION
+
+// 1. INITIALIZATION
 const firebaseConfig = { 
     apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
     authDomain: "synergy-protocol.firebaseapp.com", 
@@ -430,9 +431,9 @@ async function fetchLatestVideos() {
             const data = await res.json();
             if (data.items) allVideos.push(...data.items.map(i => i.id.videoId));
         }
-        dynamicVideos = allVideos.length > 0 ? allVideos.sort(() => Math.random() - 0.5) : [''];
+        dynamicVideos = allVideos.length > 0 ? allVideos.sort(() => Math.random() - 0.5) : ['ixe341U2mqA'];
         initPlayer();
-    } catch (e) { dynamicVideos = ['']; initPlayer(); }
+    } catch (e) { dynamicVideos = ['ixe341U2mqA']; initPlayer(); }
 }
 
 function initPlayer() {
@@ -447,36 +448,18 @@ function initPlayer() {
 }
 
 // 4. THE FIX: ME ZAI FARU IDAN BIDIYO YA KARE?
-// 4. GYARARREN LOGIC: TSAIDA BIDIYO IDAN YA KARE
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         setupSecurityTracker(player);
     }
-
-    // Idan bidiyo ya kare (ENDED)
+    // Idan bidiyo ya kare (Ended), ya kwaso na gaba kai tsaye
     if (event.data === YT.PlayerState.ENDED) {
         watchedCount++;
-        
-        // 1. Nemo bidiyo na gaba amma KAR A KIRA SHI TUKUNA
         let nextVid = dynamicVideos[watchedCount % dynamicVideos.length];
-        player.cueVideoById(nextVid); // 'cue' yana nufin loda shi amma kar a yi playing
-
-        // 2. Rufe shafin da Shutter (Cover) domin mutum ya danna da kansa
-        const shutter = document.getElementById('shutter');
-        if (shutter) {
-            shutter.style.display = "flex";
-            // Zaka iya canza rubutun shutter din don mamba ya gane
-            const shutterText = shutter.querySelector('.orbitron');
-            if(shutterText) shutterText.innerText = "NEXT UNIT READY";
-        }
-
-        // 3. Sabunta code don sabon bidiyo
-        generateCode();
-        
-        showSynergyAlert("UNIT COMPLETED. START NEXT SESSION.", "success");
+        player.loadVideoById(nextVid);
+        generateCode(); // Sabunta code don sabon bidiyo
     }
 }
-    
 
 // 5. CORE FUNCTIONS
 function startQuantumSession() {
@@ -532,6 +515,7 @@ if (currentActiveUser) {
 }
 
 fetchLatestVideos();
+            
     
 
     
