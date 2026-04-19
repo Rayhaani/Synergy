@@ -430,37 +430,41 @@ async function fetchLatestVideos() {
     try {
         let allVideos = [];
         for (const channelId of CHANNELS) {
-            // Mun kara part=snippet,id da kuma type=video don karfafawa
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channelId}&part=id&order=date&maxResults=15&type=video`);
-            const data = await res.json();
+            // Mataki na 1: Nemo "Uploads Playlist ID" na channel din
+            const channelRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?id=${channelId}&part=contentDetails&key=${API_KEY}`);
+            const channelData = await channelRes.json();
             
-            // Debugging: duba console din wayarka ko browser ka ga me yake fitowa
-            console.log("YouTube Response for " + channelId, data);
+            if (channelData.items && channelData.items.length > 0) {
+                const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
 
-            if (data.items) {
-                data.items.forEach(item => {
-                    if(item.id && item.id.videoId) {
-                        allVideos.push(item.id.videoId);
-                    }
-                });
+                // Mataki na 2: Dauko bidiyo daga wannan playlist din (Shorts suna ciki)
+                const videoRes = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${uploadsPlaylistId}&part=snippet,contentDetails&maxResults=20&key=${API_KEY}`);
+                const videoData = await videoRes.json();
+
+                if (videoData.items) {
+                    videoData.items.forEach(item => {
+                        const vidId = item.contentDetails.videoId;
+                        allVideos.push(vidId);
+                    });
+                }
             }
         }
 
-        // Tace bidiyo (Remove duplicates)
         dynamicVideos = [...new Set(allVideos)];
 
         if (dynamicVideos.length > 0) {
             dynamicVideos.sort(() => Math.random() - 0.5);
+            console.log("Synergy Loaded with Shorts: ", dynamicVideos.length);
             initPlayer();
         } else {
-            // Idan nan ya nuna, to API din ne bai kawo komai ba gaskiya
-            showSynergyAlert("FETCHING ERROR: ZERO VIDEOS FROM CHANNELS", "error");
+            showSynergyAlert("NO UPLOADS FOUND ON THESE CHANNELS", "error");
         }
     } catch (e) { 
-        console.error("Critical Fetch Error:", e);
-        showSynergyAlert("API CONNECTION FAILED", "error");
+        console.error("Shorts Fetch Error:", e);
+        showSynergyAlert("API CONNECTION ERROR", "error");
     }
 }
+    
 
 function onYouTubeIframeAPIReady() {
     // YouTube API ya loda, muna jiran fetchLatestVideos ya gama
