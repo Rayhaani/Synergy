@@ -422,31 +422,66 @@ checkAccess();
 const API_KEY = 'AIzaSyAv5i78UAOzJjNUp3EiUmRyUFz-9IQfFbU';
 const CHANNELS = ['UCj7jOBQq0cpwBp0j7XVikQQ', 'UC_54whp80N3Lyl8tgLQf4Cw'];
 
+// 3. GYARARREN YOUTUBE LOGIC (Daga Channels daban-daban)
 async function fetchLatestVideos() {
     try {
         let allVideos = [];
+        // Muna bi ta kan kowane Channel ID da ke cikin CHANNELS array
         for (const channelId of CHANNELS) {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=10&type=video`);
             const data = await res.json();
-            if (data.items) allVideos.push(...data.items.map(i => i.id.videoId));
+            
+            if (data.items && data.items.length > 0) {
+                // Tabbatar muna ɗauko kowane videoId mu saka shi a jerinmu
+                const ids = data.items.map(i => i.id.videoId);
+                allVideos.push(...ids);
+            }
         }
-        dynamicVideos = allVideos.length > 0 ? allVideos.sort(() => Math.random() - 0.5) : ['ixe341U2mqA'];
+
+        // Idan mun samu bidiyo, muna so mu gauraya su (Shuffle) don kada su fito jere-jere
+        if (allVideos.length > 0) {
+            dynamicVideos = allVideos.sort(() => Math.random() - 0.5);
+        } else {
+            // Backup idan API ya ba da matsala
+            dynamicVideos = ['ixe341U2mqA']; 
+        }
+        
+        console.log("Synergy Loaded:", dynamicVideos.length, "videos ready.");
         initPlayer();
-    } catch (e) { dynamicVideos = ['ixe341U2mqA']; initPlayer(); }
+    } catch (e) { 
+        console.error("YouTube Fetch Error:", e);
+        dynamicVideos = ['ixe341U2mqA']; 
+        initPlayer(); 
+    }
 }
 
 function initPlayer() {
     if (window.YT && YT.loaded) {
+        // Wannan lissafin (watchedCount % length) zai tabbatar idan mutum ya kalla 
+        // bidiyo na daya, na gaba zai loda na biyu a jerin dynamicVideos
         let startVid = dynamicVideos[watchedCount % dynamicVideos.length];
+        
         player = new YT.Player('yt-player', {
             height: '100%', width: '100%', videoId: startVid,
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3, 'disablekb': 1, 'origin': window.location.origin },
-            events: { 'onStateChange': onPlayerStateChange, 'onReady': () => document.getElementById('shutter').style.display = "flex" }
+            playerVars: { 
+                'controls': 0, 
+                'modestbranding': 1, 
+                'rel': 0, 
+                'iv_load_policy': 3, 
+                'disablekb': 1, 
+                'origin': window.location.origin 
+            },
+            events: { 
+                'onStateChange': onPlayerStateChange, 
+                'onReady': () => document.getElementById('shutter').style.display = "flex" 
+            }
         });
-    } else { setTimeout(initPlayer, 500); }
+    } else { 
+        setTimeout(initPlayer, 500); 
+    }
 }
+    
 
-// 4. THE FIX: ME ZAI FARU IDAN BIDIYO YA KARE?
 // 4. GYARARREN LOGIC: TSAIDA BIDIYO IDAN YA KARE
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
