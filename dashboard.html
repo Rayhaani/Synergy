@@ -390,7 +390,8 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
     
-  // 1. INITIALIZATION
+  <script>
+// 1. INITIALIZATION
 const firebaseConfig = { 
     apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
     authDomain: "synergy-protocol.firebaseapp.com", 
@@ -413,12 +414,13 @@ async function checkAccess() {
         if (doc.exists && doc.data().isVerified === true) {
             document.body.style.opacity = "1";
             watchedCount = doc.data().videosWatchedToday || 0;
+            fetchLatestVideos(); // Kira fetching bayan mun tabbatar da user
         } else { window.location.replace("activation.html"); }
     } catch (err) { console.error("Access Error", err); }
 }
 checkAccess();
 
-// 3. YOUTUBE LOGIC
+// 3. YOUTUBE LOGIC (GYARARRE)
 const API_KEY = 'AIzaSyAv5i78UAOzJjNUp3EiUmRyUFz-9IQfFbU';
 const CHANNELS = ['UCj7jOBQq0cpwBp0j7XVikQQ', 'UC_54whp80N3Lyl8tgLQf4Cw'];
 
@@ -438,58 +440,66 @@ async function fetchLatestVideos() {
             }
         }
 
-        // Cire duk wani bidiyo da ya maimaita kansa
         let uniqueVideos = [...new Set(allVideos)];
 
         if (uniqueVideos.length > 0) {
-            // Shuffle
             dynamicVideos = uniqueVideos.sort(() => Math.random() - 0.5);
+            console.log("Videos Loaded:", dynamicVideos.length);
+            initPlayer(); // Sai an samu bidiyo sannan a kira player
         } else {
-            // Idan babu komai, bari mu bar shi empty don tsaro
-            dynamicVideos = []; 
-            showSynergyAlert("FETCHING FAILED: RELOAD PAGE", "error");
+            showSynergyAlert("NO VIDEOS FOUND. CHECK API.", "error");
         }
-        
-        initPlayer();
     } catch (e) { 
-        dynamicVideos = []; 
-        initPlayer(); 
+        console.error("Fetch Error:", e);
     }
 }
-    
-    
 
-// 4. THE FIX: ME ZAI FARU IDAN BIDIYO YA KARE?
-// 4. GYARARREN LOGIC: TSAIDA BIDIYO IDAN YA KARE
+function initPlayer() {
+    if (window.YT && YT.loaded && dynamicVideos.length > 0) {
+        // Zabo bidiyon da ya dace da lissafin watchedCount
+        let startVid = dynamicVideos[watchedCount % dynamicVideos.length];
+        
+        player = new YT.Player('yt-player', {
+            height: '100%', width: '100%', videoId: startVid,
+            playerVars: { 
+                'controls': 0, 'modestbranding': 1, 'rel': 0, 
+                'iv_load_policy': 3, 'disablekb': 1, 'origin': window.location.origin 
+            },
+            events: { 
+                'onStateChange': onPlayerStateChange, 
+                'onReady': () => document.getElementById('shutter').style.display = "flex" 
+            }
+        });
+    } else { 
+        setTimeout(initPlayer, 500); 
+    }
+}
+
+// 4. PLAYER STATE LOGIC (GYARARRE)
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         setupSecurityTracker(player);
     }
 
-    // Idan bidiyo ya kare (ENDED)
     if (event.data === YT.PlayerState.ENDED) {
         watchedCount++;
-        
-        // 1. Nemo bidiyo na gaba amma KAR A KIRA SHI TUKUNA
         let nextVid = dynamicVideos[watchedCount % dynamicVideos.length];
-        player.cueVideoById(nextVid); // 'cue' yana nufin loda shi amma kar a yi playing
+        
+        // Load maimakon Cue don sabon bidiyon ya bayyana
+        player.loadVideoById(nextVid); 
+        player.pauseVideo(); 
 
-        // 2. Rufe shafin da Shutter (Cover) domin mutum ya danna da kansa
         const shutter = document.getElementById('shutter');
         if (shutter) {
             shutter.style.display = "flex";
-            // Zaka iya canza rubutun shutter din don mamba ya gane
             const shutterText = shutter.querySelector('.orbitron');
             if(shutterText) shutterText.innerText = "NEXT UNIT READY";
         }
 
-        // 3. Sabunta code don sabon bidiyo
         generateCode();
-        
         showSynergyAlert("UNIT COMPLETED. START NEXT SESSION.", "success");
     }
 }
-    
 
 // 5. CORE FUNCTIONS
 function startQuantumSession() {
@@ -515,20 +525,32 @@ function generateCode() {
             let curr = p.getCurrentTime();
             if (curr > lastTime + 2.5) {
                 strikes++; p.seekTo(lastTime);
-                if (strikes >= 3) document.body.innerHTML = "<h1 style='color:red;text-align:center;padding:50px;'>SECURITY BREACH</h1>";
+                if (strikes >= 3) document.body.innerHTML = "<h1 style='color:red;text-align:center;'>SECURITY BREACH</h1>";
                 else showSynergyAlert("NO SKIPPING!", "error");
             } else { lastTime = curr; }
         }, 1000);
     };
 })();
 
-// 7. UI & SYNC
+// 7. MENU & UI
+function toggleGoogleMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('google-nav');
+    if(menu) menu.classList.toggle('active');
+}
+
+document.addEventListener('click', () => {
+    const menu = document.getElementById('google-nav');
+    if(menu) menu.classList.remove('active');
+});
+
 function showSynergyAlert(m) {
     let t = document.getElementById('custom-toast') || document.createElement('div');
     t.id = 'custom-toast'; t.className = 'synergy-toast show'; t.innerHTML = `<span>${m}</span>`;
     document.body.appendChild(t); setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+// Firebase Sync
 if (currentActiveUser) {
     db.collection("users").doc(currentActiveUser).onSnapshot(doc => {
         if (!doc.exists) return;
@@ -544,21 +566,10 @@ if (currentActiveUser) {
     });
 }
 
-fetchLatestVideos();
-    
-function toggleGoogleMenu(event) {
-    event.stopPropagation();
-    const menu = document.getElementById('google-nav');
-    menu.classList.toggle('active');
-}
 
-// Rufe menu idan an taba ko ina a screen
-document.addEventListener('click', () => {
-    const menu = document.getElementById('google-nav');
-    if(menu) menu.classList.remove('active');
-});
-    
-    
+
+        
+        
 </script>
 </body>
 </html>
