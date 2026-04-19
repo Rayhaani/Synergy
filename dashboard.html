@@ -436,12 +436,22 @@ const CHANNELS = ['UCj7jOBQq0cpwBp0j7XVikQQ', 'UC_54whp80N3Lyl8tgLQf4Cw'];
 async function fetchLatestVideos() {
     try {
         let allVideos = [];
+        // Muna amfani da Proxy ko Direct Fetch tare da gyararren URL
         for (const channelId of CHANNELS) {
-            const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=15&type=video`;
+            const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channelId}&part=snippet,id&order=date&maxResults=20&type=video`;
+            
             const res = await fetch(url);
             const data = await res.json();
             
-            if (data.items) {
+            // Debugging: duba me API din ya dawo da shi
+            console.log("API Response for " + channelId, data);
+
+            if (data.error) {
+                console.error("YouTube API Error:", data.error.message);
+                continue; // Tsallake wannan channel din idan akwai error
+            }
+
+            if (data.items && data.items.length > 0) {
                 data.items.forEach(item => {
                     if(item.id && item.id.videoId) {
                         allVideos.push(item.id.videoId);
@@ -450,22 +460,23 @@ async function fetchLatestVideos() {
             }
         }
 
-        // Tace bidiyon
+        // Tace bidiyon (Unique)
         dynamicVideos = [...new Set(allVideos)];
 
         if (dynamicVideos.length > 0) {
             dynamicVideos.sort(() => Math.random() - 0.5);
-            // Jira YouTube API ya gama loda kansa kafin kiran player
-            if (window.YT && YT.Player) {
-                initPlayer();
-            }
+            console.log("Synergy Ready: " + dynamicVideos.length + " videos.");
+            initPlayer();
         } else {
-            showSynergyAlert("FETCHING ERROR: NO DATA FROM API", "error");
+            // Idan duka channels din basu kawo komai ba
+            showSynergyAlert("API LIMIT REACHED OR NO VIDEOS FOUND", "error");
         }
     } catch (e) { 
-        console.error("Fetch Error:", e);
+        console.error("Network Fetch Error:", e);
+        showSynergyAlert("CONNECTION ERROR", "error");
     }
 }
+    
 
 // Wannan function din zai jira YouTube IFrame API ya gama loda kansa
 function onYouTubeIframeAPIReady() {
