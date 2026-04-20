@@ -207,25 +207,37 @@
 
     // 3. AUTH & LINK GENERATION
     firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const myUsername = doc.data().username;
-                    
-                    // Saita Referral Link
-                    const refInput = document.getElementById('ref-link');
-                    const baseUrl = "https://rayhaani.github.io/Synergy/signup.html";
-                    refInput.value = `${baseUrl}?ref=${myUsername}`;
-                    
-                    // Load Network dangane da username din mutum
-                    loadReferralNetwork(myUsername);
+    if (user) {
+        // Muna amfani da UID domin gano Document din mamba
+        db.collection("users").doc(user.uid).get().then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                const myUsername = userData.username; // Wannan zai dauko "rayhaan"
+                
+                const refInput = document.getElementById('ref-link');
+                const baseUrl = "https://rayhaani.github.io/Synergy/signup.html";
+                
+                // Anan ne za mu saita link din
+                refInput.value = `${baseUrl}?ref=${myUsername}`;
+                
+                // Sannan mu loda mutanen da ya kawo
+                loadReferralNetwork(myUsername);
+            } else {
+                // Idan ba'a samu da UID ba, mu duba ta Email (Backup)
+                db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        const myUsername = doc.data().username;
+                        document.getElementById('ref-link').value = `https://rayhaani.github.io/Synergy/signup.html?ref=${myUsername}`;
+                        loadReferralNetwork(myUsername);
+                    });
                 });
-            });
-        } else {
-            window.location.href = "signin.html";
-        }
-    });
-
+            }
+        });
+    } else {
+        window.location.href = "signin.html";
+    }
+});
+    
     // 4. LOAD REFERRAL NETWORK
     function loadReferralNetwork(currentUsername) {
         const listBody = document.getElementById('referral-list-body');
