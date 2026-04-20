@@ -107,14 +107,7 @@
             
             <div class="menu-divider" style="margin: 4px 0;"></div>
             
-        
-<div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='mining.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m13 10 3.5-3.5a2 2 0 0 1 2.8 2.8L15.8 12.8a4.9 4.9 0 0 1-5.3 1.3L4 20l-2-2 5.9-6.5a4.9 4.9 0 0 1 1.3-5.3L12.7 2.7a2 2 0 0 1 2.8 2.8L12 9"></path>
-    </svg>
-    <span style="font-size: 13px;">Mining</span>
-</div>
-
+    
 <div class="menu-item" style="padding: 8px 12px; gap: 10px;" onclick="location.href='profile.html'">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -122,6 +115,16 @@
     </svg>
     <span style="font-size: 13px;">Profile</span>
 </div>
+
+            <div class="menu-item" style="padding: 8px 12px; gap: 10px; color: #ff4d4d;" onclick="location.href='signin.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+    <span style="font-size: 13px;">Logout</span>
+            </div>
+            
             
                 </div>
             </div>
@@ -183,12 +186,14 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="text-gray-600"><path d="M9 5l7 7-7 7"></path></svg>
             </div>
 
-            <div onclick="logout()" class="action-card p-5 rounded-[25px] flex justify-between items-center cursor-pointer border-red-500/10">
+            <div onclick="location.href='signin.html'" class="action-card p-5 rounded-[25px] flex justify-between items-center cursor-pointer border-red-500/10">
                 <div class="flex items-center gap-4">
                     <div class="p-2 bg-red-500/10 rounded-lg text-red-500">
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </div>
                     <div>
+
+                        
                         <p class="text-[14px] font-bold text-red-400">Terminate Session</p>
                         <p class="text-[11px] text-gray-500">Logout of protocol</p>
                     </div>
