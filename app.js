@@ -1,4 +1,4 @@
-// 1. Naka Firebase Config din da ka samo
+// 1. Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E",
   authDomain: "synergy-protocol.firebaseapp.com",
@@ -8,43 +8,56 @@ const firebaseConfig = {
   appId: "1:179647543031:web:388da8a36e1bbbb55d85f2"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+const database = firebase.database(); // Muna amfani da Realtime Database
 
-// 2. Link din Backend dinka na Render
 const API_URL = "https://synergy-backend-m42p.onrender.com";
 
-// 3. Function na kara kudi a Cloud (Firebase)
-async function updateCloudWallet(userId, amount) {
-    const userRef = database.ref('users/' + userId);
-    
-    userRef.once('value', (snapshot) => {
-        let currentData = snapshot.val();
-        let currentBalance = (currentData && currentData.balance) ? currentData.balance : 0;
-        let newBalance = currentBalance + amount;
-        
-        userRef.update({
-            balance: newBalance,
-            last_update: new Date().toISOString()
-        }).then(() => {
-            alert(`ALHAMDULLILAH! An tura $${amount} zuwa asusunka.`);
-            // Nuna sabon balance idan akwai wurin nuna shi a shafin
-            const balanceDisplay = document.getElementById('wallet-balance');
-            if (balanceDisplay) {
-                balanceDisplay.innerText = "$" + newBalance.toFixed(2);
-            }
-        });
-    });
+// --- SYNERGY MULTI-LEVEL ENGINE (GYARARRE) ---
+async function distributeCommissions(currentUser, earnedAmount) {
+    const commissionRates = [0.10, 0.05, 0.025]; 
+    let currentChild = currentUser;
+
+    for (let i = 0; i < commissionRates.length; i++) {
+        try {
+            // Nemo bayanan yaro a Realtime Database
+            const snapshot = await database.ref('users/' + currentChild).once('value');
+            const userData = snapshot.val();
+            
+            if (!userData || !userData.referredBy) break;
+            
+            const parentId = userData.referredBy;
+            if (parentId === "admin" || parentId === "") break;
+
+            const commission = earnedAmount * commissionRates[i];
+
+            // Biyan uba (Parent)
+            const parentRef = database.ref('users/' + parentId);
+            const parentSnap = await parentRef.once('value');
+            const parentData = parentSnap.val();
+            
+            let currentBal = (parentData && parentData.balance) ? parentData.balance : 0;
+            let currentRefEarn = (parentData && parentData.referralEarnings) ? parentData.referralEarnings : 0;
+
+            await parentRef.update({
+                balance: currentBal + commission,
+                referralEarnings: currentRefEarn + commission
+            });
+
+            console.log(`Level ${i+1} Commission sent to ${parentId}`);
+            currentChild = parentId; // Matsa zuwa mataki na gaba
+
+        } catch (error) {
+            console.error("Commission Error:", error);
+            break; 
+        }
+    }
 }
 
-// 4. Babban Function na Verification (Wanda button dinka yake kira)
+// 4. Babban Function na Verification
 async function executeVerification() {
-    // A yanzu kowa zai zama MAMBA_001, daga baya zamu sa kowa ya zama daban
     const userId = "MAMBA_001"; 
-    const watchTime = 65; // Misali na sakan 65
-
-    console.log("Checking with Render Backend...");
+    const watchTime = 65; 
 
     try {
         const response = await fetch(`${API_URL}/api/verify-task`, {
@@ -56,41 +69,31 @@ async function executeVerification() {
         const data = await response.json();
         
         if(data.success) {
-            // Idan Render ya tabbatar, sai mu kara kudi a Firebase
-            updateCloudWallet(userId, 0.50); 
+            // A. Biyan wanda ya yi kallo
+            await updateCloudWallet(userId, 0.50); 
+            
+            // B. Raba kudin gayyata (Level 1-3) - NAN NE AKA KARA WANNAN
+            await distributeCommissions(userId, 0.50);
+            
         } else {
-            alert("Kallo bai isa ba! Ba za a tura kudi ba.");
+            alert("Kallo bai isa ba!");
         }
     } catch (error) {
         console.error("Connection Error:", error);
-        alert("Ba a samu haduwa da Server ba.");
     }
-                }
+}
 
-// --- SYNERGY MULTI-LEVEL ENGINE ---
-async function distributeCommissions(currentUser, earnedAmount) {
-    const commissionRates = [0.10, 0.05, 0.025]; 
-    let currentChild = currentUser;
-
-    for (let i = 0; i < commissionRates.length; i++) {
-        try {
-            const userDoc = await db.collection("users").doc(currentChild).get();
-            if (!userDoc.exists) break;
-            
-            const parentId = userDoc.data().referredBy;
-            if (!parentId || parentId === "admin" || parentId === "") break;
-
-            const commission = earnedAmount * commissionRates[i];
-
-            await db.collection("users").doc(parentId).update({
-                videoBalance: firebase.firestore.FieldValue.increment(commission),
-                referralEarnings: firebase.firestore.FieldValue.increment(commission)
-            });
-
-            currentChild = parentId;
-        } catch (error) {
-            console.error("Commission Error:", error);
-            break; 
-        }
-    }
-              }
+// 3. Function na kara kudi
+async function updateCloudWallet(userId, amount) {
+    const userRef = database.ref('users/' + userId);
+    const snapshot = await userRef.once('value');
+    let currentData = snapshot.val();
+    let currentBalance = (currentData && currentData.balance) ? currentData.balance : 0;
+    
+    await userRef.update({
+        balance: currentBalance + amount,
+        last_update: new Date().toISOString()
+    });
+    
+    alert(`ALHAMDULLILAH! An tura $${amount} zuwa asusunka.`);
+}
