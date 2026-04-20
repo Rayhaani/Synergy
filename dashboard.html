@@ -458,12 +458,14 @@ checkAccess();
 
     // 2. YOUTUBE API & PLAYER LOGIC
     function onYouTubeIframeAPIReady() { 
-        player = new YT.Player('yt-player', { 
-            height: '100%', width: '100%', videoId: 'dQw4w9WgXcQ', 
-            playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 }, 
-            events: { 'onStateChange': onPlayerStateChange } 
-        }); 
+    player = new YT.Player('yt-player', { 
+        height: '100%', width: '100%', 
+        videoId: window.pendingVideoId || 'dQw4w9WgXcQ', // Zai dauko na Firebase idan ya riga ya loda
+        playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 }, 
+        events: { 'onStateChange': onPlayerStateChange } 
+    }); 
     }
+    
     
     function startQuantumSession() { 
         document.getElementById('shutter').style.opacity = "0"; 
@@ -744,6 +746,41 @@ function checkAndResetDailyStats(userData) {
         }, 1000);
     };
 })();
+
+
+    // Wannan zai maye gurbin duk wani YouTube Fetching logic
+async function loadVideosFromSynergyVault() {
+    try {
+        const snapshot = await db.collection("playlist").get();
+        let videoPool = [];
+        
+        snapshot.forEach(doc => {
+            if (doc.data().videoId) {
+                videoPool.push(doc.data().videoId);
+            }
+        });
+
+        if (videoPool.length > 0) {
+            // Zaba bidiyo guda daya a bazu (randomly) don mamban ya kalla
+            const randomVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
+            
+            // Saka bidiyon a cikin player
+            if (player && player.loadVideoById) {
+                player.loadVideoById(randomVideo);
+            } else {
+                // Idan player bai shirya ba tukuna, adana shi don onYouTubeIframeAPIReady
+                window.pendingVideoId = randomVideo;
+            }
+            console.log("Synergy Vault: Video Synced!");
+        }
+    } catch (error) {
+        console.error("Vault Error:", error);
+        showSynergyAlert("DATABASE SYNC FAILED", "error");
+    }
+}
+
+// Kira wannan function din bayan Firebase ya gama loda komai
+loadVideosFromSynergyVault();
     
     
 </script>
