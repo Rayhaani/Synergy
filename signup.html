@@ -93,7 +93,10 @@
             <div id="step-email" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-1 block">Email Address</label><input type="email" id="email" oninput="validateForm()" class="input-node"></div>
             <div id="step-user" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-1 block">Username</label><input type="text" id="username" oninput="validateForm()" class="input-node"></div>
             <div id="step-state" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-1 block">State</label><input type="text" id="state" oninput="validateForm()" class="input-node"></div>
-            <div id="step-phone" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-1 block">Phone Number</label><input type="tel" id="phone" oninput="validateForm()" class="input-node"></div>
+            <div id="step-phone" class="hidden">
+    <label class="orbitron text-gray-500 ml-1 mb-1 block">WhatsApp Number</label>
+    <input type="tel" id="phone" oninput="validateForm()" placeholder="08012345678" class="input-node">
+            </div>
             <div id="step-pass" class="hidden"><label class="orbitron text-gray-500 ml-1 mb-1 block">Password</label><input type="password" id="password" oninput="validateForm()" class="input-node"></div>
             
             <button id="reg-btn" onclick="register()" disabled class="w-full bg-white text-black py-4 rounded-2xl font-bold orbitron mt-2 opacity-20 cursor-not-allowed transition-all duration-500">ACTIVATE PROTOCOL</button>
@@ -203,84 +206,84 @@ async function register() {
     const email = document.getElementById('email').value.trim();
     const user = document.getElementById('username').value.toLowerCase().trim();
     const pass = document.getElementById('password').value.trim();
+    const rawPhone = document.getElementById('phone').value.trim(); // Mun dauko phone anan
 
     btn.disabled = true;
     btn.innerHTML = `<span class="orbitron animate-pulse">CONNECTING...</span>`;
 
+    // 1. GYARA LAMBAR WHATSAPP TUN KAFIN MU FARA
+    let formattedPhone = rawPhone;
+    if (rawPhone.startsWith('0')) {
+        formattedPhone = '234' + rawPhone.substring(1);
+    } else if (!rawPhone.startsWith('234') && rawPhone !== "") {
+        formattedPhone = '234' + rawPhone;
+    }
+
     try {
-        // A. Duba idan Username yana nan
+        // A. Duba idan Username yana nan a Firestore
         const userRef = db.collection("users").doc(user);
         const doc = await userRef.get();
 
         if (doc.exists) {
-            showTopNotif("Username is already taken. Choose another.", "error");
+            showTopNotif("Username is already taken.", "error");
             btn.disabled = false;
             btn.innerText = "ACTIVATE PROTOCOL";
             return;
         }
 
-        // B. Duba idan Email yana nan (Mafi mahimmanci)
-        try {
-            const signInMethods = await firebase.auth().fetchSignInMethodsForEmail(email);
-            if (signInMethods.length > 0) {
-                showTopNotif("Email address is already registered.", "error");
-                btn.disabled = false;
-                btn.innerText = "ACTIVATE PROTOCOL";
-                return;
-            }
-        } catch (fetchErr) {
-            // Idan error ya fito nan, yawanci security limit ne ko network
+        // B. Duba Email idan yana nan
+        const signInMethods = await firebase.auth().fetchSignInMethodsForEmail(email);
+        if (signInMethods.length > 0) {
+            showTopNotif("Email address already registered.", "error");
+            btn.disabled = false;
+            btn.innerText = "ACTIVATE PROTOCOL";
+            return;
         }
 
-        // C. Idan komai ya yi, sai a nuna success overlay
+        // C. CREATE ACCOUNT A BACKGROUND
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+        await userCredential.user.sendEmailVerification();
         
-    
-        // D. Create account a background
-const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, pass);
-await userCredential.user.sendEmailVerification();
-mainCard.style.display = 'none';
-showSuccessOverlay(email);
+        mainCard.style.display = 'none';
+        showSuccessOverlay(email);
 
-await userRef.set({
-    uid: userCredential.user.uid,
-    fullName: document.getElementById('full-name').value.trim(),
-    email: email, 
-    username: user,
-    state: document.getElementById('state').value.trim(),
-    phoneNumber: document.getElementById('phone').value.trim(),
-    videoBalance: 0, 
-    shareBalance: 0, 
-    isVerified: false, // WANNAN SHINE GYARAN: Domin kowa ya fara da false
-    rank: "IRON", 
-    videosWatchedToday: 0, // Domin resetting
-    lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' }),
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-        
+        // D. ADANA BAYANAN A FIRESTORE (Domin Security da Profiles)
+        await userRef.set({
+            uid: userCredential.user.uid,
+            fullName: document.getElementById('full-name').value.trim(),
+            email: email, 
+            username: user,
+            state: document.getElementById('state').value.trim(),
+            whatsapp: formattedPhone, // MUN SAKA GYARARRIYAR LAMBAR ANAN
+            videoBalance: 0, 
+            shareBalance: 0, 
+            isVerified: false,
+            rank: "IRON", 
+            videosWatchedToday: 0,
+            lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' }),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            referredBy: getReferrerFromURL() || "admin" // Kar ka manta da wannan domin referrals suyi aiki!
+        });
+
+        // E. ADANA BAYANAN A REALTIME DATABASE (Domin Network Page dinka ya gani da sauri)
+        // Wannan shi ne zai sa loadReferralNetwork() dinka ya yi aiki
+        await database.ref('users/' + user).set({
+            whatsapp: formattedPhone,
+            balance: 0,
+            referredBy: getReferrerFromURL() || "admin",
+            last_update: new Date().toISOString()
+        });
 
     } catch (e) {
-        // Idan account creation ya gaza bayan overlay ya fito
-        if (e.code === 'auth/email-already-in-use') {
-            showTopNotif("Email already in use. Critical Error.", "error");
-        } else {
-            showTopNotif(e.message, "error");
-        }
-        
-        // Dawo da form din idan an samu matsala
-        if (mainCard.style.display === 'none') {
-            mainCard.style.display = 'block';
-            Swal.close(); 
-        }
+        showTopNotif(e.message, "error");
+        if (mainCard.style.display === 'none') mainCard.style.display = 'block';
         btn.disabled = false;
         btn.innerText = "RETRY ACTIVATION";
     }
-}
+                }
+                
 
-
-
-
-        let checkInterval;
-
+        
 function startVerificationListener() {
     // Tabbatar bamu da wani tsohon timer da yake aiki
     if (checkInterval) clearInterval(checkInterval);
