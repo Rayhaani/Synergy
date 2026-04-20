@@ -310,37 +310,34 @@ async function resendVerification() {
     }
       }
                 
-
-       // 1. Dole ka fara bayyana wannan a sama
-let checkInterval = null; 
-
-function startVerificationListener() {
-    // Kare kanka daga double timers
+let checkInterval = null;
+        
+       function startVerificationListener() {
+    // 1. Tabbatar mun kashe duk wani tsohon timer don gudun rudani
     if (checkInterval) clearInterval(checkInterval);
 
     checkInterval = setInterval(async () => {
-        try {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                // Tilasta wa Firebase sake duba status
-                await user.reload(); 
-                
-                if (user.emailVerified) {
-                    clearInterval(checkInterval); 
-                    
-                    showTopNotif("Security Protocol Verified!", "success");
+        const currentUser = firebase.auth().currentUser;
+        
+        if (currentUser) {
+            // 2. WANNAN SHINE MUHIMMI: Tilasta wa Firebase sake duba status din user
+            await currentUser.reload(); 
+            
+            if (currentUser.emailVerified) {
+                // 3. Tsayar da binciken tunda an riga an yi verify
+                clearInterval(checkInterval); 
 
-                    // Redirect zuwa signin
-                    setTimeout(() => {
-                        window.location.href = "signin.html"; 
-                    }, 1500);
-                }
+                // 4. Nuna sako sannan a tura shi zuwa Signin
+                showTopNotif("Security Verified! Redirecting...", "success");
+
+                setTimeout(() => {
+                    window.location.href = "signin.html"; // Tabbatar sunan file din ya yi daidai
+                }, 1500);
             }
-        } catch (error) {
-            console.error("Verification Check Error:", error);
         }
-    }, 3000); 
-        }
+    }, 3000); // Yana dubawa duk bayan sakan 3
+       }
+        
                 
 
         
