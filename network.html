@@ -176,159 +176,133 @@
     </main>
 
     <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
-            authDomain: "synergy-protocol.firebaseapp.com", 
-            projectId: "synergy-protocol", 
-            storageBucket: "synergy-protocol.firebasestorage.app", 
-            messagingSenderId: "179647543031", 
-            appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
-        };
+        
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    // 1. INITIALIZE FIREBASE (Sau daya kacal ake yi)
+    const firebaseConfig = { 
+        apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
+        authDomain: "synergy-protocol.firebaseapp.com", 
+        projectId: "synergy-protocol", 
+        databaseURL: "https://synergy-protocol-default-rtdb.firebaseio.com", // TABBATAR WANNAN YA YI DAIDAI
+        storageBucket: "synergy-protocol.firebasestorage.app", 
+        messagingSenderId: "179647543031", 
+        appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
+    };
+    
+    if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const testUser = "mamba_001";
+    }
+    
+    const db = firebase.firestore();
+    const database = firebase.database(); // MUHIMMI: Domin Network List din ya fito
 
-        function toggleGoogleMenu(event) {
-            event.stopPropagation();
-            document.getElementById('google-nav').classList.toggle('active');
-        }
-        window.onclick = () => document.getElementById('google-nav').classList.remove('active');
+    // 2. TOGGLE MENU
+    function toggleGoogleMenu(event) {
+        event.stopPropagation();
+        document.getElementById('google-nav').classList.toggle('active');
+    }
+    window.onclick = () => document.getElementById('google-nav').classList.remove('active');
 
-        function loadReferralNetwork() {
-    const listBody = document.getElementById('referral-list-body');
-    const topActiveCount = document.getElementById('active-count-top');
-    const userId = "mamba_001"; // Wannan zai zama dynamic
-
-    // Muna duba dukkan 'users' a Realtime Database
-    database.ref('users').on('value', (snapshot) => {
-        listBody.innerHTML = "";
-        let activeCount = 0;
-        let totalRefs = 0;
-        const allUsers = snapshot.val();
-        
-        if (!allUsers) {
-            listBody.innerHTML = '<tr><td colspan="5" class="text-center py-20 text-gray-600 text-[11px]">No nodes scanned.</td></tr>';
-            return;
-        }
-
-        const today = new Date().toLocaleDateString('en-GB');
-
-        Object.keys(allUsers).forEach(username => {
-            const data = allUsers[username];
-            
-            // TACEWA: Sai dai idan mutumin yana karkashinka
-            if (data.referredBy === userId) {
-                totalRefs++;
-                const lastDate = data.last_update ? new Date(data.last_update).toLocaleDateString('en-GB') : "N/A";
-                const totalEarned = data.balance ? data.balance.toFixed(2) : "0.00";
-                const phone = data.whatsapp || "";
-                
-                // STATUS LOGIC
-                const isActive = (lastDate === today);
-                if(isActive) activeCount++;
-
-                // WHATSAPP MESSAGE LOGIC
-                const waMessage = window.encodeURIComponent(`Sannu @${username}, Protocol namu ya nuna baka kammala task dinka na yau ba. Ci gaba da aiki don karfafa node dinka! Balance dinka yanzu: $${totalEarned}`);
-                const waLink = `https://wa.me/${phone}?text=${waMessage}`;
-
-                // KARA ROW: Ba tare da taba asalin design din ba
-                listBody.innerHTML += `
-                    <tr class="text-[11px] border-b border-white/[0.03] hover:bg-white/[0.01] transition-all">
-                        <td class="py-5 font-medium">
-                            <div class="flex flex-col">
-                                <span class="text-gray-300 font-bold">@${username}</span>
-                                <span class="text-[7px] text-cyan-500 orbitron tracking-[2px]">Level 1 Node</span>
-                            </div>
-                        </td>
-                        <td class="py-5 text-center">
-                            ${isActive ? '<span class="text-green-400 font-bold bg-green-400/10 px-3 py-1 rounded-full border border-green-400/20">ACTIVE</span>' : '<span class="text-red-400 opacity-60 bg-red-400/5 px-3 py-1 rounded-full border border-red-400/20">INACTIVE</span>'}
-                        </td>
-                        <td class="py-5 text-center font-mono text-cyan-400/80">$${totalEarned}</td>
-                        <td class="py-5 text-right font-mono ${lastDate === today ? 'text-cyan-400' : 'text-gray-500'}">
-                            <div class="flex items-center justify-end gap-3">
-                                <span>${lastDate === today ? 'Today' : lastDate}</span>
-                                <a href="${waLink}" target="_blank" class="hover:scale-110 transition-transform">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7l1.1 1.1"></path><path d="M11 12h10"></path><path d="m17 8 4 4-4 4"></path></svg>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>`;
-            }
-        });
-        
-        topActiveCount.innerText = activeCount;
-        document.getElementById('ref-count').innerText = totalRefs;
-    });
-        }
+    // 3. AUTH & LINK GENERATION
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const myUsername = doc.data().username;
                     
+                    // Saita Referral Link
+                    const refInput = document.getElementById('ref-link');
+                    const baseUrl = "https://rayhaani.github.io/Synergy/signup.html";
+                    refInput.value = `${baseUrl}?ref=${myUsername}`;
+                    
+                    // Load Network dangane da username din mutum
+                    loadReferralNetwork(myUsername);
+                });
+            });
+        } else {
+            window.location.href = "signin.html";
+        }
+    });
 
-        function syncNodeData() {
-            db.collection("users").doc(testUser).onSnapshot((doc) => {
-                if (doc.exists) {
-                    document.getElementById('ref-link').value = `https://synergy-protocol.io/join?ref=${testUser}`;
+    // 4. LOAD REFERRAL NETWORK
+    function loadReferralNetwork(currentUsername) {
+        const listBody = document.getElementById('referral-list-body');
+        const topActiveCount = document.getElementById('active-count-top');
+        const refCountHeader = document.getElementById('ref-count');
+
+        database.ref('users').on('value', (snapshot) => {
+            listBody.innerHTML = "";
+            let activeCount = 0;
+            let totalRefs = 0;
+            const allUsers = snapshot.val();
+            
+            if (!allUsers) {
+                listBody.innerHTML = '<tr><td colspan="3" class="text-center py-10 opacity-50">No nodes found.</td></tr>';
+                return;
+            }
+
+            const today = new Date().toLocaleDateString('en-GB');
+
+            Object.keys(allUsers).forEach(username => {
+                const data = allUsers[username];
+                
+                if (data.referredBy === currentUsername) {
+                    totalRefs++;
+                    const lastDate = data.last_update ? new Date(data.last_update).toLocaleDateString('en-GB') : "N/A";
+                    const isActive = (lastDate === today);
+                    if(isActive) activeCount++;
+
+                    listBody.innerHTML += `
+                        <tr class="text-[11px] border-b border-white/[0.03]">
+                            <td class="py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-white">@${username}</span>
+                                    <span class="text-[7px] text-cyan-500">LEVEL 1 NODE</span>
+                                </div>
+                            </td>
+                            <td class="py-4 text-center">
+                                <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-bold">
+                                    ${isActive ? 'ACTIVE' : 'INACTIVE'}
+                                </span>
+                            </td>
+                            <td class="py-4 text-right font-mono text-gray-400">
+                                ${lastDate === today ? 'Today' : lastDate}
+                            </td>
+                        </tr>`;
                 }
             });
-        }
-
-        syncNodeData();
-        loadReferralNetwork();
-
-        function copyRef() {
-            const copyText = document.getElementById("ref-link");
-            copyText.select();
-            navigator.clipboard.writeText(copyText.value);
-            showToast("LINK COPIED TO CLIPBOARD");
-        }
-
-        function showToast(msg) {
-            let toast = document.getElementById('synergy-toast');
-            if(!toast) {
-                toast = document.createElement('div');
-                toast.id = 'synergy-toast';
-                toast.className = 'synergy-toast';
-                document.body.appendChild(toast);
-            }
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-       
-        firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        // Nemo username din wannan mamban a Firestore
-        db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const myUsername = doc.data().username;
-                const refInput = document.getElementById('ref-link');
-                
-                // Hadawa da asalin sunan shafinka na register
-                const baseUrl = "https://rayhaani.github.io/Synergy/signup.html";
-                refInput.value = `${baseUrl}?ref=${myUsername}`;
-            });
+            
+            topActiveCount.innerText = activeCount;
+            refCountHeader.innerText = totalRefs;
         });
     }
-});
 
+    // 5. COPY FUNCTION
+    function copyRef() {
+        const copyText = document.getElementById("ref-link");
+        if (copyText.value === "Loading...") return;
 
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            showToast("LINK COPIED TO CLIPBOARD");
+        });
+    }
 
-        function copyRef() {
-    const copyText = document.getElementById("ref-link");
-    
-    if (copyText.value === "Loading...") return; // Kar ya yi copy din "Loading"
-
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); // Domin wayoyin hannu (Mobile)
-
-    navigator.clipboard.writeText(copyText.value).then(() => {
-        // Nuna sanarwa ta SweetAlert ko TopNotif
-        showTopNotif("Link Copied to Clipboard!", "success");
-    });
+    function showToast(msg) {
+        let toast = document.getElementById('synergy-toast');
+        if(!toast) {
+            toast = document.createElement('div');
+            toast.id = 'synergy-toast';
+            toast.className = 'synergy-toast';
+            document.body.appendChild(toast);
         }
-
-    </script>
-
-
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+</script>
     
     
     
