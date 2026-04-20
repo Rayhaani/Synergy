@@ -195,36 +195,72 @@
         window.onclick = () => document.getElementById('google-nav').classList.remove('active');
 
         function loadReferralNetwork() {
-            const listBody = document.getElementById('referral-list-body');
-            const topActiveCount = document.getElementById('active-count-top');
+    const listBody = document.getElementById('referral-list-body');
+    const topActiveCount = document.getElementById('active-count-top');
+    const userId = "mamba_001"; // Wannan zai zama dynamic
 
-            db.collection("users").where("referredBy", "==", testUser)
-            .onSnapshot((querySnapshot) => {
-                listBody.innerHTML = "";
-                let activeCount = 0;
-                if (querySnapshot.empty) {
-                    listBody.innerHTML = '<tr><td colspan="3" class="text-center py-20 text-gray-600 text-[11px]">No nodes linked to your protocol.</td></tr>';
-                    return;
-                }
-                const today = new Date().toLocaleDateString('en-GB');
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const username = doc.id;
-                    const lastDate = data.lastActivityDate || "N/A";
-                    const progress = data.videosWatchedToday || 0;
-                    const isActive = (lastDate === today && progress >= 10);
-                    if(isActive) activeCount++;
-                    listBody.innerHTML += `
-                        <tr class="text-[11px]">
-                            <td class="py-5 font-medium text-gray-300">@${username}</td>
-                            <td class="py-5 text-center">${isActive ? '<span class="text-green-400 font-bold bg-green-400/10 px-3 py-1 rounded-full">ACTIVE</span>' : '<span class="text-red-400 opacity-60 bg-red-400/5 px-3 py-1 rounded-full">INACTIVE</span>'}</td>
-                            <td class="py-5 text-right font-mono ${lastDate === today ? 'text-cyan-400' : 'text-gray-500'}">${lastDate === today ? 'Today' : lastDate}</td>
-                        </tr>`;
-                });
-                topActiveCount.innerText = activeCount;
-                document.getElementById('ref-count').innerText = querySnapshot.size;
-            });
+    // Muna duba dukkan 'users' a Realtime Database
+    database.ref('users').on('value', (snapshot) => {
+        listBody.innerHTML = "";
+        let activeCount = 0;
+        let totalRefs = 0;
+        const allUsers = snapshot.val();
+        
+        if (!allUsers) {
+            listBody.innerHTML = '<tr><td colspan="5" class="text-center py-20 text-gray-600 text-[11px]">No nodes scanned.</td></tr>';
+            return;
         }
+
+        const today = new Date().toLocaleDateString('en-GB');
+
+        Object.keys(allUsers).forEach(username => {
+            const data = allUsers[username];
+            
+            // TACEWA: Sai dai idan mutumin yana karkashinka
+            if (data.referredBy === userId) {
+                totalRefs++;
+                const lastDate = data.last_update ? new Date(data.last_update).toLocaleDateString('en-GB') : "N/A";
+                const totalEarned = data.balance ? data.balance.toFixed(2) : "0.00";
+                const phone = data.whatsapp || "";
+                
+                // STATUS LOGIC
+                const isActive = (lastDate === today);
+                if(isActive) activeCount++;
+
+                // WHATSAPP MESSAGE LOGIC
+                const waMessage = window.encodeURIComponent(`Sannu @${username}, Protocol namu ya nuna baka kammala task dinka na yau ba. Ci gaba da aiki don karfafa node dinka! Balance dinka yanzu: $${totalEarned}`);
+                const waLink = `https://wa.me/${phone}?text=${waMessage}`;
+
+                // KARA ROW: Ba tare da taba asalin design din ba
+                listBody.innerHTML += `
+                    <tr class="text-[11px] border-b border-white/[0.03] hover:bg-white/[0.01] transition-all">
+                        <td class="py-5 font-medium">
+                            <div class="flex flex-col">
+                                <span class="text-gray-300 font-bold">@${username}</span>
+                                <span class="text-[7px] text-cyan-500 orbitron tracking-[2px]">Level 1 Node</span>
+                            </div>
+                        </td>
+                        <td class="py-5 text-center">
+                            ${isActive ? '<span class="text-green-400 font-bold bg-green-400/10 px-3 py-1 rounded-full border border-green-400/20">ACTIVE</span>' : '<span class="text-red-400 opacity-60 bg-red-400/5 px-3 py-1 rounded-full border border-red-400/20">INACTIVE</span>'}
+                        </td>
+                        <td class="py-5 text-center font-mono text-cyan-400/80">$${totalEarned}</td>
+                        <td class="py-5 text-right font-mono ${lastDate === today ? 'text-cyan-400' : 'text-gray-500'}">
+                            <div class="flex items-center justify-end gap-3">
+                                <span>${lastDate === today ? 'Today' : lastDate}</span>
+                                <a href="${waLink}" target="_blank" class="hover:scale-110 transition-transform">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7l1.1 1.1"></path><path d="M11 12h10"></path><path d="m17 8 4 4-4 4"></path></svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+        });
+        
+        topActiveCount.innerText = activeCount;
+        document.getElementById('ref-count').innerText = totalRefs;
+    });
+        }
+                    
 
         function syncNodeData() {
             db.collection("users").doc(testUser).onSnapshot((doc) => {
