@@ -180,12 +180,18 @@
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-    // 1. INITIALIZE FIREBASE (Sau daya kacal ake yi)
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+    // 1. INITIALIZE FIREBASE
     const firebaseConfig = { 
         apiKey: "AIzaSyDLTwLq8Le9vYAwRkRcqXPGxFnEqW1yE2E", 
         authDomain: "synergy-protocol.firebaseapp.com", 
         projectId: "synergy-protocol", 
-        databaseURL: "https://synergy-protocol-default-rtdb.firebaseio.com", // TABBATAR WANNAN YA YI DAIDAI
+        databaseURL: "https://synergy-protocol-default-rtdb.firebaseio.com", 
         storageBucket: "synergy-protocol.firebasestorage.app", 
         messagingSenderId: "179647543031", 
         appId: "1:179647543031:web:388da8a36e1bbbb55d85f2" 
@@ -196,7 +202,7 @@
     }
     
     const db = firebase.firestore();
-    const database = firebase.database(); // MUHIMMI: Domin Network List din ya fito
+    const database = firebase.database();
 
     // 2. TOGGLE MENU
     function toggleGoogleMenu(event) {
@@ -205,24 +211,35 @@
     }
     window.onclick = () => document.getElementById('google-nav').classList.remove('active');
 
-    // 3. AUTH & LINK GENERATION
+    // 3. AUTH & LINK GENERATION (Wannan bangaren ne baya aiki)
     firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        // Muna gaya wa kwamfuta ta nemo mamban da email dinsa ya yi daidai da na wanda ya yi login
-        db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const myUsername = doc.data().username; // Wannan zai dauko "rayhaan" ko "bash" ko duk wanda ke ciki
+        if (user) {
+            console.log("Mamba ya shigo:", user.email);
+            // Nemo mamban ta Email
+            db.collection("users").where("email", "==", user.email).get().then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    console.error("Ba a samu bayanan wannan email din a Firestore ba!");
+                    document.getElementById('ref-link').value = "Profile Not Found";
+                    return;
+                }
                 
-                const refInput = document.getElementById('ref-link');
-                const baseUrl = "https://rayhaani.github.io/Synergy/signup.html";
-                
-                // Yanzu link din zai fito da sunan asalin mamban
-                refInput.value = `${baseUrl}?ref=${myUsername}`;
-            });
-        });
-    }
-});
-    
+                querySnapshot.forEach((doc) => {
+                    const myUsername = doc.data().username;
+                    const refInput = document.getElementById('ref-link');
+                    const baseUrl = "https://rayhaani.github.io/Synergy/signup.html";
+                    
+                    // Saita Referral Link
+                    refInput.value = `${baseUrl}?ref=${myUsername}`;
+                    
+                    // MUHIMMI: Loda network din mamban nan take
+                    loadReferralNetwork(myUsername);
+                });
+            }).catch(err => console.error("Error fetching user:", err));
+        } else {
+            window.location.href = "signin.html";
+        }
+    });
+
     // 4. LOAD REFERRAL NETWORK
     function loadReferralNetwork(currentUsername) {
         const listBody = document.getElementById('referral-list-body');
@@ -253,12 +270,7 @@
 
                     listBody.innerHTML += `
                         <tr class="text-[11px] border-b border-white/[0.03]">
-                            <td class="py-4">
-                                <div class="flex flex-col">
-                                    <span class="text-white">@${username}</span>
-                                    <span class="text-[7px] text-cyan-500">LEVEL 1 NODE</span>
-                                </div>
-                            </td>
+                            <td class="py-4 text-white">@${username}</td>
                             <td class="py-4 text-center">
                                 <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-bold">
                                     ${isActive ? 'ACTIVE' : 'INACTIVE'}
@@ -273,6 +285,7 @@
             
             topActiveCount.innerText = activeCount;
             refCountHeader.innerText = totalRefs;
+            if (totalRefs === 0) listBody.innerHTML = '<tr><td colspan="3" class="text-center py-10 opacity-50">No nodes found.</td></tr>';
         });
     }
 
@@ -280,25 +293,21 @@
     function copyRef() {
         const copyText = document.getElementById("ref-link");
         if (copyText.value === "Loading...") return;
-
         copyText.select();
-        navigator.clipboard.writeText(copyText.value).then(() => {
-            showToast("LINK COPIED TO CLIPBOARD");
-        });
+        navigator.clipboard.writeText(copyText.value).then(() => showToast("LINK COPIED"));
     }
 
     function showToast(msg) {
-        let toast = document.getElementById('synergy-toast');
-        if(!toast) {
-            toast = document.createElement('div');
-            toast.id = 'synergy-toast';
-            toast.className = 'synergy-toast';
-            document.body.appendChild(toast);
-        }
+        let toast = document.getElementById('synergy-toast') || document.createElement('div');
+        toast.id = 'synergy-toast';
+        toast.className = 'synergy-toast';
+        document.body.appendChild(toast);
         toast.innerText = msg;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
+
+    
 </script>
     
     
