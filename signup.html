@@ -311,41 +311,38 @@ async function resendVerification() {
       }
                 
 
-        
+       // 1. Dole ka fara bayyana wannan a sama
+let checkInterval = null; 
+
 function startVerificationListener() {
-    // Tabbatar bamu da wani tsohon timer da yake aiki
+    // Kare kanka daga double timers
     if (checkInterval) clearInterval(checkInterval);
 
     checkInterval = setInterval(async () => {
-        const user = firebase.auth().currentUser;
-        if (user) {
-            // Tilasta wa Firebase ta sake duba status din user
-            await user.reload(); 
-            
-            if (user.emailVerified) {
-                clearInterval(checkInterval); // Tsayar da binciken
+        try {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                // Tilasta wa Firebase sake duba status
+                await user.reload(); 
                 
-                // Nuna sakon nasara ta GitHub Bar
-                showTopNotif("Security Protocol Verified. Access Granted!", "success");
+                if (user.emailVerified) {
+                    clearInterval(checkInterval); 
+                    
+                    showTopNotif("Security Protocol Verified!", "success");
 
-                // Jira sakan 2 sannan mu tura shi shafin Login ko Dashboard
-                setTimeout(() => {
-                    Swal.fire({
-                        title: 'ACCESS GRANTED',
-                        text: 'Redirecting to your dashboard...',
-                        icon: 'success',
-                        background: '#020617',
-                        color: '#fff',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        window.location.href = "signin.html"; // Ko sunan shafin dashboard dinka
-                    });
-                }, 1000);
+                    // Redirect zuwa signin
+                    setTimeout(() => {
+                        window.location.href = "signin.html"; 
+                    }, 1500);
+                }
             }
+        } catch (error) {
+            console.error("Verification Check Error:", error);
         }
-    }, 3000); // Yana dubawa duk bayan sakan 3
-}
+    }, 3000); 
+        }
+                
+
         
     </script>
 </body>
