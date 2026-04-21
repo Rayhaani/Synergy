@@ -8,167 +8,98 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
         
-        .orbitron { font-family: 'Syncopate', sans-serif; }
 
-        /* NAV LOGO & MENU */
-        .header-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; z-index: 100; margin-top: 10px; margin-bottom: 30px; position: relative; }
-        .nav-logo { font-weight: 800; letter-spacing: -1px; font-size: 24px; }
-        .menu-icon { width: 30px; height: 20px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 1001; }
-        .menu-bar { width: 100%; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
-        .menu-bar.short { width: 60%; align-self: flex-end; }
-
-        .header-nav { 
-    /* Kar ka taba tsofaffin codes din, kawai ka tabbatar wadannan suna ciki: */
-    padding-left: 20px !important; 
-    padding-right: 20px !important;
-    box-sizing: border-box; /* Wannan layin ne zai hana shi lalata tsarin */
-        }
-        
-        #side-menu { 
-    position: fixed; 
-    top: 65px; 
-    right: 15px; 
-    width: 160px; /* Ya yi daidai da girman mobile */
-    background: rgba(2, 6, 23, 0.98); /* Duhu sosai domin ya dace da background */
-    backdrop-filter: blur(20px); 
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 242, 254, 0.4); 
-    border-radius: 12px; 
-    z-index: 1000; 
-    display: none; /* JavaScript ne zai canza wannan zuwa flex */
-    flex-direction: column; 
-    padding: 8px 0;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-}
-
-#side-menu.active { 
-    display: flex !important; /* Dole ya nuna idan aka danna */
-}
-
-.menu-link { 
-    padding: 12px 15px; 
-    font-size: 10px; 
-    font-weight: 700; 
-    color: #ffffff; 
-    text-decoration: none; 
-    text-transform: uppercase; 
-    letter-spacing: 1.5px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-}
-        
-      
-        
-
-        /* HERO SECTION */
-        .hero-layer { width: 100%; text-align: center; z-index: 50; margin-bottom: 10px; }
-        .hero-h1 { font-size: clamp(2.2rem, 10vw, 3.8rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1.1; margin: 0; }
-        .hero-h1 span { color: #00f2fe; }
-        .hero-p { font-size: 13px; color: #888; max-width: 350px; margin: 15px auto 0; line-height: 1.6; }
-
-        
-        /* ORBITAL SYSTEM */
-        .main-container { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 300px; min-height: 280px; }
-        .core-system { width: 100px; height: 100px; background: radial-gradient(circle, #00f2fe 0%, transparent 70%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0, 242, 254, 0.4); position: relative; z-index: 10; animation: pulse 4s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
-        .orbit-container { position: absolute; width: 220px; height: 220px; border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 50%; animation: rotate 20s linear infinite; }
-        .node-item { position: absolute; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: counter-rotate 20s linear infinite; cursor: pointer; transition: 0.3s; }
-        .node-item:hover { border-color: #00f2fe; background: rgba(0, 242, 254, 0.1); transform: scale(1.1); }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes counter-rotate { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-        .n1 { top: -25px; left: 50%; margin-left: -25px; }
-        .n2 { bottom: -25px; left: 50%; margin-left: -25px; }
-        .n3 { left: -25px; top: 50%; margin-top: -25px; }
-        .n4 { right: -25px; top: 50%; margin-top: -25px; }
-
-        /* SECTIONS STYLING */
-        .content-section { width: 100%; max-width: 800px; padding: 20px; }
-        .section-title { font-size: 10px; color: #00f2fe; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 25px; text-align: center; opacity: 0.7; }
-        
-        /* FEATURISTIC LIVE STATS */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 40px; }
-        .stat-card { background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 16px; padding: 18px 10px; text-align: center; position: relative; overflow: hidden; }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #00f2fe, transparent); }
-        .stat-value { font-size: 16px; color: #fff; font-weight: 800; }
-        .stat-label { font-size: 7px; color: #00f2fe; text-transform: uppercase; margin-top: 5px; letter-spacing: 2px; font-weight: 700; }
-        .live-dot { width: 4px; height: 4px; background: #00f2fe; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; box-shadow: 0 0 10px #00f2fe; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        /* SECURITY LOGIC SECTION */
-        .security-box { background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(0,242,254,0.02) 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; margin-bottom: 40px; position: relative; }
-        .security-tag { position: absolute; top: -10px; left: 20px; background: #00f2fe; color: #000; font-size: 8px; font-weight: 900; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; }
-        .logic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
-        .logic-item h4 { font-size: 10px; color: #fff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .logic-item p { font-size: 11px; color: #666; line-height: 1.6; }
-
-        .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
-        .how-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; }
-        
-        .workflow-list { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 40px; }
-        .work-step { display: flex; align-items: center; gap: 20px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid #00f2fe; padding: 15px; border-radius: 0 12px 12px 0; }
-        .step-num { font-size: 18px; font-weight: 800; color: rgba(0, 242, 254, 0.3); }
-        .step-text h4 { font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 4px; }
-        .step-text p { font-size: 11px; color: #666; }
-
-        /* QUOTES & FAQ CSS */
-        .quote-container { width: 100%; overflow: hidden; position: relative; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.01); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1); text-align: center; }
-        .quote-slide { display: none; animation: fadeIn 0.5s ease-in; }
-        .quote-slide.active { display: block; }
-        .quote-text { font-style: italic; font-size: 16px; color: #ccc; margin-bottom: 15px; }
-        .quote-author { color: #00f2fe; font-size: 10px; font-weight: 800; letter-spacing: 2px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .faq-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
-        .faq-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; }
-        .faq-body { padding: 0 15px; max-height: 0; overflow: hidden; transition: 0.3s ease-out; font-size: 11px; color: #666; line-height: 1.6; }
-        .faq-item.active .faq-body { padding: 10px 15px 15px; max-height: 200px; }
-        .faq-item.active .faq-header { color: #00f2fe; }
-
-        /* PROFESSIONAL FOOTER CSS */
-        .footer-minimal { width: 100%; max-width: 800px; margin-top: 80px; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .footer-logo { font-size: 18px; font-weight: 800; margin-bottom: 15px; opacity: 0.8; }
-        .footer-legal-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
-        .legal-link { font-size: 10px; color: #555; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .legal-link:hover { color: #00f2fe; }
-        .footer-disclaimer { font-size: 9px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto 25px; padding: 0 20px; }
-        .footer-copyright { font-size: 9px; color: #444; letter-spacing: 2px; }
-
-        @media (max-width: 600px) { .how-grid, .logic-grid { grid-template-columns: 1fr; } .footer-legal-links { gap: 10px; } }
-   
-    
-
-
-        /* SYNERGY PROTOCOL - GLOBAL BACKGROUND ENGINE */
+/* --- 1. GENERAL SETUP & FONTS --- */
 body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    background-color: #020617; /* Deep Space Blue-Black */
-    
-    /* Wannan shi ne hadin Radial Gradient da Carbon Fibre Texture */
+    background-color: #020617;
     background-image: 
         radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.15), transparent), 
         url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-    
-    /* Wannan zai sa background din ya tsaya wuri daya koda ana scrolling (Premium Feel) */
     background-attachment: fixed;
-    
     color: #ffffff;
+    /* FONT 1: Don dukkan bayanan body */
     font-family: 'Space Grotesk', sans-serif;
     overflow-x: hidden;
 }
 
-/* Kyautatawa: Karin haske ga Glassmorphism cards a kan wannan background din */
-.glass-premium {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-top: 1px solid rgba(0, 242, 254, 0.3); /* Neon line a sama */
-    border-radius: 24px;
+/* FONT 2: Syncopate (Orbitron) - Don Logo, Buttons da Card Titles */
+.orbitron, .nav-logo, .menu-link, .security-tag, .how-card h3, .work-step h4, .quote-author, .footer-logo { 
+    font-family: 'Syncopate', sans-serif !important; 
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
+
+/* FONT 3: Plus Jakarta Sans - Don Main Headings na shafin */
+.hero-h1, .section-title { 
+    font-family: 'Plus Jakarta Sans', sans-serif !important; 
+    font-weight: 800;
+}
+
+/* --- 2. HEADER & NAV --- */
+.header-nav { 
+    width: 100%; display: flex; justify-content: space-between; align-items: center; 
+    max-width: 1200px; padding: 20px; z-index: 100; margin: 10px auto 30px; box-sizing: border-box;
+}
+
+.nav-logo { font-size: 24px; font-weight: 800; }
+
+#side-menu { 
+    position: fixed; top: 65px; right: 15px; width: 160px; 
+    background: rgba(2, 6, 23, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 12px; z-index: 1000; 
+    display: none; flex-direction: column; padding: 8px 0; box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+}
+#side-menu.active { display: flex !important; }
+
+.menu-link { padding: 12px 15px; font-size: 10px; color: #ffffff; text-decoration: none; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+/* --- 3. HERO & SECTIONS --- */
+.hero-layer { width: 100%; text-align: center; z-index: 50; margin-bottom: 10px; }
+.hero-h1 { font-size: clamp(2.2rem, 10vw, 3.8rem); letter-spacing: -0.05em; line-height: 1.1; margin: 0; }
+.hero-h1 span { color: #00f2fe; }
+.hero-p { font-size: 13px; color: #888; max-width: 350px; margin: 15px auto 0; line-height: 1.6; }
+
+.section-title { font-size: 10px; color: #00f2fe; letter-spacing: 4px; margin-bottom: 25px; text-align: center; opacity: 0.7; }
+
+/* --- 4. ORBITAL SYSTEM --- */
+.main-container { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 300px; }
+.core-system { width: 100px; height: 100px; background: radial-gradient(circle, #00f2fe 0%, transparent 70%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0, 242, 254, 0.4); position: relative; z-index: 10; animation: pulse 4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+.orbit-container { position: absolute; width: 220px; height: 220px; border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 50%; animation: rotate 20s linear infinite; }
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.node-item { position: absolute; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: counter-rotate 20s linear infinite; cursor: pointer; transition: 0.3s; }
+@keyframes counter-rotate { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+.n1 { top: -25px; left: 50%; margin-left: -25px; } .n2 { bottom: -25px; left: 50%; margin-left: -25px; }
+.n3 { left: -25px; top: 50%; margin-top: -25px; } .n4 { right: -25px; top: 50%; margin-top: -25px; }
+
+/* --- 5. CARDS & GRID --- */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 40px; padding: 0 20px; }
+.stat-card { background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.1); border-radius: 16px; padding: 18px 10px; text-align: center; }
+.stat-value { font-size: 16px; color: #fff; font-weight: 800; }
+.stat-label { font-size: 7px; color: #00f2fe; margin-top: 5px; font-weight: 700; letter-spacing: 1px; }
+
+.security-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; margin: 20px; position: relative; }
+.security-tag { position: absolute; top: -10px; left: 20px; background: #00f2fe; color: #000; font-size: 8px; font-weight: 900; padding: 2px 10px; border-radius: 4px; }
+
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px; }
+.how-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; }
+
+.work-step { display: flex; align-items: center; gap: 20px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid #00f2fe; padding: 15px; margin: 10px 20px; border-radius: 0 12px 12px 0; }
+
+/* --- 6. FOOTER --- */
+.footer-minimal { border-top: 1px solid rgba(255,255,255,0.05); text-align: center; padding: 40px 20px; margin-top: 80px; }
+.footer-logo { font-size: 18px; color: #fff; margin-bottom: 15px; }
+.footer-disclaimer { font-size: 9px; color: #444; max-width: 600px; margin: 0 auto 25px; }
         
-    
-    
+
+        
+
+
     
     
     </style>
