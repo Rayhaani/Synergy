@@ -797,26 +797,20 @@ async function loadVideosFromSynergyVault() {
         });
 
         if (videoPool.length > 0) {
-            // Zaba bidiyo guda daya a bazu (randomly) don mamban ya kalla
             const randomVideo = videoPool[Math.floor(Math.random() * videoPool.length)];
             
-            // Saka bidiyon a cikin player
-            if (player && player.loadVideoById) {
-                player.loadVideoById(randomVideo);
+            // GYARA: Mun sauya loadVideoById zuwa cueVideoById don hana auto-play
+            if (player && typeof player.cueVideoById === 'function') {
+                player.cueVideoById(randomVideo);
             } else {
-                // Idan player bai shirya ba tukuna, adana shi don onYouTubeIframeAPIReady
                 window.pendingVideoId = randomVideo;
             }
-            console.log("Synergy Vault: Video Synced!");
+            console.log("Synergy Vault: Video Queued (No Auto-play)!");
         }
     } catch (error) {
         console.error("Vault Error:", error);
-        showSynergyAlert("DATABASE SYNC FAILED", "error");
     }
 }
-
-// Kira wannan function din bayan Firebase ya gama loda komai
-loadVideosFromSynergyVault();
     
     
 </script>
