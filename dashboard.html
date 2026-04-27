@@ -342,28 +342,27 @@
     <div class="glass-premium rounded-[32px] overflow-hidden border-b-2 border-cyan-500/20">
         
         <div class="p-6 border-b border-white/5">
-            <p class="orbitron text-[9px] text-cyan-400 tracking-[3px] mb-2">Daily Protocol</p>
+            <p class="orbitron text-[9px] text-cyan-400 tracking-[3px] mb-4">Daily Protocol</p>
             
-            <div class="flex justify-between items-center mb-4 gap-2">
+            <div class="flex justify-between items-end mb-4">
                 <div class="flex items-baseline gap-2">
-                    <h3 id="daily-count" class="text-xl digits-terminal text-white">0</h3>
-                    <span class="text-[10px] orbitron text-gray-500 uppercase">/ 10 Units</span>
+                    <h3 id="daily-count" class="text-3xl font-bold digits-terminal text-white leading-none">8 <span class="text-sm text-gray-500 font-light">/ 10 UNITS</span></h3>
                 </div>
                 
-                <div id="rank-tag" class="px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/5 text-[9px] orbitron text-purple-400 whitespace-nowrap">
-                    Rank: Iron
+                <div id="rank-tag" class="px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/5 text-[10px] orbitron text-purple-400 whitespace-nowrap">
+                    RANK: IRON
                 </div>
             </div>
 
-            <div class="h-[6px] w-full bg-white/5 rounded-full p-[1px]">
-                <div id="daily-progress-bar" class="h-full bg-gradient-to-r from-cyan-600 to-blue-400 rounded-full shadow-[0_0_15px_rgba(0,242,254,0.3)] transition-all duration-1000" style="width: 0%"></div>
+            <div class="h-[6px] w-full bg-white/5 rounded-full p-[1px] mt-2">
+                <div id="daily-progress-bar" class="h-full bg-gradient-to-r from-cyan-600 to-blue-400 rounded-full shadow-[0_0_15px_rgba(0,242,254,0.3)] transition-all duration-1000" style="width: 80%"></div>
             </div>
         </div>
 
         <div class="grid grid-cols-2">
             <div class="p-6 border-r border-white/5 bg-white/[0.01]">
-                <p class="orbitron text-[8px] text-gray-500 tracking-[2px] mb-1">Est. Monthly Yield</p>
-                <h3 id="est-earnings" class="text-lg digits-terminal text-green-400">₦0</h3>
+                <p class="orbitron text-[8px] text-gray-500 tracking-[2px] mb-1 uppercase">Est. Monthly Yield</p>
+                <h3 id="est-earnings" class="text-xl font-bold digits-terminal text-green-400">₦36,000</h3>
                 <div class="mt-2 flex items-center gap-2">
                     <div class="w-1.5 h-1.5 rounded-full bg-green-500/50 animate-pulse"></div>
                     <span class="text-[7px] text-gray-500 uppercase tracking-widest">Live Projection</span>
@@ -371,8 +370,8 @@
             </div>
 
             <div class="p-6 bg-white/[0.01]">
-                <p class="orbitron text-[8px] text-gray-500 tracking-[2px] mb-1">Current Task</p>
-                <p id="task-desc" class="text-[9px] font-medium text-gray-300 leading-tight">Unlock Silver Rank by watching 10 units.</p>
+                <p class="orbitron text-[8px] text-gray-500 tracking-[2px] mb-1 uppercase">Current Task</p>
+                <p id="task-desc" class="text-[10px] font-medium text-gray-300 leading-tight">Unlock Silver Rank by watching 10 units.</p>
                 <div class="mt-2 text-[12px]" id="status-icon">🚀</div>
             </div>
         </div>
