@@ -824,25 +824,7 @@ async function loadVideosFromSynergyVault() {
 }
     
 
-    <script>
-// Nemo layin da yake sa lamba a "daily-count"
-// Yawanci yana kama da haka: 
-// document.getElementById('daily-count').innerText = doc.data().watched;
-
-// Kawai ka canja shi ya koma haka:
-const watchedFromDB = doc.data().watched || 0; // Wannan lambar dake fitowa 11
-const dailyLimit = 5; // Sabon limit dinmu
-
-// Wannan layin shine zai takaita lissafin ya tsaya a 5
-const displayCount = Math.min(watchedFromDB, dailyLimit);
-
-// Saka a allon waya
-document.getElementById('daily-count').innerText = displayCount;
-
-// Gyara progress bar shi ma ya tsaya a 5
-const progressPercentage = (displayCount / dailyLimit) * 100;
-document.getElementById('daily-progress-bar').style.width = `${progressPercentage}%`;
-</script>
+    
     
 </script>
 </body>
