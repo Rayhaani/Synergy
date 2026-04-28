@@ -519,6 +519,13 @@ let panelTriggered = false; // Wannan zai hana panel din hauka
                 // --- NUNA PANEL (Verifier) ---
                 // Lokacin da ya kai 5% kuma ba a taba nuna panel din ba
                 if (progress >= 5 && !panelTriggered) { 
+
+                    
+    const currentWatched = parseInt(document.getElementById('daily-count').innerText) || 0;
+    if(currentWatched < 5) { 
+        // Sai idan bai kai 5 ba panel din zai fito
+        p.classList.add('is-visible-now');
+                          
                     const p = document.getElementById('verifier-panel'); 
                     if(p) {
                         panelTriggered = true; // Saita shi zuwa true don kar ya sake fitowa
@@ -632,18 +639,32 @@ if (currentActiveUser) {
     });
 }
     
- async function executeVerification() {
+async function executeVerification() {
     const inputVal = document.getElementById('node-code').value.toUpperCase();
     const p = document.getElementById('verifier-panel');
 
     if(inputVal === currentCode && currentCode !== "") {
         try {
-            // 1. Hana sake generating code nan take
+            // 1. Hana sake latsa button ko generating wani code din
             currentCode = ""; 
             
             const currentActiveUser = localStorage.getItem('synergy_user');
             const userRef = db.collection("users").doc(currentActiveUser);
             
+            // --- SABON GYARA: Duba Limit na 5/5 tukunna ---
+            const userDoc = await userRef.get();
+            const userData = userDoc.data();
+            const watchedToday = userData.videosWatchedToday || 0;
+
+            if (watchedToday >= 5) {
+                showSynergyAlert("LIMIT REACHED: 5/5 UNITS COMPLETED", "info");
+                // Ko da ya kai limit, mu cire panel din
+                handlePanelExit(p);
+                return; // Kar a bashi kudi, tsaya a nan.
+            }
+            // --------------------------------------------
+
+            // 2. Idan bai kai 5 ba, a ba shi kudi
             await userRef.update({
                 videoBalance: firebase.firestore.FieldValue.increment(150),
                 videosWatchedToday: firebase.firestore.FieldValue.increment(1),
@@ -652,27 +673,13 @@ if (currentActiveUser) {
             
             showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
 
-            // 2. Boye Panel din nan take (Ba tare da jinkiri ba)
-            if(p) {
-                p.style.opacity = "0";
-                p.style.pointerEvents = "none";
-                p.style.transform = "translateY(40px)";
-                
-                // Jira rabin sakan sannan a cire shi daga display
-                setTimeout(() => {
-                    p.classList.remove('is-visible-now');
-                    document.getElementById('node-code').value = "";
-                    // Bada damar panel din ya sake fitowa a bidiyo na gaba
-                    panelTriggered = false; 
-                }, 500);
-            }
+            // 3. Boye Panel din
+            handlePanelExit(p);
 
-            // 3. Tsayar da bidiyon tukunna kafin loda wani
+            // 4. Tsayar da bidiyo da loda wani (ba tare da auto-play ba)
             if (player && typeof player.pauseVideo === 'function') {
                 player.pauseVideo();
             }
-
-            // 4. Loda sabon bidiyo
             loadNextVideoWithoutPlaying();
 
         } catch (error) {
@@ -682,9 +689,23 @@ if (currentActiveUser) {
     } else {
         showSynergyAlert("INVALID CODE", "error");
     }
- }
-    
+}
 
+// Karamin function don saukaka boye panel din
+function handlePanelExit(p) {
+    if(p) {
+        p.style.opacity = "0";
+        p.style.pointerEvents = "none";
+        p.style.transform = "translateY(40px)";
+        
+        setTimeout(() => {
+            p.classList.remove('is-visible-now');
+            document.getElementById('node-code').value = "";
+            panelTriggered = false; 
+        }, 500);
+    }
+}
+    
     
 
 // Wannan sabon function din zai loda bidiyo ba tare da ya yi Play ba
