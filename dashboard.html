@@ -634,9 +634,13 @@ if (currentActiveUser) {
     
  async function executeVerification() {
     const inputVal = document.getElementById('node-code').value.toUpperCase();
-    
+    const p = document.getElementById('verifier-panel');
+
     if(inputVal === currentCode && currentCode !== "") {
         try {
+            // 1. Hana sake generating code nan take
+            currentCode = ""; 
+            
             const currentActiveUser = localStorage.getItem('synergy_user');
             const userRef = db.collection("users").doc(currentActiveUser);
             
@@ -648,26 +652,32 @@ if (currentActiveUser) {
             
             showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
 
-            // --- BOYAR DA PANEL ---
-            const p = document.getElementById('verifier-panel');
+            // 2. Boye Panel din nan take (Ba tare da jinkiri ba)
             if(p) {
                 p.style.opacity = "0";
+                p.style.pointerEvents = "none";
                 p.style.transform = "translateY(40px)";
+                
+                // Jira rabin sakan sannan a cire shi daga display
                 setTimeout(() => {
                     p.classList.remove('is-visible-now');
-                    // RESET DON BIDIYO NA GABA
-                    panelTriggered = false; 
-                    currentCode = ""; 
                     document.getElementById('node-code').value = "";
+                    // Bada damar panel din ya sake fitowa a bidiyo na gaba
+                    panelTriggered = false; 
                 }, 500);
             }
 
-            if (player && typeof player.cueVideoById === 'function') {
-                loadNextVideoWithoutPlaying(); 
+            // 3. Tsayar da bidiyon tukunna kafin loda wani
+            if (player && typeof player.pauseVideo === 'function') {
+                player.pauseVideo();
             }
+
+            // 4. Loda sabon bidiyo
+            loadNextVideoWithoutPlaying();
 
         } catch (error) {
             showSynergyAlert("DATABASE ERROR", "error");
+            console.error(error);
         }
     } else {
         showSynergyAlert("INVALID CODE", "error");
