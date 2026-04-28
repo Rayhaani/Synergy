@@ -615,12 +615,26 @@ async function executeVerification() {
     if(inputVal === currentCode && currentCode !== "") {
         try {
             const currentActiveUser = localStorage.getItem('synergy_user');
-            if(!currentActiveUser) { showSynergyAlert("SESSION EXPIRED", "error"); return; }
+            if(!currentActiveUser) return;
 
-            // 1. TARE LOOP DIN: Kashe currentCode nan take don kar onSnapshot ya sake tayar da shi
-            currentCode = ""; 
+            // 1. DAUKO BAYANAN USER DAGA FIREBASE DON DUBA LIMIT
+            const userRef = db.collection("users").doc(currentActiveUser);
+            const doc = await userRef.get();
+            const userData = doc.data();
+            const watchedToday = userData.videosWatchedToday || 0;
 
-            await db.collection("users").doc(currentActiveUser).update({
+            // 2. MAI GADI (The Gatekeeper): Idan ya kai 5, tsayar da shi
+            if (watchedToday >= 5) {
+                showSynergyAlert("DAILY LIMIT REACHED (5/5). NO MORE YIELD TODAY!", "info");
+                
+                // Kulle panel din tunda ya riga ya gama
+                const p = document.getElementById('verifier-panel');
+                if(p) p.classList.remove('is-visible-now');
+                return; // Wannan zai hana code din dake kasa guduwa
+            }
+
+            // 3. IDAN BAI KAI 5 BA, TO AIKA KUDIN
+            await userRef.update({
                 videoBalance: firebase.firestore.FieldValue.increment(150),
                 videosWatchedToday: firebase.firestore.FieldValue.increment(1),
                 lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
@@ -628,23 +642,16 @@ async function executeVerification() {
             
             showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
 
-            // 2. KULLE PANEL DIN: Dole ne mu cire class din dake nuna shi
+            // UI Reset
             const p = document.getElementById('verifier-panel');
             if(p) {
                 p.style.opacity = "0";
-                p.style.transform = "translateY(40px)"; // Maida shi kasa
-                p.style.pointerEvents = "none"; // Hana danna komai
-                setTimeout(() => {
-                    p.classList.remove('is-visible-now'); // Wannan zai sa shi display: none
-                }, 500);
+                setTimeout(() => p.classList.remove('is-visible-now'), 500);
             }
-
-            // 3. DAWO DA PROGRESS RING: Maida komai 0%
             document.getElementById("ring").innerText = "0%";
             document.getElementById("ring").style.background = `conic-gradient(var(--aqua) 0deg, #111 0deg)`;
-            document.getElementById('node-code').value = ""; 
+            currentCode = ""; 
 
-            // 4. Loda sabon bidiyo
             if (player && typeof player.cueVideoById === 'function') {
                 loadNextVideoWithoutPlaying(); 
             }
@@ -656,7 +663,8 @@ async function executeVerification() {
     } else {
         showSynergyAlert("INVALID CODE", "error");
     }
-}
+        }
+        
     
 
 // Wannan sabon function din zai loda bidiyo ba tare da ya yi Play ba
