@@ -520,6 +520,19 @@ let panelTriggered = false; // Wannan zai hana panel din hauka
             let currentTime = player.getCurrentTime();
             let duration = player.getDuration();
             
+            // 1. Duba idan mutum ya yi Mute ko ya rage sauti kasa da 5%
+if (player.isMuted() || player.getVolume() < 5) {
+    // 2. Tsayar da bidiyon
+    player.pauseVideo();
+    
+    // 3. Nuna Attractive Alert dinka
+    showSynergyAlert("PROTOCOL ERROR: AUDIO REQUIRED FOR YIELD", "info");
+    
+    return; // Tsayar da lissafi a nan har sai ya kunna sauti
+}
+            
+            
+            
             if (duration > 0) {
                 let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
                 
