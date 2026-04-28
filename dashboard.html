@@ -487,13 +487,20 @@ checkAccess();
         player.playVideo(); 
     }
 
-   function onPlayerStateChange(event) {
+
+    
+    
+    let tracker; 
+let panelTriggered = false; // WANNAN SHINE MAKULLIN (THE LOCK)
+
+function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
-        // 1. Kira sabon garkuwar tsaro (Strikes)
+        // Tabbatar bamu da wani tsohon tracker dake gudu
+        if (tracker) clearInterval(tracker);
+
         if(window.setupSecurityTracker) window.setupSecurityTracker(event.target);
 
-        // 2. Fara lissafin progress da nuna verifier panel
-        const tracker = setInterval(() => {
+        tracker = setInterval(() => {
             if (player.getPlayerState() !== YT.PlayerState.PLAYING) { 
                 clearInterval(tracker); 
                 return; 
@@ -502,27 +509,34 @@ checkAccess();
             let currentTime = player.getCurrentTime();
             let duration = player.getDuration();
             let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
-
-            // Mun cire tsohon Anti-skip din a nan domin kar ya yi fada da sabon Module din
             
             document.getElementById("ring").innerText = progress + "%";
             document.getElementById("ring").style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
 
-            if (progress >= 5) { 
+            // GYARA MAI MUHIMMI:
+            // 1. progress >= 5
+            // 2. !panelTriggered (Wato panel din bai riga ya fito ba tukuna)
+            if (progress >= 5 && !panelTriggered) { 
                 const p = document.getElementById('verifier-panel'); 
                 if(p) {
+                    panelTriggered = true; // Mun kulle kofa anan take!
                     p.classList.add('is-visible-now'); 
                     setTimeout(() => { 
                         p.style.opacity = "1"; 
                         p.style.transform = "translateY(0)"; 
                         p.style.pointerEvents = "all"; 
                     }, 50);
+                    if(currentCode === "") generateCode();
                 }
-                if(currentCode === "") generateCode();
             }
         }, 1000);
+    } else {
+        // Idan an yi pause ko bidiyo ya kare, mu tsayar da lissafin
+        if (tracker) clearInterval(tracker);
     }
-                        }
+                }
+
+
     
 
     // 3. UI & INTERACTION FUNCTIONS
@@ -641,6 +655,8 @@ async function executeVerification() {
             });
             
             showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
+            panelTriggered = false; // Bude makullin don bidiyo na gaba
+            
 
             // UI Reset
             const p = document.getElementById('verifier-panel');
