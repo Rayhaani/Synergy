@@ -368,9 +368,10 @@
 
         
         <div class="flex items-baseline gap-2 mb-3">
-    <h3 id="daily-count" class="text-2xl font-bold digits-terminal text-white">5</h3>
-</div>
-
+    <h3 id="est-earnings" class="text-2xl font-bold digits-terminal text-white">₦0</h3>
+    <span class="text-[11px] orbitron text-gray-500 uppercase tracking-wider">Estimated</span>
+        </div>
+        
         <div class="h-[5px] w-full bg-white/5 rounded-full overflow-hidden">
             <div class="h-full bg-gradient-to-r from-green-600 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]" style="width: 100%"></div>
         </div>
@@ -549,8 +550,7 @@ checkAccess();
     }
 
     
-
-  // 4. DATA SYNC (FIREBASE) - FINAL STABLE VERSION
+// 4. DATA SYNC (FIREBASE) - GYARAN KARSHE
 const currentActiveUser = localStorage.getItem('synergy_user');
 
 if (currentActiveUser) {
@@ -558,15 +558,16 @@ if (currentActiveUser) {
         if (doc.exists) {
             const data = doc.data();
             
-            // 1. Kudi (Akwai bukatar lissafin total kudi na gaske)
+            // 1. Kudi
             const vBal = data.videoBalance || 0;
             const sBal = data.shareBalance || 0;
             const total = vBal + sBal;
             
-            // 2. Saita Limit na 5 Units
+            // 2. Saita Limit na 5 Units don Dashboard
             const watchedRaw = data.videosWatchedToday || 0;
             const dailyLimit = 5;
-            const displayWatched = Math.min(watchedRaw, dailyLimit); // Ba zai taba wuce 5 ba
+            // Wannan zai sa dashboard ya nuna 0 idan 0 ne, ko 5 idan ya wuce 5
+            const displayWatched = watchedRaw > dailyLimit ? dailyLimit : watchedRaw;
             
             // 3. Update Dashboard Numbers
             document.getElementById('total-balance-main').innerText = total.toLocaleString();
@@ -574,11 +575,10 @@ if (currentActiveUser) {
             document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
             document.getElementById('display-name').innerText = data.username || "MEMBER";
             
-            // 4. Progress Tracking (Yanzu zai nuna x / 5 Units)
+            // 4. Progress Tracking (Daidaita x / 5 Units)
             const percent = (displayWatched / dailyLimit) * 100;
             const countElement = document.getElementById('daily-count');
             if(countElement) {
-                // Wannan ne zai dawo da "/ 5 Units" din da ya bace
                 countElement.innerHTML = `${displayWatched} <span class="text-[11px] text-gray-500 uppercase ml-1">/ 5 Units</span>`;
             }
             
@@ -587,10 +587,14 @@ if (currentActiveUser) {
                 progressBar.style.width = percent + "%";
             }
             
-            // 5. Monthly Yield (Lissafi ya dogara ne akan 5 units kawai a rana)
-            // Idan mutum ya kalla 5, lissafin zai tsaya a (5 * 150 * 30) = 22,500
-            const estimatedMonthly = displayWatched * 150 * 30;
-            document.getElementById('est-earnings').innerText = "₦" + estimatedMonthly.toLocaleString();
+            // 5. Monthly Yield (Maida lissafin ₦36,000 dinka)
+            // Idan baka kalla ba (0), zai nuna 0. Idan ka kalla 5, zai nuna 22,500 ko 36,000 dangane da rate dinka.
+            // Bari mu sanya lissafin ya zama (watched * 150 * 30)
+            const estimatedMonthly = watchedRaw * 150 * 30;
+            const estElement = document.getElementById('est-earnings');
+            if(estElement) {
+                estElement.innerText = "₦" + estimatedMonthly.toLocaleString();
+            }
             
             // 6. Outer Ring Animation
             const outerRing = document.getElementById('task-ring-outer');
@@ -598,13 +602,12 @@ if (currentActiveUser) {
                 outerRing.style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
             }
 
-            // 7. AUTO-RESET ENGINE (Duba idan ranar ta canja)
             checkAndResetDailyStats(data);
         }
     });
-    }
+}
     
-    
+  
 
   async function executeVerification() {
     const inputVal = document.getElementById('node-code').value.toUpperCase();
