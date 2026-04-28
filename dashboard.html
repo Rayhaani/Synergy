@@ -494,6 +494,21 @@ let panelTriggered = false; // Wannan zai hana panel din hauka
         events: { 'onStateChange': onPlayerStateChange } 
     }); 
     }
+
+    // Wannan zai rika duba sauti koda bidiyon yana a tsaye (Pause)
+setInterval(() => {
+    if (player && typeof player.getPlayerState === 'function') {
+        if (player.getPlayerState() === YT.PlayerState.PAUSED) {
+            // Idan an dawo da sauti kuma bidiyon a tsaye yake, kunna shi
+            if (!player.isMuted() && player.getVolume() >= 5 && !panelTriggered) {
+                // Tabbatar shafin shine yake a bude (Active Tab)
+                if (!document.hidden) {
+                    player.playVideo();
+                }
+            }
+        }
+    }
+}, 1000);
     
     
     function startQuantumSession() { 
@@ -520,16 +535,21 @@ let panelTriggered = false; // Wannan zai hana panel din hauka
             let currentTime = player.getCurrentTime();
             let duration = player.getDuration();
             
-            // 1. Duba idan mutum ya yi Mute ko ya rage sauti kasa da 5%
-if (player.isMuted() || player.getVolume() < 5) {
-    // 2. Tsayar da bidiyon
-    player.pauseVideo();
-    
-    // 3. Nuna Attractive Alert dinka
-    showSynergyAlert("PROTOCOL ERROR: AUDIO REQUIRED FOR YIELD", "info");
-    
-    return; // Tsayar da lissafi a nan har sai ya kunna sauti
+            // --- VOLUME & AUTO-PAUSE SECURITY ---
+let isMuted = player.isMuted();
+let volumeLevel = player.getVolume();
+
+if (isMuted || volumeLevel < 5) {
+    // 1. Tsayar da bidiyon idan yana kunne
+    if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo(); 
+    }
+    // 2. Nuna Alert
+    showSynergyAlert("AUDIO REQUIRED: PLEASE UNMUTE TO CONTINUE", "info");
+    // 3. Tsayar da lissafi (Progress bar ba zai motsa ba)
+    return; 
 }
+            
             
             
             
