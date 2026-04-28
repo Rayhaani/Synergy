@@ -644,6 +644,20 @@ if (currentActiveUser) {
             const currentActiveUser = localStorage.getItem('synergy_user');
             const userRef = db.collection("users").doc(currentActiveUser);
             
+           
+            
+
+            // 1. Fara duba nawa ya kalla a yau daga dashboard dinka
+const currentCountText = document.getElementById('daily-count').innerText;
+const watchedToday = parseInt(currentCountText) || 0;
+
+// 2. Idan ya riga ya kai 5, tsayar da shi anan
+if (watchedToday >= 5) {
+    showSynergyAlert("LIMIT REACHED: 5/5 UNITS COMPLETED", "info");
+    handlePanelExit(p); // Ko kuma duk wani code da kake amfani dashi wajen boye panel
+    return; // Wannan 'return' din shi ne zai hana kudin tafiya
+}
+            
             await userRef.update({
                 videoBalance: firebase.firestore.FieldValue.increment(150),
                 videosWatchedToday: firebase.firestore.FieldValue.increment(1),
