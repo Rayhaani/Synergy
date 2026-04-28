@@ -654,7 +654,11 @@ const watchedToday = parseInt(currentCountText) || 0;
 // 2. Idan ya riga ya kai 5, tsayar da shi anan
 if (watchedToday >= 5) {
     showSynergyAlert("LIMIT REACHED: 5/5 UNITS COMPLETED", "info");
-    handlePanelExit(p); // Ko kuma duk wani code da kake amfani dashi wajen boye panel
+     p.style.opacity = "0";
+p.style.pointerEvents = "none";
+p.style.transform = "translateY(40px)";
+p.classList.remove('is-visible-now');
+    
     return; // Wannan 'return' din shi ne zai hana kudin tafiya
 }
             
