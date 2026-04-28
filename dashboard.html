@@ -367,10 +367,10 @@
         </div>
 
         <div class="flex items-baseline gap-2 mb-3">
-            <h3 id="est-earnings" class="text-2xl font-bold digits-terminal text-white">₦36,000</h3>
-            <span class="text-[11px] orbitron text-gray-500 uppercase tracking-wider">Estimated</span>
+    <h3 id="est-earnings" class="text-2xl font-bold digits-terminal text-white">₦0</h3>
+    <span class="text-[11px] orbitron text-gray-500 uppercase tracking-wider">Estimated</span>
         </div>
-
+        
         <div class="h-[5px] w-full bg-white/5 rounded-full overflow-hidden">
             <div class="h-full bg-gradient-to-r from-green-600 to-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]" style="width: 100%"></div>
         </div>
@@ -549,8 +549,8 @@ checkAccess();
     }
 
     
-    // 4. DATA SYNC (FIREBASE) - Sabon Gyara
-const currentActiveUser = localStorage.getItem('synergy_user'); // Tabbatar muna da sunan mutum
+// 4. DATA SYNC (FIREBASE) - GYARAN 5/5 UNITS KUMA DA KYAU
+const currentActiveUser = localStorage.getItem('synergy_user');
 
 if (currentActiveUser) {
     db.collection("users").doc(currentActiveUser).onSnapshot(doc => {
@@ -561,47 +561,53 @@ if (currentActiveUser) {
             const vBal = data.videoBalance || 0;
             const sBal = data.shareBalance || 0;
             const total = vBal + sBal;
-            const watched = data.videosWatchedToday || 0;
             
-            // 2. Nuna kudin a babban Balance (da commas)
+            // --- GYARAN LIMIT ZUWA 5 ---
+            const watchedRaw = data.videosWatchedToday || 0;
+            const dailyLimit = 5; 
+            const watched = Math.min(watchedRaw, dailyLimit); // Ba zai taba wuce 5 ba
+            // ---------------------------
+            
+            // 2. Nuna kudi
             document.getElementById('total-balance-main').innerText = total.toLocaleString();
-            
-            // 3. Nuna kudin a kananan Vaults
             document.getElementById('video-balance-sub').innerText = vBal.toLocaleString();
             document.getElementById('share-balance-sub').innerText = sBal.toLocaleString();
             
-            // 4. Bayanan Profile
+            // 3. Bayanan Profile
             document.getElementById('display-name').innerText = data.username || "MEMBER";
             
-            // Tabbatar an nuna Verified badge idan isVerified = true
-            const badge = document.getElementById('verified-badge');
-            if(badge) badge.style.display = data.isVerified ? 'flex' : 'none';
+            // 4. Daily Progress (Update don ya tsaya a 5)
+            const percent = (watched / dailyLimit) * 100;
             
-            // 5. Daily Progress HUD
-            const percent = Math.min((watched / 10) * 100, 100);
-            document.getElementById('daily-count').innerText = `${watched} / 10 UNITS`;
+            // Muna sanya lamba daya kawai a h3, sauran span zai kula da shi
+            const countElement = document.getElementById('daily-count');
+            if(countElement) {
+                countElement.innerText = watched;
+            }
             
             const progressBar = document.getElementById('daily-progress-bar');
-            if(progressBar) progressBar.style.width = percent + "%";
+            if(progressBar) {
+                progressBar.style.width = percent + "%";
+            }
             
-            // 6. Est. Monthly Yield
-            document.getElementById('est-earnings').innerText = "₦" + (watched * 150 * 30).toLocaleString();
+            // 5. Est. Monthly Yield (Lissafi a kan abin da aka kalla na gaske)
+            document.getElementById('est-earnings').innerText = "₦" + (watchedRaw * 150 * 30).toLocaleString();
             
-            // 7. Outer Ring Animation
+            // 6. Outer Ring Animation
             const outerRing = document.getElementById('task-ring-outer');
             if(outerRing) {
                 outerRing.style.background = `conic-gradient(#00f2fe ${percent * 3.6}deg, rgba(255,255,255,0.05) 0deg)`;
             }
 
-            // Check if stats need resetting (Idan sabon rana ne)
             checkAndResetDailyStats(data);
         }
     }, (error) => {
         console.error("Snapshot Listener Error:", error);
     });
 } else {
-    console.error("No active user found in storage.");
-}
+    console.warn("No active user found in storage.");
+            }
+            
     
 
   async function executeVerification() {
