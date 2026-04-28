@@ -45,29 +45,43 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .is-active-floating { animation: float 6s ease-in-out infinite; }
 
-      .synergy-toast {
+ .synergy-toast {
     position: fixed; 
     top: -100px; 
     left: 50%; 
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.95); 
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--aqua); 
-    border-top: 3px solid var(--aqua);
-    color: white; 
-    padding: 18px 35px; 
-    border-radius: 20px;
-    z-index: 999999 !important; /* Dole ya fi header girma */
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Glassmorphism Effect */
+    background: rgba(15, 23, 42, 0.8); 
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    /* Neon Borders */
+    border: 1px solid rgba(0, 242, 254, 0.3); 
+    border-top: 3px solid #00f2fe;
+    
+    color: #fff; 
+    padding: 16px 40px; 
+    border-radius: 24px;
+    z-index: 100000; 
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    
+    /* Typography & Layout */
     display: flex; 
     align-items: center; 
-    gap: 12px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    font-weight: bold;
-    min-width: 280px;
+    gap: 15px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.1);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-width: 320px;
     justify-content: center;
 }
-.synergy-toast.show { top: 120px; } /* Mun sauko da shi kasa kadan don kar header ta taba shi */
+
+.synergy-toast.show { 
+    top: 30px; /* Zai sauko daga sama cikin kyan gani */
+}
       
                          
     #task-ring-outer {
@@ -567,12 +581,30 @@ let panelTriggered = false; // Wannan zai hana panel din hauka
     };
 
     function showSynergyAlert(msg, type = 'info') {
-        let toast = document.getElementById('custom-toast') || document.createElement('div');
-        toast.id = 'custom-toast'; toast.className = 'synergy-toast show';
-        toast.innerHTML = `<span>${msg}</span>`;
-        if(!document.getElementById('custom-toast')) document.body.appendChild(toast);
-        setTimeout(() => toast.classList.remove('show'), 3000);
+    let toast = document.getElementById('custom-toast') || document.createElement('div');
+    toast.id = 'custom-toast'; 
+    toast.className = 'synergy-toast';
+    
+    // Zabi Icon dangane da sakon
+    let icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'; // Warning icon
+    
+    if(type === 'success' || msg.includes('RESUMED')) {
+        icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
     }
+
+    toast.innerHTML = `${icon} <span class="neon-glow-text" style="font-size: 11px;">${msg}</span>`;
+    
+    if(!document.getElementById('custom-toast')) document.body.appendChild(toast);
+    
+    // Nuna shi
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    // Boye shi bayan sakan 3
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3500);
+    }
+    
 
     
 // 4. DATA SYNC (FIREBASE) - GYARAN KARSHE
