@@ -356,7 +356,8 @@ function openNodeVault(fullName, username, phone, email, balance) {
             const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20${fullName}%20(@${username}),%20this%20is%20from%20Synergy%20Protocol`;
           window.open(waUrl, '_blank');
         } else {
-            
+          alert("NO PHONE NUMBER FOUND");
+        }  
         closeModal();
     };  
 
