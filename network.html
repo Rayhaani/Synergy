@@ -327,8 +327,8 @@ function loadReferralNetwork(currentUsername) {
 }
     
 function openNodeVault(fullName, username, phone, email, balance) {
-    // Gyara lambar waya daga field din phoneNumber
-    let cleanPhone = phone.replace(/\D/g, '');
+    // 1. Gyara lambar waya
+    let cleanPhone = String(phone).replace(/\D/g, '');
     if(cleanPhone.startsWith('0')) {
         cleanPhone = '234' + cleanPhone.substring(1);
     }
@@ -336,32 +336,44 @@ function openNodeVault(fullName, username, phone, email, balance) {
     const modal = document.getElementById('customNodeModal');
     const modalBody = document.getElementById('modalBody');
     const waBtn = document.getElementById('waBtn');
+    const closeBtn = document.getElementById('closeBtn'); // Ka tabbatar ka kira shi a nan
 
+    // 2. Saka bayanan (Centered style tare da Space Grotesk)
     modalBody.innerHTML = `
-        <div class="space-y-3">
-            <p><span class="text-gray-500 font-space">Name:</span> <span class="text-white font-bold font-space text-[15px]">${fullName}</span></p>
-            <p><span class="text-gray-500 font-space">User:</span> <span class="text-cyan-400 font-medium font-space">@${username}</span></p>
-            <p><span class="text-gray-500 font-space">Email:</span> <span class="text-white font-space text-[12px]">${email}</span></p>
-            <p><span class="text-gray-500 font-space">Yield:</span> <span class="text-green-400 font-bold font-space">₦${parseInt(balance).toLocaleString()}</span></p>
-            <div class="h-[1px] bg-white/5 my-4"></div>
-            <p class="text-[11px] text-cyan-500/70 font-space">Tap WhatsApp to message this node.</p>
+        <div class="flex flex-col items-center text-center space-y-3 font-space">
+            <p><span class="text-gray-500">Name:</span> <span class="text-white font-bold text-[15px]">${fullName}</span></p>
+            <p><span class="text-gray-500">User:</span> <span class="text-cyan-400 font-medium">@${username}</span></p>
+            <p><span class="text-gray-500">Email:</span> <span class="text-white text-[12px]">${email}</span></p>
+            <p><span class="text-gray-500">Yield:</span> <span class="text-green-400 font-bold">₦${parseInt(balance).toLocaleString()}</span></p>
+            <div class="h-[1px] bg-white/5 w-full my-4"></div>
+            <p class="text-[11px] text-cyan-500/70">Tap WhatsApp to message this node.</p>
         </div>
     `;
 
+    // 3. Aikin WhatsApp Button
     waBtn.onclick = function() {
         if(cleanPhone && cleanPhone.length > 5) {
             const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20${fullName}%20(@${username}),%20this%20is%20from%20Synergy%20Protocol`;
             window.open(waUrl, '_blank');
         } else {
-            showToast("NO PHONE NUMBER FOUND");
+            alert("NO PHONE NUMBER FOUND");
         }
+        closeModal();
+    };
+
+    // 4. GYARAN DA KAKE SO (Cancel Button Action)
+    closeBtn.onclick = function() {
         closeModal();
     };
 
     modal.style.display = 'flex';
 }
-    
 
+// Tabbatar wannan function din na kasa yana nan
+function closeModal() {
+    document.getElementById('customNodeModal').style.display = 'none';
+                }
+    
     
     // 5. COPY FUNCTION
     function copyRef() {
