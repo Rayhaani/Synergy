@@ -242,7 +242,7 @@
     window.onclick = () => document.getElementById('google-nav').classList.remove('active');
 
     // 3. AUTH & LINK GENERATION (Wannan bangaren ne baya aiki)
-   Firebase.auth().onAuthStateChanged((user) => {
+   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         console.log("Mamba ya shigo:", user.email);
         // Nemo mamban ta Email
@@ -257,7 +257,7 @@
                 const myUsername = doc.data().username;
                 const refInput = document.getElementById('ref-link');
                 
-                // GYARA: Mun sauya tsohon URL zuwa sabon domain dinka zynta.org
+                // MUN GYARA NAN KAWAI: Daga rayhaani zuwa zynta.org
                 const baseUrl = "https://zynta.org/signup.html";
                 
                 // Saita Referral Link
@@ -265,7 +265,7 @@
                     refInput.value = `${baseUrl}?ref=${myUsername}`;
                 }
                 
-                // MUHIMMI: Loda network din mamban nan take (Kar ka taba wannan)
+                // MUHIMMI: Loda network din mamban nan take
                 loadReferralNetwork(myUsername);
             });
         }).catch(err => console.error("Error fetching user:", err));
