@@ -351,7 +351,7 @@ function openNodeVault(fullName, username, phone, email, balance) {
     `;
 
     // 3. Aikin WhatsApp Button
-    waBtn.onclick = function() {
+    waBtn. = function() {
         if(cleanPhone && cleanPhone.length > 5) {
             const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20${fullName}%20(@${username}),%20this%20is%20from%20Synergy%20Protocol`;
             window.open(waUrl, '_blank');
