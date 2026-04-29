@@ -301,22 +301,34 @@ function loadReferralNetwork(currentUsername) {
             if(isActive) activeCount++;
 
             // Wannan bangaren ne referrals din suke fita
-            listBody.innerHTML += `
+const data = doc.data();
+
+// MUHIMMI: Tabbatar ana kiran 'data.phoneNumber' (ba 'data.phone' ba)
+const mambaPhone = data.phoneNumber || ''; 
+const mambaName = data.fullName || 'N/A';
+const mambaUser = data.username || 'user';
+const mambaMail = data.email || 'N/A';
+const mambaBalance = (data.videoBalance || 0) + (data.shareBalance || 0);
+
+listBody.innerHTML += `
     <tr class="text-[13px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
-        onclick="openNodeVault('${data.fullName || 'N/A'}', '${data.username}', '${data.phoneNumber || ''}', '${data.email || 'N/A'}', '${(data.videoBalance || 0) + (data.shareBalance || 0)}')">
+        onclick="openNodeVault('${mambaName}', '${mambaUser}', '${mambaPhone}', '${mambaMail}', '${mambaBalance}')">
+        
         <td class="py-5 text-white">
-            <div class="flex flex-col">
-                <span class="font-medium text-cyan-400">@${data.username.charAt(0).toUpperCase() + data.username.slice(1).toLowerCase()}</span>
-                <span class="text-[9px] text-gray-500 tracking-wide">View details</span>
+            <div class="flex flex-col text-left">
+                <span class="font-medium text-cyan-400">@${mambaUser}</span>
+                <span class="text-[9px] text-gray-500 tracking-wide uppercase font-space">View details</span>
             </div>
         </td>
+        
         <td class="py-5 text-center">
-            <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-medium">
-                ${isActive ? 'Active' : 'Inactive'}
+            <span class="${data.isVerified ? 'text-green-400' : 'text-red-400'} font-medium font-space">
+                ${data.isVerified ? 'Active' : 'Inactive'}
             </span>
         </td>
-        <td class="py-5 text-right text-gray-400 font-light">
-            ${lastDate === today ? 'Today' : lastDate}
+        
+        <td class="py-5 text-right text-gray-400 font-light font-space">
+            ${data.lastActivityDate || 'Today'}
         </td>
     </tr>`;
             
@@ -328,36 +340,39 @@ function loadReferralNetwork(currentUsername) {
     });
 }
     
-
 function openNodeVault(fullName, username, phone, email, balance) {
     const modal = document.getElementById('customNodeModal');
     const modalBody = document.getElementById('modalBody');
     const waBtn = document.getElementById('waBtn');
     const closeBtn = document.getElementById('closeBtn');
 
-    // Saka bayanai a Modal (Space Grotesk & Centered)
+    // Saka bayanan a tsakiya (Centered) tare da Space Grotesk font
     modalBody.innerHTML = `
         <div class="flex flex-col items-center text-center space-y-4 font-space">
-            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Full Name</p>
-            <p class="text-white font-bold text-lg">${fullName}</p></div>
-            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Node ID</p>
-            <p class="text-cyan-400 font-medium">@${username}</p></div>
-            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Email</p>
-            <p class="text-white text-[11px]">${email}</p></div>
-            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Yield</p>
-            <p class="text-green-400 font-bold text-xl font-space">₦${parseInt(balance).toLocaleString()}</p></div>
+            <div>
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Full Name</p>
+                <p class="text-white font-bold text-lg leading-tight uppercase font-space">${fullName}</p>
+            </div>
+            <div>
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Node Identity</p>
+                <p class="text-cyan-400 font-medium font-space">@${username}</p>
+            </div>
+            <div>
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Total Yield</p>
+                <p class="text-green-400 font-bold text-xl font-space">₦${parseInt(balance).toLocaleString()}</p>
+            </div>
         </div>
     `;
 
     modal.style.display = 'flex';
 
-    // WhatsApp Action
+    // Wannan shi ne zai sa WhatsApp din ya yi aiki
     waBtn.onclick = function(e) {
         e.preventDefault();
         
-        // Idan babu lamba ko bata da kyau
-        if (!phone || phone === 'undefined' || phone.length < 5) {
-            alert("Database Error: Ba a samu lambar waya ga @" + username + " ba. Sunan field din a Firebase ya zama 'phoneNumber'.");
+        // Idan lamba bata samu ba daga Firebase
+        if (!phone || phone === '' || phone === 'undefined') {
+            alert("Database Error: Lambar @" + username + " ba ta da kyau a database!");
             return;
         }
 
@@ -366,17 +381,14 @@ function openNodeVault(fullName, username, phone, email, balance) {
             cleanPhone = '234' + cleanPhone.substring(1);
         }
 
-        const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20${fullName},%20this%20is%20from%20Synergy%20Protocol`;
-        window.open(waUrl, '_blank');
-        closeModal();
+        window.open(`https://wa.me/${cleanPhone}`, '_blank');
+        modal.style.display = 'none';
     };
 
-    closeBtn.onclick = function() { closeModal(); };
+    closeBtn.onclick = function() { modal.style.display = 'none'; };
 }
+    
 
-function closeModal() {
-    document.getElementById('customNodeModal').style.display = 'none';
-}
     
 
     
