@@ -68,6 +68,20 @@
         .synergy-toast.show { top: 30px; }
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.2); border-radius: 10px; }
+   
+    .font-space { font-family: 'Space Grotesk', sans-serif !important; }
+
+/* Salon Custom Modal ɗinmu */
+.synergy-modal {
+    position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95);
+    display: none; align-items: center; justify-content: center; z-index: 20000;
+}
+.modal-content {
+    background: #0f172a; border: 1px solid rgba(0, 242, 254, 0.3);
+    padding: 30px; border-radius: 32px; width: 90%; max-width: 400px;
+    text-align: center; box-shadow: 0 0 40px rgba(0, 242, 254, 0.1);
+}
+        
     </style>
 </head>
 <body>
@@ -178,6 +192,17 @@
         </section>
     </main>
 
+    <div id="customNodeModal" class="synergy-modal font-space">
+    <div class="modal-content animate-ui">
+        <h2 class="orbitron text-cyan-400 text-[10px] tracking-[4px] mb-6">Node Protocol Details</h2>
+        <div id="modalBody" class="text-gray-300 text-[13px] space-y-3 mb-8"></div>
+        <div class="flex gap-3">
+            <button onclick="closeModal()" class="flex-1 py-4 rounded-2xl border border-white/5 text-[10px] orbitron">Cancel</button>
+            <button id="waBtn" class="flex-1 py-4 rounded-2xl bg-cyan-500 text-black font-bold text-[10px] orbitron">WhatsApp</button>
+        </div>
+    </div>
+    </div>
+    
     <script>
         
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -245,64 +270,59 @@
 
 
     // 4. LOAD REFERRAL NETWORK (GYARARRE)
-function loadReferralNetwork(currentUsername) {
-    const listBody = document.getElementById('referral-list-body');
-    const topActiveCount = document.getElementById('active-count-top');
-    const refCountHeader = document.getElementById('ref-count');
 
-    // Muna amfani da FIRESTORE yanzu domin nan ne bayanan suke
-    db.collection("users").where("referredBy", "==", currentUsername)
-    .onSnapshot((querySnapshot) => {
-        listBody.innerHTML = "";
-        let activeCount = 0;
-        let totalRefs = 0;
-
-        if (querySnapshot.empty) {
-            listBody.innerHTML = '<tr><td colspan="3" class="text-center py-10 opacity-50">No nodes found.</td></tr>';
-            topActiveCount.innerText = "0";
-            refCountHeader.innerText = "0";
-            return;
-        }
-
-        const today = "20/04/2026"; // Kamar yadda na gani a hotonka
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            totalRefs++;
-            
-            const lastDate = data.lastActivityDate || "N/A";
-            const isActive = (lastDate === today);
-            if(isActive) activeCount++;
-
-            
-    listBody.innerHTML += `
-    <tr class="text-[11px] border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
+// A cikin querySnapshot.forEach, canza table row dinka zuwa wannan:
+listBody.innerHTML += `
+    <tr class="text-[12px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
         onclick="openNodeVault('${data.username}', '${data.phone || ''}', '${data.email || 'N/A'}', '${(data.videoBalance || 0) + (data.shareBalance || 0)}')">
-        <td class="py-4 text-white">
+        <td class="py-5 text-white">
             <div class="flex flex-col">
                 <span class="font-bold text-cyan-400">@${data.username}</span>
-                <span class="text-[7px] text-gray-600 uppercase tracking-tighter">View Contact</span>
+                <span class="text-[9px] text-gray-500 uppercase tracking-tight">View Contact</span>
             </div>
         </td>
-        <td class="py-4 text-center">
-            <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-bold">
+        <td class="py-5 text-center">
+            <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-bold uppercase tracking-wider">
                 ${isActive ? 'ACTIVE' : 'INACTIVE'}
             </span>
         </td>
-        <td class="py-4 text-right font-mono text-gray-400">
+        <td class="py-5 text-right text-gray-400">
             ${lastDate === today ? 'Today' : lastDate}
         </td>
     </tr>`;
-            
-            
-        });
-        
-        topActiveCount.innerText = activeCount;
-        refCountHeader.innerText = totalRefs;
-    });
+
+// Sabon Function don Modal (Zai cire "zynta.org says")
+function openNodeVault(username, phone, email, balance) {
+    let cleanPhone = phone.replace(/\D/g, '');
+    if(cleanPhone.startsWith('0')) cleanPhone = '234' + cleanPhone.substring(1);
+
+    const modal = document.getElementById('customNodeModal');
+    const modalBody = document.getElementById('modalBody');
+    const waBtn = document.getElementById('waBtn');
+
+    modalBody.innerHTML = `
+        <p><span class="text-gray-500">User:</span> <span class="text-white font-bold">@${username}</span></p>
+        <p><span class="text-gray-500">Email:</span> <span class="text-white">${email}</span></p>
+        <p><span class="text-gray-500">Yield:</span> <span class="text-green-400 font-bold">₦${parseInt(balance).toLocaleString()}</span></p>
+        <p class="pt-4 text-[11px] text-cyan-500/70">Tap below to initiate communication.</p>
+    `;
+
+    waBtn.onclick = () => {
+        if(cleanPhone) {
+            window.open(`https://wa.me/${cleanPhone}?text=Hello%20@${username},%20this%20is%20from%20Synergy%20Protocol`, '_blank');
+        } else {
+            showToast("NO WHATSAPP NUMBER");
+        }
+        closeModal();
+    };
+
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('customNodeModal').style.display = 'none';
 }
     
-
     // 5. COPY FUNCTION
     function copyRef() {
         const copyText = document.getElementById("ref-link");
@@ -321,37 +341,6 @@ function loadReferralNetwork(currentUsername) {
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-
-    
-
-    function openNodeVault(username, phone, email, balance) {
-    // Shirya lambar WhatsApp (Cire duk wani harafi da ba lamba ba)
-    let cleanPhone = phone.replace(/\D/g, '');
-    
-    // Idan lambar bata da +234, mu kara mata (Optional, ya danganta da yadda kake save)
-    if(cleanPhone.startsWith('0')) {
-        cleanPhone = '234' + cleanPhone.substring(1);
-    }
-
-    const details = `
-        NODE PROTOCOL DETAILS
-        ----------------------
-        User: @${username}
-        Email: ${email}
-        Total Yield: ₦${parseInt(balance).toLocaleString()}
-        
-        Click OK to message on WhatsApp.
-    `;
-
-    if (confirm(details)) {
-        if(cleanPhone) {
-            window.open(`https://wa.me/${cleanPhone}?text=Hello%20@${username},%20this%20is%20from%20Synergy%20Protocol`, '_blank');
-        } else {
-            alert("This node has no registered WhatsApp number.");
-        }
-    }
-    }
-    
     
 </script>
     
