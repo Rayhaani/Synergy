@@ -86,20 +86,28 @@
 </head>
 <body>
 
-    <nav class="sticky top-0 z-[10000] p-5 flex justify-between items-center px-8 bg-[#0a0a0a] border-b border-cyan-900/20">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full border-2 border-dashed border-cyan-500 flex items-center justify-center p-1">
-                <div class="w-full h-full bg-cyan-500 rounded-full shadow-[0_0_15px_#00f2fe]"></div>
-            </div>
-            <h1 class="orbitron text-[13px] text-white font-bold tracking-[4px] whitespace-nowrap uppercase">Referral Section</h1>
+<nav class="sticky top-0 z-[10000] p-5 flex justify-between items-center px-8 bg-[#0a0a0a] border-b border-cyan-900/20 relative">
+    <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full border-2 border-dashed border-cyan-500 flex items-center justify-center p-1">
+            <div class="w-full h-full bg-cyan-500 rounded-full shadow-[0_0_15px_#00f2fe]"></div>
         </div>
+    </div>
 
-        <div class="relative">
-            <div class="menu-trigger cursor-pointer p-2 hover:bg-white/5 rounded-lg transition-all" onclick="toggleGoogleMenu(event)">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle>
-                </svg>
-            </div>
+    <h1 class="orbitron text-[13px] text-white font-bold tracking-[4px] whitespace-nowrap uppercase absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        Referral Section
+    </h1>
+
+    <div class="relative">
+        <div class="menu-trigger cursor-pointer p-2 hover:bg-white/5 rounded-lg transition-all" onclick="toggleGoogleMenu(event)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+        </div>
+    </div>
+</nav>
+    
 
             <!-- POPUP MENU (Compact & Connected) -->
         <div id="google-nav" class="google-popup" style="width: 165px; padding: 6px;">
