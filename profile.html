@@ -240,38 +240,35 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 function loadRealData(email) {
-    // Nemo mamban ta hanyar Email dinsa
     db.collection("users").where("email", "==", email).onSnapshot((querySnapshot) => {
         if (!querySnapshot.empty) {
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 
-                // 1. Sanya Suna (Username)
+                // 1. Sanya Suna
                 document.getElementById('display-username').innerText = `@${data.username || 'User'}`;
                 
-                // 2. Sanya Rank
+                // 2. Sanya Rank (Daga hoton Firebase dinka: IRON)
                 document.getElementById('user-rank').innerText = data.rank || "BRONZE";
                 
-                // 3. Sanya Ranar Shiga (Join Date)
-                // Idan kana da field mai suna 'createdAt' a Firebase
+                // 3. Sanya Date Joined (Amfani da createdAt kamar yadda kace)
                 if (data.createdAt) {
-                    const date = data.createdAt.toDate(); // Maida shi kwanan wata
-                    const options = { month: 'short', year: 'numeric' };
-                    document.getElementById('join-date').innerText = date.toLocaleDateString('en-US', options);
+                    // Tunda Timestamp ne, maida shi JavaScript Date object
+                    const date = data.createdAt.toDate(); 
+                    
+                    // Tsara yadda zai fito (Misali: Apr 2026)
+                    const month = date.toLocaleString('en-US', { month: 'short' });
+                    const year = date.getFullYear();
+                    
+                    document.getElementById('join-date').innerText = `${month} ${year}`;
                 } else {
-                    document.getElementById('join-date').innerText = "Jan 2026";
-                }
-
-                // 4. Update Avatar (Idan akwai)
-                if (data.profileImg) {
-                    document.getElementById('user-img').src = data.profileImg;
+                    document.getElementById('join-date').innerText = "---";
                 }
             });
-        } else {
-            console.error("Ba a samu bayanan wannan mamban ba");
         }
     });
 }
+        
         
         function logout() {
             alert("Terminating session...");
