@@ -97,3 +97,15 @@ async function updateCloudWallet(userId, amount) {
     
     alert(`ALHAMDULLILAH! An tura $${amount} zuwa asusunka.`);
 }
+
+// Duk lokacin da mamba ya bude shafi, mu sabunta ranar da ya shigo
+function updateActivity(uid) {
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('en-GB'); // Zai bada misali: 29/04/2026
+    
+    db.collection("users").doc(uid).update({
+        lastActivityDate: formattedDate
+    }).then(() => {
+        console.log("Activity updated!");
+    });
+}
