@@ -300,35 +300,22 @@ function loadReferralNetwork(currentUsername) {
             const isActive = (lastDate === today);
             if(isActive) activeCount++;
 
-            // Wannan bangaren ne referrals din suke fita
-const data = doc.data();
-
-// MUHIMMI: Tabbatar ana kiran 'data.phoneNumber' (ba 'data.phone' ba)
-const mambaPhone = data.phoneNumber || ''; 
-const mambaName = data.fullName || 'N/A';
-const mambaUser = data.username || 'user';
-const mambaMail = data.email || 'N/A';
-const mambaBalance = (data.videoBalance || 0) + (data.shareBalance || 0);
-
-listBody.innerHTML += `
+            listBody.innerHTML += `
     <tr class="text-[13px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
-        onclick="openNodeVault('${mambaName}', '${mambaUser}', '${mambaPhone}', '${mambaMail}', '${mambaBalance}')">
-        
+        onclick="openNodeVault('${data.fullName || 'N/A'}', '${data.username}', '${data.phoneNumber || ''}', '${data.email || 'N/A'}', '${(data.videoBalance || 0) + (data.shareBalance || 0)}')">
         <td class="py-5 text-white">
-            <div class="flex flex-col text-left">
-                <span class="font-medium text-cyan-400">@${mambaUser}</span>
-                <span class="text-[9px] text-gray-500 tracking-wide uppercase font-space">View details</span>
+            <div class="flex flex-col">
+                <span class="font-medium text-cyan-400">@${data.username.charAt(0).toUpperCase() + data.username.slice(1).toLowerCase()}</span>
+                <span class="text-[9px] text-gray-500 tracking-wide">View details</span>
             </div>
         </td>
-        
         <td class="py-5 text-center">
-            <span class="${data.isVerified ? 'text-green-400' : 'text-red-400'} font-medium font-space">
-                ${data.isVerified ? 'Active' : 'Inactive'}
+            <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-medium">
+                ${isActive ? 'Active' : 'Inactive'}
             </span>
         </td>
-        
-        <td class="py-5 text-right text-gray-400 font-light font-space">
-            ${data.lastActivityDate || 'Today'}
+        <td class="py-5 text-right text-gray-400 font-light">
+            ${lastDate === today ? 'Today' : lastDate}
         </td>
     </tr>`;
             
