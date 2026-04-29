@@ -300,23 +300,24 @@ function loadReferralNetwork(currentUsername) {
 
             // Wannan bangaren ne referrals din suke fita
             listBody.innerHTML += `
-                <tr class="text-[12px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
-                    onclick="openNodeVault('${data.username}', '${data.phone || ''}', '${data.email || 'N/A'}', '${(data.videoBalance || 0) + (data.shareBalance || 0)}')">
-                    <td class="py-5 text-white">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-cyan-400">@${data.username}</span>
-                            <span class="text-[9px] text-gray-500 uppercase tracking-tight">View Contact</span>
-                        </div>
-                    </td>
-                    <td class="py-5 text-center">
-                        <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-bold uppercase tracking-wider">
-                            ${isActive ? 'ACTIVE' : 'INACTIVE'}
-                        </span>
-                    </td>
-                    <td class="py-5 text-right text-gray-400">
-                        ${lastDate === today ? 'Today' : lastDate}
-                    </td>
-                </tr>`;
+    <tr class="text-[13px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
+        onclick="openNodeVault('${data.username}', '${data.phone || ''}', '${data.email || 'N/A'}', '${(data.videoBalance || 0) + (data.shareBalance || 0)}')">
+        <td class="py-5 text-white">
+            <div class="flex flex-col">
+                <span class="font-medium text-cyan-400">@${data.username.charAt(0).toUpperCase() + data.username.slice(1).toLowerCase()}</span>
+                <span class="text-[9px] text-gray-500 tracking-wide">View details</span>
+            </div>
+        </td>
+        <td class="py-5 text-center">
+            <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-medium">
+                ${isActive ? 'Active' : 'Inactive'}
+            </span>
+        </td>
+        <td class="py-5 text-right text-gray-400 font-light">
+            ${lastDate === today ? 'Today' : lastDate}
+        </td>
+    </tr>`;
+            
         });
         
         topActiveCount.innerText = activeCount;
