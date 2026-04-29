@@ -335,68 +335,48 @@ function openNodeVault(fullName, username, phone, email, balance) {
     const waBtn = document.getElementById('waBtn');
     const closeBtn = document.getElementById('closeBtn');
 
-    // Tsaftace lambar waya
-    let cleanPhone = String(phone).replace(/\D/g, '');
-    if(cleanPhone.startsWith('0')) {
-        cleanPhone = '234' + cleanPhone.substring(1);
-    }
-
-    // Saka bayanan a center tare da Space Grotesk font
+    // Saka bayanai a Modal (Space Grotesk & Centered)
     modalBody.innerHTML = `
-        <div class="flex flex-col items-center text-center space-y-5 font-space">
-            <div>
-                <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-1">Full Name</p>
-                <p class="text-white font-bold text-[17px] leading-tight">${fullName}</p>
-            </div>
-
-            <div>
-                <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-1">Node Identity</p>
-                <p class="text-cyan-400 font-medium text-[14px]">@${username}</p>
-            </div>
-
-            <div>
-                <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-1">Email Address</p>
-                <p class="text-white/80 text-[12px] font-light">${email}</p>
-            </div>
-
-            <div class="pt-2">
-                <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-1">Network Yield</p>
-                <p class="text-green-400 font-bold text-[20px]">₦${parseInt(balance).toLocaleString()}</p>
-            </div>
+        <div class="flex flex-col items-center text-center space-y-4 font-space">
+            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Full Name</p>
+            <p class="text-white font-bold text-lg">${fullName}</p></div>
+            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Node ID</p>
+            <p class="text-cyan-400 font-medium">@${username}</p></div>
+            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Email</p>
+            <p class="text-white text-[11px]">${email}</p></div>
+            <div><p class="text-[9px] text-gray-500 uppercase tracking-widest">Yield</p>
+            <p class="text-green-400 font-bold text-xl font-space">₦${parseInt(balance).toLocaleString()}</p></div>
         </div>
     `;
 
     modal.style.display = 'flex';
 
-    // Button Actions
-
+    // WhatsApp Action
     waBtn.onclick = function(e) {
         e.preventDefault();
         
-        // Debugging: Sanar da mu me aka kwaso daga Firebase
-        console.log("Daga Firebase:", phone); 
-        
-        // Tabbatar phone ba 'undefined' bane kafin ayi amfani dashi
-        if (!phone || phone === 'undefined' || phone === '') {
-            alert("Kuskure! Ba a samu lambar waya a profile din @"+username+" ba. Duba sunan field din a Firestore.");
+        // Idan babu lamba ko bata da kyau
+        if (!phone || phone === 'undefined' || phone.length < 5) {
+            alert("Database Error: Ba a samu lambar waya ga @" + username + " ba. Sunan field din a Firebase ya zama 'phoneNumber'.");
             return;
         }
 
         let cleanPhone = String(phone).replace(/\D/g, '');
-
-        if(cleanPhone && cleanPhone.length >= 10) {
-            // Idan lambar ta cika, bude WhatsApp
-            if(cleanPhone.startsWith('0')) {
-                cleanPhone = '234' + cleanPhone.substring(1);
-            }
-            const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20${fullName}%20(@${username}),%20this%20is%20from%20Synergy%20Protocol`;
-            window.open(waUrl, '_blank');
-            closeModal();
-        } else {
-            // Idan lambar bata cika ba, nuna mana me aka samu
-            alert("Lambar bata cika ba! Abinda aka samu: " + phone);
+        if(cleanPhone.startsWith('0')) {
+            cleanPhone = '234' + cleanPhone.substring(1);
         }
+
+        const waUrl = `https://wa.me/${cleanPhone}?text=Hello%20${fullName},%20this%20is%20from%20Synergy%20Protocol`;
+        window.open(waUrl, '_blank');
+        closeModal();
     };
+
+    closeBtn.onclick = function() { closeModal(); };
+}
+
+function closeModal() {
+    document.getElementById('customNodeModal').style.display = 'none';
+}
     
 
     
