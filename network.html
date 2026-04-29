@@ -300,24 +300,44 @@ function loadReferralNetwork(currentUsername) {
             const isActive = (lastDate === today);
             if(isActive) activeCount++;
 
-            listBody.innerHTML += `
-    <tr class="text-[13px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" 
-        onclick="openNodeVault('${data.fullName || 'N/A'}', '${data.username}', '${data.phoneNumber || ''}', '${data.email || 'N/A'}', '${(data.videoBalance || 0) + (data.shareBalance || 0)}')">
+           // Wannan yana cikin querySnapshot.forEach((doc) => {
+const data = doc.data();
+
+// 1. Kwaso bayanai cikin sauki
+const mambaPhone = data.phoneNumber || ''; 
+const mambaName = data.fullName || 'N/A';
+const mambaUser = data.username || 'user';
+const mambaMail = data.email || 'N/A';
+const mambaBalance = (Number(data.videoBalance) || 0) + (Number(data.shareBalance) || 0);
+
+// 2. Jera Table Row (TR) ba tare da 'onclick' a ciki ba don gudun kuskure
+const row = `
+    <tr class="text-[13px] font-space border-b border-white/[0.03] hover:bg-white/[0.01] cursor-pointer" id="row-${doc.id}">
         <td class="py-5 text-white">
-            <div class="flex flex-col">
-                <span class="font-medium text-cyan-400">@${data.username.charAt(0).toUpperCase() + data.username.slice(1).toLowerCase()}</span>
-                <span class="text-[9px] text-gray-500 tracking-wide">View details</span>
+            <div class="flex flex-col text-left font-space">
+                <span class="font-medium text-cyan-400 font-space">@${mambaUser}</span>
+                <span class="text-[9px] text-gray-500 tracking-wide uppercase font-space">View details</span>
             </div>
         </td>
         <td class="py-5 text-center">
-            <span class="${isActive ? 'text-green-400' : 'text-red-400'} font-medium">
-                ${isActive ? 'Active' : 'Inactive'}
+            <span class="${data.isVerified ? 'text-green-400' : 'text-red-400'} font-medium font-space">
+                ${data.isVerified ? 'Active' : 'Inactive'}
             </span>
         </td>
-        <td class="py-5 text-right text-gray-400 font-light">
-            ${lastDate === today ? 'Today' : lastDate}
+        <td class="py-5 text-right text-gray-400 font-light font-space">
+            ${data.lastActivityDate || 'Today'}
         </td>
     </tr>`;
+
+listBody.innerHTML += row;
+
+// 3. Saka aikin danna row din a waje don kar referrals su boye
+setTimeout(() => {
+    const clickableRow = document.getElementById(`row-${doc.id}`);
+    if(clickableRow) {
+        clickableRow.onclick = () => openNodeVault(mambaName, mambaUser, mambaPhone, mambaMail, mambaBalance);
+    }
+}, 100);
             
             
         });
@@ -329,53 +349,29 @@ function loadReferralNetwork(currentUsername) {
     
 function openNodeVault(fullName, username, phone, email, balance) {
     const modal = document.getElementById('customNodeModal');
-    const modalBody = document.getElementById('modalBody');
-    const waBtn = document.getElementById('waBtn');
-    const closeBtn = document.getElementById('closeBtn');
-
-    // Saka bayanan a tsakiya (Centered) tare da Space Grotesk font
-    modalBody.innerHTML = `
+    // Saka bayanan tsakiya da Space Grotesk
+    document.getElementById('modalBody').innerHTML = `
         <div class="flex flex-col items-center text-center space-y-4 font-space">
-            <div>
-                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Full Name</p>
-                <p class="text-white font-bold text-lg leading-tight uppercase font-space">${fullName}</p>
-            </div>
-            <div>
-                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Node Identity</p>
-                <p class="text-cyan-400 font-medium font-space">@${username}</p>
-            </div>
-            <div>
-                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Total Yield</p>
-                <p class="text-green-400 font-bold text-xl font-space">₦${parseInt(balance).toLocaleString()}</p>
-            </div>
+            <p class="text-white font-bold text-lg font-space">${fullName}</p>
+            <p class="text-cyan-400 font-space">@${username}</p>
+            <p class="text-white text-[11px] font-space">${email}</p>
+            <p class="text-green-400 font-bold text-xl font-space">₦${Number(balance).toLocaleString()}</p>
         </div>
     `;
-
     modal.style.display = 'flex';
 
-    // Wannan shi ne zai sa WhatsApp din ya yi aiki
-    waBtn.onclick = function(e) {
+    // WhatsApp Action
+    document.getElementById('waBtn').onclick = (e) => {
         e.preventDefault();
-        
-        // Idan lamba bata samu ba daga Firebase
-        if (!phone || phone === '' || phone === 'undefined') {
-            alert("Database Error: Lambar @" + username + " ba ta da kyau a database!");
+        if(!phone || phone === 'undefined') {
+            alert("Babu lambar waya a database!");
             return;
         }
-
-        let cleanPhone = String(phone).replace(/\D/g, '');
-        if(cleanPhone.startsWith('0')) {
-            cleanPhone = '234' + cleanPhone.substring(1);
-        }
-
-        window.open(`https://wa.me/${cleanPhone}`, '_blank');
-        modal.style.display = 'none';
+        let clean = String(phone).replace(/\D/g, '');
+        if(clean.startsWith('0')) clean = '234' + clean.substring(1);
+        window.open(`https://wa.me/${clean}`, '_blank');
     };
-
-    closeBtn.onclick = function() { modal.style.display = 'none'; };
 }
-    
-
     
 
     
