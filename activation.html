@@ -33,7 +33,8 @@
         }
     </style>
 </head>
-<body class="p-6">
+
+ <body class="p-6">
 
     <div id="congestion-shutter">
         <div class="w-20 h-20 border-2 border-dashed border-red-500 rounded-full flex items-center justify-center animate-spin mb-6">
@@ -45,39 +46,7 @@
     </div>
   
     <main id="main-content" class="max-w-xl mx-auto space-y-8 mt-10" style="display: none;">
-    <div class="text-center space-y-4">
-            <div class="w-12 h-12 rounded-full border border-cyan-500/30 mx-auto flex items-center justify-center">
-                <div class="w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_15px_#00f2fe]"></div>
-            </div>
-            <h1 class="orbitron text-sm font-bold tracking-[6px]">System Activation</h1>
-            <p class="text-[10px] text-gray-500 uppercase tracking-[2px]">Verify 5 nodes to unlock permanent yield</p>
-        </div>
-
-        <div class="glass-premium p-6 rounded-[32px] border-b-2 border-cyan-500/20">
-            <div class="flex justify-between items-center mb-4">
-                <span class="orbitron text-[9px] text-gray-400">Node Synchronization</span>
-                <span id="nodes-count" class="digits-terminal text-cyan-400 text-lg">0 / 5</span>
-            </div>
-            <div class="h-1 w-full bg-white/5 rounded-full">
-                <div id="progress-bar" class="h-full bg-cyan-500 rounded-full transition-all duration-700" style="width: 0%"></div>
-            </div>
-        </div>
-
-        <div id="player-area" class="hidden space-y-6">
-            <div class="aspect-video glass-premium rounded-[30px] overflow-hidden relative">
-                <div id="activation-player"></div>
-            </div>
-            <div class="text-center space-y-4">
-                <div id="timer-display" class="digits-terminal text-4xl text-white">02:00</div>
-                <div id="verify-ui" class="hidden space-y-4 animate-in fade-in duration-500">
-                    <input type="text" id="hash-input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-center digits-terminal text-xl outline-none focus:border-cyan-500" placeholder="ENTER CODE">
-                    <button onclick="confirmNodeActivation()" class="w-full btn-neon text-white py-4 rounded-2xl orbitron text-[11px] font-bold">Secure Node</button>
-                </div>
-            </div>
-        </div>
-
         
-    <main id="main-content" class="max-w-xl mx-auto space-y-8 mt-10" style="display: none;">
         <div class="text-center space-y-4">
             <div class="w-12 h-12 rounded-full border border-cyan-500/30 mx-auto flex items-center justify-center">
                 <div class="w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_15px_#00f2fe]"></div>
@@ -102,8 +71,7 @@
             </div>
             <div class="text-center space-y-4">
                 <div id="timer-display" class="digits-terminal text-4xl text-white">02:00</div>
-                <div id="verify-ui" class="hidden space-y-4 animate-in fade-in duration-500">
-                    </div>
+                <div id="verify-ui" class="hidden space-y-4 animate-in fade-in duration-500"></div>
             </div>
         </div>
 
@@ -113,60 +81,56 @@
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-red-600/10 rounded-2xl border border-red-500/20 flex items-center justify-center text-red-500">1</div>
                         <div>
-                            <h4 class="orbitron text-[11px] text-white">Node: AI Wealth Academy</h4>
-                            <p class="text-[9px] text-gray-500">Status: Authentication Required</p>
+                            <h4 class="orbitron text-[11px] text-white">Node: AI Wealth</h4>
+                            <p class="text-[9px] text-gray-500">Status: Required</p>
                         </div>
                     </div>
                     <button onclick="launchActivation(1)" class="px-5 py-2 rounded-xl bg-white text-black orbitron text-[9px] font-bold">Initialize</button>
                 </div>
             </div>
-
             <div id="node-2" class="node-card glass-premium p-6 rounded-[30px]">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-cyan-600/10 rounded-2xl border border-cyan-500/20 flex items-center justify-center text-cyan-400">2</div>
                         <div>
-                            <h4 class="orbitron text-[11px] text-white">Node: Global Wealth Secret</h4>
-                            <p class="text-[9px] text-gray-500">Status: Authentication Required</p>
+                            <h4 class="orbitron text-[11px] text-white">Node: Global Secret</h4>
+                            <p class="text-[9px] text-gray-500">Status: Required</p>
                         </div>
                     </div>
                     <button onclick="launchActivation(2)" class="px-5 py-2 rounded-xl bg-white text-black orbitron text-[9px] font-bold">Initialize</button>
                 </div>
             </div>
-
             <div id="node-3" class="node-card glass-premium p-6 rounded-[30px]">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-purple-600/10 rounded-2xl border border-purple-500/20 flex items-center justify-center text-purple-400">3</div>
                         <div>
-                            <h4 class="orbitron text-[11px] text-white">Node: Urban Vision 2050</h4>
-                            <p class="text-[9px] text-gray-500">Status: Authentication Required</p>
+                            <h4 class="orbitron text-[11px] text-white">Node: Urban Vision</h4>
+                            <p class="text-[9px] text-gray-500">Status: Required</p>
                         </div>
                     </div>
                     <button onclick="launchActivation(3)" class="px-5 py-2 rounded-xl bg-white text-black orbitron text-[9px] font-bold">Initialize</button>
                 </div>
             </div>
-
             <div id="node-4" class="node-card glass-premium p-6 rounded-[30px]">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-green-600/10 rounded-2xl border border-green-500/20 flex items-center justify-center text-green-400">4</div>
                         <div>
-                            <h4 class="orbitron text-[11px] text-white">Node: Zenith Nature 4k</h4>
-                            <p class="text-[9px] text-gray-500">Status: Authentication Required</p>
+                            <h4 class="orbitron text-[11px] text-white">Node: Zenith Nature</h4>
+                            <p class="text-[9px] text-gray-500">Status: Required</p>
                         </div>
                     </div>
                     <button onclick="launchActivation(4)" class="px-5 py-2 rounded-xl bg-white text-black orbitron text-[9px] font-bold">Initialize</button>
                 </div>
             </div>
-
             <div id="node-5" class="node-card glass-premium p-6 rounded-[30px]">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-blue-600/10 rounded-2xl border border-blue-500/20 flex items-center justify-center text-blue-400">5</div>
                         <div>
                             <h4 class="orbitron text-[11px] text-white">Node: Cosmic Horizon</h4>
-                            <p class="text-[9px] text-gray-500">Status: Authentication Required</p>
+                            <p class="text-[9px] text-gray-500">Status: Required</p>
                         </div>
                     </div>
                     <button onclick="launchActivation(5)" class="px-5 py-2 rounded-xl bg-white text-black orbitron text-[9px] font-bold">Initialize</button>
@@ -174,7 +138,11 @@
             </div>
         </div>
     </main>
+     
     
+        
+            
+            
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
