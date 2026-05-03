@@ -303,19 +303,19 @@ async function resendVerification() {
         const userRef = db.collection("users").doc(user);
         const userDoc = await userRef.get();
         if (userDoc.exists) {
-            throw new Error("Wannan Username din an riga an yi amfani da shi.");
+            throw new Error("This username isn't available.");
         }
 
         // B. DUBA WHATSAPP NUMBER (Firestore Query)
         const phoneCheck = await db.collection("users").where("whatsapp", "==", formattedPhone).get();
         if (!phoneCheck.empty) {
-            throw new Error("Wannan lambar WhatsApp din tana da account riga.");
+            throw new Error("This WhatsApp number is already in use. Try another one.");
         }
 
         // C. DUBA EMAIL (Firebase Auth Check)
         const signInMethods = await auth.fetchSignInMethodsForEmail(email);
         if (signInMethods.length > 0) {
-            throw new Error("Wannan Email din ma an riga an yi amfani da shi.");
+            throw new Error("This email is alreadytaken. Please choose another one.");
         }
 
         // D. CREATE ACCOUNT
