@@ -352,21 +352,26 @@ async function resendVerification() {
         });
 
     } catch (e) {
-        // Amfani da Custom Notification Bar dinka maimakon Firebase alerts
         console.error("Registration Error:", e);
         
-        // Nan mun canza sakon zuwa Hausa ko English na kashin kanka
+        // Zaka iya barin e.message kawai, ko ka tsara custom English messages:
         let errorMsg = e.message;
-        if(e.code === 'auth/email-already-in-use') errorMsg = "Wannan email din yana da account riga.";
-        if(e.code === 'auth/invalid-email') errorMsg = "Email dinka ba daidai ba yake.";
         
+        if(e.code === 'auth/email-already-in-use') {
+            errorMsg = "This email is already registered. Please sign in.";
+        } else if(e.code === 'auth/invalid-email') {
+            errorMsg = "The email address is badly formatted.";
+        } else if(e.code === 'auth/weak-password') {
+            errorMsg = "The password is too weak.";
+        }
+        
+        // Wannan zai nuna rubutun a saman waya (GitHub Style) da Turanci
         showTopNotif(errorMsg, "error");
         
         btn.disabled = false;
         btn.innerText = "RETRY ACTIVATION";
     }
-      }
-        
+          
 
         
        function startVerificationListener() {
