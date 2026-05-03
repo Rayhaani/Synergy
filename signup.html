@@ -283,14 +283,14 @@ async function resendVerification() {
     const user = document.getElementById('username').value.toLowerCase().trim();
     const pass = document.getElementById('password').value.trim();
     const rawPhone = document.getElementById('phone').value.trim();
-    const referrer = getReferrerFromURL(); // Wannan zai duba URL din ya gano referrer din
-          
+    const fullName = document.getElementById('full-name').value.trim();
+    const state = document.getElementById('state').value.trim();
+    const referrer = getReferrerFromURL();
 
-    // Reset button don fara aiki
     btn.disabled = true;
     btn.innerHTML = `<span class="orbitron animate-pulse">CONNECTING...</span>`;
 
-    // 1. GYARA LAMBAR WHATSAPP
+    // 1. Gyara lambar WhatsApp
     let formattedPhone = rawPhone;
     if (rawPhone.startsWith('0')) {
         formattedPhone = '234' + rawPhone.substring(1);
@@ -299,36 +299,40 @@ async function resendVerification() {
     }
 
     try {
-        // A. DUBA USERNAME (A Firestore)
+        // A. DUBA USERNAME (Firestore Check)
         const userRef = db.collection("users").doc(user);
-        const doc = await userRef.get();
-        if (doc.exists) {
-            throw new Error("Username is already taken.");
+        const userDoc = await userRef.get();
+        if (userDoc.exists) {
+            throw new Error("Wannan Username din an riga an yi amfani da shi.");
         }
 
-        // B. DUBA EMAIL (A Auth)
-        const signInMethods = await firebase.auth().fetchSignInMethodsForEmail(email);
+        // B. DUBA WHATSAPP NUMBER (Firestore Query)
+        const phoneCheck = await db.collection("users").where("whatsapp", "==", formattedPhone).get();
+        if (!phoneCheck.empty) {
+            throw new Error("Wannan lambar WhatsApp din tana da account riga.");
+        }
+
+        // C. DUBA EMAIL (Firebase Auth Check)
+        const signInMethods = await auth.fetchSignInMethodsForEmail(email);
         if (signInMethods.length > 0) {
-            throw new Error("Email address already registered.");
+            throw new Error("Wannan Email din ma an riga an yi amfani da shi.");
         }
 
-        // C. CREATE ACCOUNT & SEND VERIFICATION
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+        // D. CREATE ACCOUNT
+        const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
         await userCredential.user.sendEmailVerification();
         
-        // --- MATAKI MAFI MUHIMMANCI ---
-        // Da zarar an tura email, mu boye tsohon shafin kafin mu nuna overlay
+        // Boye main card kafin nuna overlay
         mainCard.style.display = 'none';
         showSuccessOverlay(email); 
-        // ------------------------------
 
-        // D. ADANA BAYANAN A FIRESTORE
+        // E. ADANA BAYANAN A FIRESTORE
         await userRef.set({
             uid: userCredential.user.uid,
-            fullName: document.getElementById('full-name').value.trim(),
+            fullName: fullName,
             email: email, 
             username: user,
-            state: document.getElementById('state').value.trim(),
+            state: state,
             whatsapp: formattedPhone, 
             videoBalance: 0, 
             shareBalance: 0, 
@@ -337,11 +341,10 @@ async function resendVerification() {
             videosWatchedToday: 0,
             lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' }),
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            referredBy: referrer //
-        
+            referredBy: referrer
         });
 
-        // E. ADANA BAYANAN A REALTIME DATABASE
+        // F. ADANA BAYANAN A REALTIME DATABASE
         await database.ref('users/' + user).set({
             whatsapp: formattedPhone,
             balance: 0,
@@ -350,16 +353,21 @@ async function resendVerification() {
         });
 
     } catch (e) {
-        // Idan aka samu error, nuna shi sannan dawo da shafin idan ya bace
-        console.error("Critical Error:", e);
-        showTopNotif(e.message, "error");
+        // Amfani da Custom Notification Bar dinka maimakon Firebase alerts
+        console.error("Registration Error:", e);
         
-        mainCard.style.display = 'block'; 
+        // Nan mun canza sakon zuwa Hausa ko English na kashin kanka
+        let errorMsg = e.message;
+        if(e.code === 'auth/email-already-in-use') errorMsg = "Wannan email din yana da account riga.";
+        if(e.code === 'auth/invalid-email') errorMsg = "Email dinka ba daidai ba yake.";
+        
+        showTopNotif(errorMsg, "error");
+        
         btn.disabled = false;
         btn.innerText = "RETRY ACTIVATION";
     }
       }
-                
+        
 
         
        function startVerificationListener() {
