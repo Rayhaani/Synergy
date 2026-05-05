@@ -280,17 +280,17 @@
     <main class="max-w-2xl mx-auto p-6 mt-4 space-y-10">
       
         
-        <section class="glass-premium rounded-[34px] p-8 relative border-t border-cyan-500/20 overflow-hidden">
+      <section id="activation-task-area" class="glass-premium rounded-[34px] p-8 relative border-t border-cyan-500/20 overflow-hidden">
     <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px]"></div>
     
     <div class="relative z-10 space-y-6 text-center">
         <div class="inline-block px-4 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20">
-            <p class="orbitron text-[8px] text-cyan-400 tracking-[3px]">Active Task Assigned</p>
+            <p id="node-badge-display" class="orbitron text-[8px] text-cyan-400 tracking-[3px]">NODE 1: ACTIVE TASK</p>
         </div>
 
         <div class="space-y-2">
             <p class="text-gray-500 text-[10px] uppercase tracking-[2px]">Bincika wannan a YouTube:</p>
-            <h2 id="task-keyword-display" class="digits-terminal text-xl text-white font-bold px-4">--- LOADING TASK ---</h2>
+            <h2 id="task-keyword-display" class="digits-terminal text-xl text-white font-bold px-4 tracking-tight">--- LOADING ---</h2>
         </div>
 
         <div class="pt-4">
@@ -298,10 +298,10 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span class="orbitron text-[11px] font-black tracking-[2px]">Bude YouTube Search</span>
             </button>
-            <p class="text-[9px] text-gray-600 mt-4 italic">Bayan ka kallo bidiyon, dawo nan ka saka Security Code</p>
         </div>
     </div>
-        </section>
+      </section>
+        
         
 
         <div class="relative flex items-center justify-center my-10">
@@ -860,53 +860,74 @@ async function loadVideosFromSynergyVault() {
     
  
 
-    // 1. ZAYYANA TASK DAGA PLAYLIST
+    
+// 1. ZAYYANA TASK DANGANE DA NODE NA RANAR
 async function loadNewTask() {
     try {
+        const userDoc = await db.collection("users").doc(currentActiveUser).get();
+        const watchedToday = userDoc.data().videosWatchedToday || 0;
+        const currentNode = (watchedToday % 5) + 1; // Zai bamu 1 zuwa 5
+
+        // Idan ya riga ya gama 5, nuna masa ya huta
+        if (watchedToday >= 5) {
+            document.getElementById('task-keyword-display').innerText = "ALL NODES SECURED";
+            document.getElementById('node-badge-display').innerText = "LIMIT REACHED";
+            return;
+        }
+
         const snapshot = await db.collection("playlist").get();
         let tasks = [];
         snapshot.forEach(doc => tasks.push(doc.data()));
 
         if (tasks.length > 0) {
-            // Zabo bidiyo guda daya a hargitse (Random)
-            const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
-            currentTaskKeyword = randomTask.keyword || "Synergy Protocol Review";
-            currentCode = randomTask.securityCode || ""; 
+            // Zabo bidiyo dangane da Node din da muke kai
+            const task = tasks[currentNode - 1] || tasks[0]; 
+            currentTaskKeyword = task.keyword || "Synergy Protocol";
+            currentCode = task.securityCode || ""; 
             
-            // Nuna sunan bidiyon da za a yi search
-            const display = document.getElementById('task-keyword-display');
-            if(display) display.innerText = currentTaskKeyword;
-            
-            // Boye code din har sai sun dawo
-            const codeDisplay = document.getElementById("generated-code-display");
-            if(codeDisplay) codeDisplay.innerText = "LOCKED";
+            document.getElementById('task-keyword-display').innerText = currentTaskKeyword;
+            document.getElementById('node-badge-display').innerText = `NODE ${currentNode}: ACTIVE TASK`;
+            document.getElementById("generated-code-display").innerText = "LOCKED";
         }
     } catch (e) { console.error("Vault Error:", e); }
 }
 
-// 2. BUDE YOUTUBE SEARCH
-function openYouTubeSearch() {
-    if(!currentTaskKeyword) {
-        showSynergyAlert("LOADING TASK... PLEASE WAIT", "info");
-        return;
-    }
-    
-    // Tura mutum zuwa YouTube Search results
-    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(currentTaskKeyword)}`;
-    window.open(searchUrl, '_blank');
-
-    // Nuna musu Panel din saka code nan take don suna dawowa su saka
+// 2. VERIFICATION LOGIC (Don ƙara kuɗi da canza Task)
+async function executeVerification() {
+    const inputVal = document.getElementById('node-code').value.toUpperCase();
     const p = document.getElementById('verifier-panel');
-    if(p) {
-        p.classList.add('is-visible-now');
-        p.style.opacity = "1";
-        p.style.transform = "translateY(0)";
-        p.style.pointerEvents = "all";
+
+    if(inputVal === currentCode && currentCode !== "") {
+        try {
+            const userRef = db.collection("users").doc(currentActiveUser);
+            const userDoc = await userRef.get();
+            const watchedToday = userDoc.data().videosWatchedToday || 0;
+
+            if (watchedToday >= 5) {
+                showSynergyAlert("LIMIT REACHED: 5/5 UNITS COMPLETED", "info");
+                return;
+            }
+
+            await userRef.update({
+                videoBalance: firebase.firestore.FieldValue.increment(150),
+                videosWatchedToday: firebase.firestore.FieldValue.increment(1),
+                lastActivityDate: new Date().toLocaleDateString('en-GB', { timeZone: 'Africa/Lagos' })
+            });
+
+            showSynergyAlert("SUCCESS: ₦150 EARNED", "success");
+            
+            // Boye Panel
+            p.classList.remove('is-visible-now');
+            p.style.opacity = "0";
+            
+            // Load sabon task nan take ba tare da reload ba
+            setTimeout(loadNewTask, 500);
+
+        } catch (error) { showSynergyAlert("DATABASE ERROR", "error"); }
+    } else {
+        showSynergyAlert("INVALID CODE", "error");
     }
 }
-
-// Kira aikin idan shafi ya bude
-loadNewTask();
     
 </script>
 </body>
