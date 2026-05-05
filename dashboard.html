@@ -279,66 +279,63 @@
     
     <main class="max-w-2xl mx-auto p-6 mt-4 space-y-10">
       
-        
-      <div id="nodes-list" class="space-y-4">
-    
-    <div class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+
+ <div id="synergy-nodes-wrapper" class="space-y-4">
+    <div id="node-1" class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between transition-all duration-500">
+        <div class="flex items-center gap-4 w-full" id="content-1">
             <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 font-bold orbitron">1</div>
-            <div>
-                <h4 class="orbitron text-[11px] text-white tracking-wider">AI WEALTH ACADEMY</h4>
-                <p id="status-1" class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
+            <div class="flex-1" id="text-area-1">
+                <h4 class="orbitron text-[11px] text-white tracking-wider uppercase">AI Wealth Academy</h4>
+                <p class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
             </div>
+            <button id="btn-1" onclick="processNode(1)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
         </div>
-        <button id="btn-1" onclick="launchActivation(1)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
     </div>
 
-    <div class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+    <div id="node-2" class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between transition-all duration-500">
+        <div class="flex items-center gap-4 w-full" id="content-2">
             <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold orbitron">2</div>
-            <div>
-                <h4 class="orbitron text-[11px] text-white tracking-wider">GLOBAL WEALTH SECRET</h4>
-                <p id="status-2" class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
+            <div class="flex-1" id="text-area-2">
+                <h4 class="orbitron text-[11px] text-white tracking-wider uppercase">Global Wealth Secret</h4>
+                <p class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
             </div>
+            <button id="btn-2" onclick="processNode(2)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
         </div>
-        <button id="btn-2" onclick="launchActivation(2)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
     </div>
 
-    <div class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+    <div id="node-3" class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between transition-all duration-500">
+        <div class="flex items-center gap-4 w-full" id="content-3">
             <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-bold orbitron">3</div>
-            <div>
-                <h4 class="orbitron text-[11px] text-white tracking-wider">URBAN VISION 2050</h4>
-                <p id="status-3" class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
+            <div class="flex-1" id="text-area-3">
+                <h4 class="orbitron text-[11px] text-white tracking-wider uppercase">Urban Vision 2050</h4>
+                <p class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
             </div>
+            <button id="btn-3" onclick="processNode(3)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
         </div>
-        <button id="btn-3" onclick="launchActivation(3)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
     </div>
 
-    <div class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+    <div id="node-4" class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between transition-all duration-500">
+        <div class="flex items-center gap-4 w-full" id="content-4">
             <div class="w-12 h-12 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-bold orbitron">4</div>
-            <div>
-                <h4 class="orbitron text-[11px] text-white tracking-wider">ZENITH NATURE 4K</h4>
-                <p id="status-4" class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
+            <div class="flex-1" id="text-area-4">
+                <h4 class="orbitron text-[11px] text-white tracking-wider uppercase">Zenith Nature 4K</h4>
+                <p class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
             </div>
+            <button id="btn-4" onclick="processNode(4)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
         </div>
-        <button id="btn-4" onclick="launchActivation(4)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
     </div>
 
-    <div class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+    <div id="node-5" class="glass-premium p-5 rounded-[24px] border border-white/5 flex items-center justify-between transition-all duration-500">
+        <div class="flex items-center gap-4 w-full" id="content-5">
             <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold orbitron">5</div>
-            <div>
-                <h4 class="orbitron text-[11px] text-white tracking-wider">COSMIC HORIZON</h4>
-                <p id="status-5" class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
+            <div class="flex-1" id="text-area-5">
+                <h4 class="orbitron text-[11px] text-white tracking-wider uppercase">Cosmic Horizon</h4>
+                <p class="text-[9px] text-gray-500 uppercase tracking-tighter">Status: Required</p>
             </div>
+            <button id="btn-5" onclick="processNode(5)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
         </div>
-        <button id="btn-5" onclick="launchActivation(5)" class="px-6 py-2.5 rounded-xl bg-white text-black orbitron text-[9px] font-black tracking-widest hover:bg-cyan-400 transition-all">START</button>
     </div>
-
-      </div>
-        
+ </div>
         
         
 
@@ -992,7 +989,81 @@ async function executeVerification() {
         }
     });
     }
+
+
     
+  // Bayanan bidiyonka na YouTube da Security Codes
+const nodeTasks = {
+    1: { keyword: "Synergy AI Wealth Node-01", code: "XA99" },
+    2: { keyword: "Global Secret Synergy Node-02", code: "BZ44" },
+    3: { keyword: "Urban Vision Synergy Node-03", code: "UV50" },
+    4: { keyword: "Zenith Nature Synergy Node-04", code: "ZN4K" },
+    5: { keyword: "Cosmic Horizon Synergy Node-05", code: "CH05" }
+};
+
+async function processNode(id) {
+    const btn = document.getElementById(`btn-${id}`);
+    const textArea = document.getElementById(`text-area-${id}`);
+    const nodeRow = document.getElementById(`node-${id}`);
+
+    if (btn.innerText === "START") {
+        // 1. Bude YouTube Search
+        const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(nodeTasks[id].keyword)}`;
+        window.open(searchUrl, '_blank');
+
+        // 2. Rikida Bar din (Input Mode)
+        textArea.innerHTML = `
+            <input type="text" id="code-input-${id}" 
+            placeholder="ENTER SECURITY CODE" 
+            class="bg-transparent border-b-2 border-cyan-500 text-white orbitron text-[10px] w-full outline-none py-1 animate-pulse">
+        `;
+        
+        btn.innerText = "SUBMIT";
+        btn.classList.replace('bg-white', 'bg-cyan-400'); // Canza launin button din
+        
+    } else if (btn.innerText === "SUBMIT") {
+        const inputVal = document.getElementById(`code-input-${id}`).value.toUpperCase();
+        
+        if (inputVal === nodeTasks[id].code) {
+            // 3. Nasara: Bada kudi sannan a goge Bar din
+            showSynergyAlert(`NODE ${id} SECURED! +₦150`, "success");
+            
+            // Effect na bacewa
+            nodeRow.style.opacity = "0";
+            nodeRow.style.transform = "scale(0.9) translateX(50px)";
+            
+            setTimeout(() => {
+                nodeRow.remove(); // Goge bar din gaba daya
+                
+                // Idan dukkan bars sun kare, nuna sakon kammalawa
+                if (document.querySelectorAll('[id^="node-"]').length === 0) {
+                    document.getElementById('synergy-nodes-wrapper').innerHTML = `
+                        <div class="text-center p-10 orbitron text-cyan-400 text-[10px] tracking-[4px] animate-bounce">
+                            ALL NODES SYNCHRONIZED. COME BACK TOMORROW.
+                        </div>`;
+                }
+            }, 500);
+
+            // Update Firebase Balance a nan
+            saveEarningsToFirebase(150);
+
+        } else {
+            showSynergyAlert("SECURITY BREACH: INVALID CODE", "error");
+        }
+    }
+}
+
+// Function din Update kudi (Misali)
+function saveEarningsToFirebase(amount) {
+    const user = localStorage.getItem('synergy_user');
+    if(user) {
+        db.collection("users").doc(user).update({
+            videoBalance: firebase.firestore.FieldValue.increment(amount),
+            videosWatchedToday: firebase.firestore.FieldValue.increment(1)
+        });
+    }
+}
+  
 </script>
 </body>
 </html>
