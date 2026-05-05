@@ -278,13 +278,31 @@
 
     
     <main class="max-w-2xl mx-auto p-6 mt-4 space-y-10">
-        <section class="glass-premium rounded-[32px] overflow-hidden aspect-video relative">
-            <div id="yt-player"></div>
-            <div id="shutter" class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-20">
-                <button onclick="startQuantumSession()" class="w-20 h-20 glass-premium rounded-full flex items-center justify-center border border-white/10 group hover:border-cyan-500/50 transition-all"><svg class="fill-white group-hover:fill-cyan-400" width="28" height="28" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg></button>
-                <p class="orbitron text-[10px] text-cyan-500/70 mt-5 tracking-[8px]">Initialize Session</p>
-            </div>
+      
+        
+        <section class="glass-premium rounded-[34px] p-8 relative border-t border-cyan-500/20 overflow-hidden">
+    <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px]"></div>
+    
+    <div class="relative z-10 space-y-6 text-center">
+        <div class="inline-block px-4 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20">
+            <p class="orbitron text-[8px] text-cyan-400 tracking-[3px]">Active Task Assigned</p>
+        </div>
+
+        <div class="space-y-2">
+            <p class="text-gray-500 text-[10px] uppercase tracking-[2px]">Bincika wannan a YouTube:</p>
+            <h2 id="task-keyword-display" class="digits-terminal text-xl text-white font-bold px-4">--- LOADING TASK ---</h2>
+        </div>
+
+        <div class="pt-4">
+            <button onclick="openYouTubeSearch()" class="btn-viral w-full py-5 rounded-[22px] flex items-center justify-center gap-3 group transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span class="orbitron text-[11px] font-black tracking-[2px]">Bude YouTube Search</span>
+            </button>
+            <p class="text-[9px] text-gray-600 mt-4 italic">Bayan ka kallo bidiyon, dawo nan ka saka Security Code</p>
+        </div>
+    </div>
         </section>
+        
 
         <div class="relative flex items-center justify-center my-10">
     <div id="task-ring-outer" class="absolute w-[160px] h-[160px] rounded-full border border-white/5 shadow-[0_0_30px_rgba(74,222,128,0.1)]" style="background: conic-gradient(#4ade80 0deg, transparent 0deg);"></div>
@@ -392,9 +410,6 @@
         </section>
 
 
-        
-
-
     <section id="referral-panel" class="glass-premium p-8 rounded-[32px] mt-6 space-y-8">
     <div class="text-center space-y-2">
         <h2 class="orbitron text-[12px] text-cyan-400 tracking-[4px]">Network Expansion</h2>
@@ -484,86 +499,13 @@ let tracker; // Wannan ne zai rike lissafin circle din
 let panelTriggered = false; // Wannan zai hana panel din hauka
     
 
-    // 2. YOUTUBE API & PLAYER LOGIC
-    function onYouTubeIframeAPIReady() { 
-    player = new YT.Player('yt-player', { 
-        height: '100%', width: '100%', 
-       videoId: window.pendingVideoId || '', 
-        playerVars: { 'controls': 0, 'modestbranding': 1, 'rel': 0, 'disablekb': 1 }, 
-        events: { 'onStateChange': onPlayerStateChange } 
-    }); 
-    }
 
-
-    
     function startQuantumSession() { 
         document.getElementById('shutter').style.opacity = "0"; 
         setTimeout(() => document.getElementById('shutter').style.display = "none", 1000); 
         player.playVideo(); 
     }
 
-
-    
-    
-   function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-        // Share tsohon tracker idan akwai don gudun rikicewa
-        if (tracker) clearInterval(tracker);
-
-        tracker = setInterval(() => {
-            // Idan an tsayar da bidiyo (Pause), tsayar da lissafin
-            if (player.getPlayerState() !== YT.PlayerState.PLAYING) { 
-                clearInterval(tracker); 
-                return; 
-            }
-
-            let currentTime = player.getCurrentTime();
-            let duration = player.getDuration();
-            
-            
-            if (duration > 0) {
-                let progress = Math.min(Math.floor((currentTime / duration) * 100), 100);
-                
-                // --- UPDATE CIRCLE (Reading) ---
-                const ring = document.getElementById("ring");
-                if(ring) {
-                    ring.innerText = progress + "%";
-                    ring.style.background = `conic-gradient(var(--aqua) ${progress * 3.6}deg, #111 0deg)`;
-                }
-
-                // --- NUNA PANEL (Verifier) ---
-                // Lokacin da ya kai 5% kuma ba a taba nuna panel din ba
-                if (progress >= 5 && !panelTriggered) { 
-                    const p = document.getElementById('verifier-panel'); 
-                    if(p) {
-                        panelTriggered = true; // Saita shi zuwa true don kar ya sake fitowa
-                        p.classList.add('is-visible-now'); 
-                        p.style.opacity = "1"; 
-                        p.style.transform = "translateY(0)"; 
-                        p.style.pointerEvents = "all"; 
-                        
-                        // Generate code idan babu shi
-                        if(currentCode === "") {
-                            currentCode = Math.random().toString(36).substring(2,8).toUpperCase(); 
-                            document.getElementById("generated-code-display").innerText = currentCode;
-                        }
-                    }
-                }
-            }
-        }, 1000); // Kowane bayan sakan daya
-
-        // Kunna Anti-Skip Security (Domin kiyaye kudi)
-        if (window.setupSecurityTracker) {
-            window.setupSecurityTracker(player);
-        }
-
-    } else {
-        // Idan an yi Pause ko bidiyo ya kare, tsayar da tracker
-        if (tracker) clearInterval(tracker);
-    }
-   }
-    
-    
 
     // 3. UI & INTERACTION FUNCTIONS
     function generateCode() { 
@@ -917,6 +859,54 @@ async function loadVideosFromSynergyVault() {
 }
     
  
+
+    // 1. ZAYYANA TASK DAGA PLAYLIST
+async function loadNewTask() {
+    try {
+        const snapshot = await db.collection("playlist").get();
+        let tasks = [];
+        snapshot.forEach(doc => tasks.push(doc.data()));
+
+        if (tasks.length > 0) {
+            // Zabo bidiyo guda daya a hargitse (Random)
+            const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
+            currentTaskKeyword = randomTask.keyword || "Synergy Protocol Review";
+            currentCode = randomTask.securityCode || ""; 
+            
+            // Nuna sunan bidiyon da za a yi search
+            const display = document.getElementById('task-keyword-display');
+            if(display) display.innerText = currentTaskKeyword;
+            
+            // Boye code din har sai sun dawo
+            const codeDisplay = document.getElementById("generated-code-display");
+            if(codeDisplay) codeDisplay.innerText = "LOCKED";
+        }
+    } catch (e) { console.error("Vault Error:", e); }
+}
+
+// 2. BUDE YOUTUBE SEARCH
+function openYouTubeSearch() {
+    if(!currentTaskKeyword) {
+        showSynergyAlert("LOADING TASK... PLEASE WAIT", "info");
+        return;
+    }
+    
+    // Tura mutum zuwa YouTube Search results
+    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(currentTaskKeyword)}`;
+    window.open(searchUrl, '_blank');
+
+    // Nuna musu Panel din saka code nan take don suna dawowa su saka
+    const p = document.getElementById('verifier-panel');
+    if(p) {
+        p.classList.add('is-visible-now');
+        p.style.opacity = "1";
+        p.style.transform = "translateY(0)";
+        p.style.pointerEvents = "all";
+    }
+}
+
+// Kira aikin idan shafi ya bude
+loadNewTask();
     
 </script>
 </body>
