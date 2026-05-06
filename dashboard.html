@@ -990,80 +990,102 @@ async function executeVerification() {
     });
     }
 
-
-    
-  // Bayanan bidiyonka na YouTube da Security Codes
+// Bayanan aikin kowane Node
 const nodeTasks = {
-    1: { keyword: "Synergy AI Wealth Node-01", code: "XA99" },
-    2: { keyword: "Global Secret Synergy Node-02", code: "BZ44" },
-    3: { keyword: "Urban Vision Synergy Node-03", code: "UV50" },
-    4: { keyword: "Zenith Nature Synergy Node-04", code: "ZN4K" },
-    5: { keyword: "Cosmic Horizon Synergy Node-05", code: "CH05" }
+    1: { title: "AI Wealth Academy", anchor: "Synergy Protocol Official", channel: "@yourchannel", code: "XA99", amount: 150 },
+    2: { title: "Global Wealth Secret", anchor: "Synergy Protocol Tutorial", channel: "@yourchannel", code: "BZ44", amount: 150 },
+    3: { title: "Urban Vision 2050", anchor: "Synergy Protocol Review", channel: "@yourchannel", code: "UV50", amount: 150 },
+    4: { title: "Zenith Nature 4K", anchor: "Synergy Protocol Video", channel: "@yourchannel", code: "ZN4K", amount: 150 },
+    5: { title: "Cosmic Horizon", anchor: "Synergy Protocol Full", channel: "@yourchannel", code: "CH05", amount: 150 }
 };
+
+let completedNodes = 0; // Don lura da Progress Ring
 
 async function processNode(id) {
     const btn = document.getElementById(`btn-${id}`);
-    const textArea = document.getElementById(`text-area-${id}`);
-    const nodeRow = document.getElementById(`node-${id}`);
+    const task = nodeTasks[id];
 
     if (btn.innerText === "START") {
-        // 1. Bude YouTube Search
-        const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(nodeTasks[id].keyword)}`;
-        window.open(searchUrl, '_blank');
+        // Bude YouTube tare da Unique Search
+        const randomTags = ["Latest", "2026", "Official", "Secure"];
+        const randomTag = randomTags[Math.floor(Math.random() * randomTags.length)];
+        const query = `${task.title} ${task.anchor} ${task.channel} ${randomTag}`;
+        window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, '_blank');
 
-        // 2. Rikida Bar din (Input Mode)
-        textArea.innerHTML = `
-            <input type="text" id="code-input-${id}" 
-            placeholder="ENTER SECURITY CODE" 
-            class="bg-transparent border-b-2 border-cyan-500 text-white orbitron text-[10px] w-full outline-none py-1 animate-pulse">
+        // Rikida Bar zuwa Input
+        document.getElementById(`text-area-${id}`).innerHTML = `
+            <input type="text" id="code-input-${id}" placeholder="CODE" class="bg-transparent border-b border-cyan-500 text-white orbitron text-[10px] w-full outline-none">
         `;
-        
         btn.innerText = "SUBMIT";
-        btn.classList.replace('bg-white', 'bg-cyan-400'); // Canza launin button din
-        
+        btn.classList.replace('bg-white', 'bg-cyan-400');
+
     } else if (btn.innerText === "SUBMIT") {
         const inputVal = document.getElementById(`code-input-${id}`).value.toUpperCase();
         
-        if (inputVal === nodeTasks[id].code) {
-            // 3. Nasara: Bada kudi sannan a goge Bar din
-            showSynergyAlert(`NODE ${id} SECURED! +₦150`, "success");
-            
-            // Effect na bacewa
+        if (inputVal === task.code) {
+            // 1. Update Progress Ring
+            completedNodes++;
+            updateProgressCircle(completedNodes);
+
+            // 2. Add Money to Firebase
+            addEarningsToFirebase(task.amount);
+
+            // 3. Effect na Bacewa
+            const nodeRow = document.getElementById(`node-${id}`);
             nodeRow.style.opacity = "0";
-            nodeRow.style.transform = "scale(0.9) translateX(50px)";
+            nodeRow.style.transform = "translateX(50px)";
             
             setTimeout(() => {
-                nodeRow.remove(); // Goge bar din gaba daya
-                
-                // Idan dukkan bars sun kare, nuna sakon kammalawa
-                if (document.querySelectorAll('[id^="node-"]').length === 0) {
-                    document.getElementById('synergy-nodes-wrapper').innerHTML = `
-                        <div class="text-center p-10 orbitron text-cyan-400 text-[10px] tracking-[4px] animate-bounce">
-                            ALL NODES SYNCHRONIZED. COME BACK TOMORROW.
-                        </div>`;
-                }
+                nodeRow.remove();
+                showSynergyAlert(`NODE ${id} SECURED: +₦${task.amount}`, "success");
             }, 500);
 
-            // Update Firebase Balance a nan
-            saveEarningsToFirebase(150);
-
         } else {
-            showSynergyAlert("SECURITY BREACH: INVALID CODE", "error");
+            showSynergyAlert("WRONG SECURITY CODE", "error");
         }
     }
 }
 
-// Function din Update kudi (Misali)
-function saveEarningsToFirebase(amount) {
-    const user = localStorage.getItem('synergy_user');
-    if(user) {
-        db.collection("users").doc(user).update({
-            videoBalance: firebase.firestore.FieldValue.increment(amount),
-            videosWatchedToday: firebase.firestore.FieldValue.increment(1)
-        });
+// Function din cika Circle (Progress Ring)
+function updateProgressCircle(count) {
+    const percentage = (count / 5) * 100;
+    // Nemo text din cikin circle
+    const progressText = document.querySelector('.relative.z-10.flex.flex-col.items-center h2'); 
+    if (progressText) progressText.innerText = `${percentage}%`;
+    
+    // Idan kana amfani da SVG stroke-dasharray
+    const circle = document.querySelector('.progress-ring-circle');
+    if (circle) {
+        const radius = circle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
     }
 }
-  
+
+// Function din hada kudi a Firebase
+async function addEarningsToFirebase(amount) {
+    const userId = localStorage.getItem('userId'); // Tabbatar ka ajiye userId a login
+    if (!userId) return;
+
+    const userRef = db.collection("users").doc(userId);
+    
+    try {
+        await userRef.update({
+            balance: firebase.firestore.FieldValue.increment(amount),
+            nodesCompleted: firebase.firestore.FieldValue.increment(1),
+            lastActivity: firebase.firestore.Timestamp.now()
+        });
+        
+        // Refresh balance display a screen (Idan akwai)
+        fetchNewBalance(userId); 
+    } catch (error) {
+        console.error("Error updating balance:", error);
+    }
+                      }
+        
+    
+
 </script>
 </body>
 </html>
